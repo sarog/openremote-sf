@@ -1,6 +1,6 @@
 /*
  * OpenRemote, the Home of the Digital Home.
- * Copyright 2008-2011, OpenRemote Inc.
+ * Copyright 2008-2014, OpenRemote Inc.
  *
  * See the contributors.txt file in the distribution for a
  * full listing of individual contributors.
@@ -20,12 +20,17 @@
  */
 package org.openremote.controller;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
-import java.util.logging.Logger;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.logging.Level;
 
+import org.openremote.controller.exception.ConfigurationException;
 import org.openremote.controller.service.ServiceContext;
+import org.openremote.controller.utils.Logger;
 
 
 /**
@@ -73,11 +78,35 @@ public class ControllerConfiguration extends Configuration
    * TODO : See ORCJAVA-191 (http://jira.openremote.org/browse/ORCJAVA-191)
    */
   public static final String BEEHIVE_REST_ROOT_URL = "beehive.REST.Root.Url";
+
+  /**
+   * Configuration property name used for listing the remote command service URIs: {@value}
+   */
+  public static final String REMOTE_COMMAND_SERVICE_URI = "remote.command.service.uri";
+
+  /**
+   * Configuration property name used for setting the request interval to check incoming
+   * remote commands to the controller.
+   */
+  public final static String REMOTE_COMMAND_REQUEST_INTERVAL = "remote.command.request.interval";
+
+  /**
+   * Configuration property name used for setting the connection timeout value for remote command
+   * service : {@value}
+   */
+  public final static String REMOTE_COMMAND_CONNECTION_TIMEOUT = "remote.command.connection.timeout";
+
+  /**
+   * Configuration property name used for setting the response response timeout for remote command
+   * service : {@value}
+   */
+  public final static String REMOTE_COMMAND_RESPONSE_TIMEOUT = "remote.command.response.timeout";
+
+
   public static final String BEEHIVE_ACCOUNT_SERVICE_REST_ROOT_URL = "beehiveAccountService.REST.Root.Url";
   public static final String BEEHIVE_DEVICE_DISCOVERY_SERVICE_REST_ROOT_URL = "beehiveDeviceDiscoveryService.REST.Root.Url";
-  public static final String BEEHIVE_CONTROLLER_COMMAND_SERVICE_REST_ROOT_URL = "beehiveControllerCommandService.REST.Root.Url";
   public static final String BEEHIVE_SYNCING = "controller.performBeehiveSyncing";
-  
+
   public static final String IRSEND_PATH = "irsend.path";
   public static final String MULTICAST_PORT = "multicast.port";
   public static final String MULTICAST_ADDRESS = "multicast.address";
@@ -89,14 +118,31 @@ public class ControllerConfiguration extends Configuration
   public static final String LAGARTO_BROADCAST_ADDRESS = "lagarto_network.broadcast";
 
   public static final String PROXY_TIMEOUT = "proxy.timeout";
-  public static final String BEEHIVE_COMMAND_SERVICE_CHECK_INTERVAL = "beehiveCommandService.check.interval";
- 
+
   public static final String CONTROLLER_APPLICATIONNAME = "controller.applicationname";
+
+
+  /**
+   * Default value to wait between requests when checking for available remote commands
+   * for this controller. Milliseconds : {@value}
+   */
+  public final static int DEFAULT_REMOTE_COMMAND_REQUEST_INTERVAL = 30000;
+
+  /**
+   * Default value to establish remote command service connection before timing out.
+   * Milliseconds : {@value}
+   */
+  public final static int DEFAULT_REMOTE_COMMAND_CONNECTION_TIMEOUT = 10000;
+
+  /**
+   * Default value to wait for remote command service response before timing out.
+   * Milliseconds : {@value}
+   */
+  public final static int DEFAULT_REMOTE_COMMAND_RESPONSE_TIMEOUT = 15000;
 
 
 
   // Class Members --------------------------------------------------------------------------------
-
 
   private static String getLineSeparator()
   {
@@ -144,14 +190,39 @@ public class ControllerConfiguration extends Configuration
   private String beehiveRESTRootUrl;
   private String beehiveAccountServiceRESTRootUrl;
   private String beehiveDeviceDiscoveryServiceRESTRootUrl;
-  private String beehiveControllerCommandServiceRESTRootUrl;
   private boolean beehiveSyncing;
   private String webappName;
   private String irsendPath;
   private String lircdconfPath;
   private String lagartoBroadcastAddr;
   private int proxyTimeout;
-  private int beehiveCommandServiceCheckInterval;
+
+  /**
+   * The set of URIs used to retrieve remote commands. Note that this can contain a comma
+   * separated list of URIs. Therefore for programmatic access, the method
+   * {@link #getRemoteCommandURIs()} should be used to retrieve the parsed array of
+   * actual URI instance that can be used.
+   */
+  private String remoteCommandServiceURI = "<undefined>";
+
+  /**
+   * The request interval used to check if remote commands are available for this controller.
+   * In milliseconds: {@link #DEFAULT_REMOTE_COMMAND_REQUEST_INTERVAL}
+   */
+  private int remoteCommandRequestInterval;
+
+  /**
+   * The connection timeout value used to wait for the remote command service to establish
+   * a connection with controller, until timed out. In milliseconds :
+   * {@link #DEFAULT_REMOTE_COMMAND_CONNECTION_TIMEOUT}
+   */
+  private int remoteCommandConnectionTimeout = DEFAULT_REMOTE_COMMAND_CONNECTION_TIMEOUT;
+
+  /**
+   * The connection timeout value used for waiting a response from remote command service
+   * before timing out. In milliseconds : {@link #DEFAULT_REMOTE_COMMAND_RESPONSE_TIMEOUT}
+   */
+  private int remoteCommandResponseTimeout = DEFAULT_REMOTE_COMMAND_RESPONSE_TIMEOUT;
 
   /** Whether copy lircd.conf for user. */
   private boolean copyLircdconf;
@@ -472,62 +543,58 @@ public class ControllerConfiguration extends Configuration
       this.macroIRExecutionDelay = macroIRExecutionDelay;
    }
 
-   public String getWebappIp() {      
-      return preferAttrCustomValue(WEBAPP_IP, webappIp);
+   public String getWebappIp()
+   {
+     return preferAttrCustomValue(WEBAPP_IP, webappIp);
    }
 
-   public void setWebappIp(String webappIp) {
-      this.webappIp = webappIp;
+   public void setWebappIp(String webappIp)
+   {
+     this.webappIp = webappIp.trim();
    }
 
-   public String getBeehiveRESTRootUrl() {
-
+   public String getBeehiveRESTRootUrl()
+   {
      // TODO : see ORCJAVA-191 (http://jira.openremote.org/browse/ORCJAVA-191)
-      return preferAttrCustomValue(BEEHIVE_REST_ROOT_URL, beehiveRESTRootUrl);
+     return preferAttrCustomValue(BEEHIVE_REST_ROOT_URL, beehiveRESTRootUrl);
    }
 
-   public void setBeehiveRESTRootUrl(String beehiveRESTRootUrl) {
-      this.beehiveRESTRootUrl = beehiveRESTRootUrl;
+   public void setBeehiveRESTRootUrl(String beehiveRESTRootUrl)
+   {
+     this.beehiveRESTRootUrl = beehiveRESTRootUrl.trim();
    }
    
-   public String getBeehiveAccountServiceRESTRootUrl() {
-      return preferAttrCustomValue(BEEHIVE_ACCOUNT_SERVICE_REST_ROOT_URL, beehiveAccountServiceRESTRootUrl);
+   public String getBeehiveAccountServiceRESTRootUrl()
+   {
+     return preferAttrCustomValue(BEEHIVE_ACCOUNT_SERVICE_REST_ROOT_URL, beehiveAccountServiceRESTRootUrl);
    }
 
-   public void setBeehiveAccountServiceRESTRootUrl(String beehiveAccountServiceRESTRootUrl) {
-      this.beehiveAccountServiceRESTRootUrl = beehiveAccountServiceRESTRootUrl;
+   public void setBeehiveAccountServiceRESTRootUrl(String beehiveAccountServiceRESTRootUrl)
+   {
+     this.beehiveAccountServiceRESTRootUrl = beehiveAccountServiceRESTRootUrl.trim();
    }
    
-   public String getBeehiveDeviceDiscoveryServiceRESTRootUrl() {
-      return preferAttrCustomValue(BEEHIVE_DEVICE_DISCOVERY_SERVICE_REST_ROOT_URL, beehiveDeviceDiscoveryServiceRESTRootUrl);
+   public String getBeehiveDeviceDiscoveryServiceRESTRootUrl()
+   {
+     return preferAttrCustomValue(BEEHIVE_DEVICE_DISCOVERY_SERVICE_REST_ROOT_URL, beehiveDeviceDiscoveryServiceRESTRootUrl);
    }
 
-   public void setBeehiveDeviceDiscoveryServiceRESTRootUrl(String beehiveDeviceDiscoveryServiceRESTRootUrl) {
-      this.beehiveDeviceDiscoveryServiceRESTRootUrl = beehiveDeviceDiscoveryServiceRESTRootUrl;
+   public void setBeehiveDeviceDiscoveryServiceRESTRootUrl(String beehiveDeviceDiscoveryServiceRESTRootUrl)
+   {
+     this.beehiveDeviceDiscoveryServiceRESTRootUrl = beehiveDeviceDiscoveryServiceRESTRootUrl.trim();
    }
 
-   public String getBeehiveControllerCommandServiceRESTRootUrl() {
-      return preferAttrCustomValue(BEEHIVE_CONTROLLER_COMMAND_SERVICE_REST_ROOT_URL, beehiveControllerCommandServiceRESTRootUrl);
-   }
 
-   public void setBeehiveControllerCommandServiceRESTRootUrl(String beehiveControllerCommandServiceRESTRootUrl) {
-      this.beehiveControllerCommandServiceRESTRootUrl = beehiveControllerCommandServiceRESTRootUrl;
+
+
+   public String getWebappName()
+   {
+     return preferAttrCustomValue(CONTROLLER_APPLICATIONNAME, webappName);
    }
    
-   public boolean getBeehiveSyncing() {
-      return preferAttrCustomValue(BEEHIVE_SYNCING, beehiveSyncing);
-   }
-
-   public void setBeehiveSyncing(boolean beehiveSyncing) {
-      this.beehiveSyncing = beehiveSyncing;
-   }
-    
-   public String getWebappName() {
-      return preferAttrCustomValue(CONTROLLER_APPLICATIONNAME, webappName);
-   }
-   
-   public void setWebappName(String webappName) {
-      this.webappName = webappName;
+   public void setWebappName(String webappName)
+   {
+     this.webappName = webappName;
    }
 
   /**
@@ -548,8 +615,6 @@ public class ControllerConfiguration extends Configuration
    * Lagarto servers
    *
    * @see #getLagartoBroadcastAddr()
-   *
-   * @param IP broadcast address as a string
    */
   public void setLagartoBroadcastAddr(String broadcastAddress)
   {
@@ -557,7 +622,282 @@ public class ControllerConfiguration extends Configuration
   }
 
 
-  public int getProxyTimeout()  
+  // Remote Command Service Configuration ---------------------------------------------------------
+
+
+  /**
+   * Returns the configured value of remote command service URIs. Note that this is the original
+   * configured value of string based URIs, as a comma separated list. For programatic API
+   * usage you will want to use {@link #getRemoteCommandURIs()} instead.
+   *
+   * @return  configuration string of a comma separated list of remote command service URIs
+   */
+  public String getRemoteCommandServiceURI()
+  {
+    // NOTE: this mainly exist to satisfy Spring requirements for configuration, otherwise
+    //       it is not really useful, use URL[] getRemoteCommandURIs() instead
+
+    return preferAttrCustomValue(
+       REMOTE_COMMAND_SERVICE_URI,
+       remoteCommandServiceURI
+    ).trim();
+  }
+
+  /**
+   * Returns a list of configured URIs that are used to connect to a remote command service.
+   * Note that the list will not contain any values returned by {@link #getRemoteCommandServiceURI()}
+   * that cannot be parsed into a proper URI syntax.
+   *
+   * @return  an array of remote command service URIs
+   */
+  public URI[] getRemoteCommandURIs()
+  {
+    String value = preferAttrCustomValue(
+       REMOTE_COMMAND_SERVICE_URI,
+       remoteCommandServiceURI
+    ).trim();
+
+    String[] uriStrings = value.split(",");
+    Set<URI> uris = new HashSet<URI>(1);
+
+    for (String uriString : uriStrings)
+    {
+      try
+      {
+        uris.add(new URI(uriString.trim()));
+      }
+
+      catch (URISyntaxException e)
+      {
+        log.warn(
+            "Unable to parse ''{0}'' in property ''{1}'' to a valid URI. Value ignored.",
+            uriString, REMOTE_COMMAND_SERVICE_URI
+        );
+      }
+    }
+
+    return uris.toArray(new URI[uris.size()]);
+  }
+
+  /**
+   * Sets remote command service URIs. The string must parse to a proper URI syntax. Multiple
+   * URIs may be added with as a comma-separated list.
+   *
+   * @param remoteCommandServiceURI   remote command service URI(s) as a string
+   */
+  public void setRemoteCommandServiceURI(String remoteCommandServiceURI)
+  {
+    this.remoteCommandServiceURI = remoteCommandServiceURI.trim();
+  }
+
+
+  /**
+   * Returns the configured remote command connection timeout value in milliseconds.
+   *
+   * @return  remote command service client connection timeout value in milliseconds
+   */
+  public int getRemoteCommandConnectionTimeoutMillis()
+  {
+    return preferAttrCustomValue(REMOTE_COMMAND_CONNECTION_TIMEOUT, remoteCommandConnectionTimeout);
+  }
+
+  /**
+   * This method returns the configured string value (uninterpreted, including potential suffices
+   * for minutes, seconds or milliseconds) for remote command service response timeout. <p>
+   *
+   * It is included to satisfy Spring framework configuration requirements but it is not used
+   * otherwise. See {@link #getRemoteCommandResponseTimeoutMillis()} instead for the actual
+   * timeout value in milliseconds.
+   *
+   * @return    configuration string for remote command service response timeout, uninterpreted
+   *            including user convenience suffices for minutes, seconds or milliseconds
+   */
+  public String getRemoteCommandConnectionTimeout()
+  {
+    return preferAttrCustomValue(REMOTE_COMMAND_CONNECTION_TIMEOUT, "" + remoteCommandConnectionTimeout);
+  }
+
+  /**
+   * Sets the remote command connection timeout value. The string value must be parseable to
+   * an integer value and is interpreted as seconds. For smaller millisecond values, postfix the
+   * integer string with 'ms', e.g. '100ms'. For longer minute values postfix the integer
+   * string with 'm', e.g. '1m' for one minute (60 seconds, 60,000 milliseconds). An explicit
+   * 's' suffix is also accepted for seconds but is not required; any number value without
+   * a suffix is interpreted as a second value.
+   *
+   * @param timeout   number string such as '10' for ten seconds or a number string with
+   *                  time-unit qualifier such as '2m' for two minutes, '1500ms' for 1,500
+   *                  milliseconds or '10s' for ten seconds
+   */
+  public void setRemoteCommandConnectionTimeout(String timeout)
+  {
+    try
+    {
+      remoteCommandConnectionTimeout = timeStringToMillis(timeout);
+    }
+
+    catch (InvalidTimeException e)
+    {
+      log.info(
+          "Remote command connection timeout was configured to an invalid value {0}. " +
+          "Will wait for connection indefinitely.", timeout
+      );
+
+      remoteCommandConnectionTimeout = 0;
+    }
+
+    catch (ConfigurationException e)
+    {
+      log.warn(
+          "Unable to parse remote command connection timeout value ''{0}'', " +
+          "using default {1} milliseconds...",
+          timeout, DEFAULT_REMOTE_COMMAND_CONNECTION_TIMEOUT);
+    }
+  }
+
+
+  /**
+   * Returns the configured remote command response timeout value in milliseconds.
+   *
+   * @return  remote command service client response timeout value in milliseconds
+   */
+  public int getRemoteCommandResponseTimeoutMillis()
+  {
+    return preferAttrCustomValue(REMOTE_COMMAND_RESPONSE_TIMEOUT, remoteCommandResponseTimeout);
+  }
+
+  /**
+   * This method returns the configured string value (uninterpreted, including potential suffices
+   * for minutes, seconds or milliseconds) for remote command service response timeout. <p>
+   *
+   * It is included to satisfy Spring framework configuration requirements but it is not used
+   * otherwise. See {@link #getRemoteCommandResponseTimeoutMillis()} instead for the actual
+   * timeout value in milliseconds.
+   *
+   * @return    configuration string for remote command service response timeout, uninterpreted
+   *            including user convenience suffices for minutes, seconds or milliseconds
+   */
+  public String getRemoteCommandResponseTimeout()
+  {
+    return preferAttrCustomValue(
+        REMOTE_COMMAND_RESPONSE_TIMEOUT,
+        Integer.toString(remoteCommandResponseTimeout)
+    );
+  }
+
+
+  /**
+   * Sets the remote command response timeout value. The string value must be parseable to
+   * an integer value and is interpreted as seconds. For smaller millisecond values, postfix the
+   * integer string with 'ms', e.g. '100ms'. For longer minute values postfix the integer
+   * string with 'm', e.g. '1m' for one minute (60 seconds, 60,000 milliseconds). An explicit
+   * 's' suffix is also accepted for seconds but is not required; any number value without
+   * a suffix is interpreted as a second value.
+   *
+   * @param timeout   number string such as '10' for ten seconds or a number string with
+   *                  time-unit qualifier such as '2m' for two minutes, '1500ms' for
+   *                  1,500 milliseconds or '10s' for ten seconds
+   */
+  public void setRemoteCommandResponseTimeout(String timeout)
+  {
+    try
+    {
+      remoteCommandResponseTimeout = timeStringToMillis(timeout);
+    }
+
+    catch (InvalidTimeException e)
+    {
+      log.info(
+          "Remote command response timeout was set to {0}, will wait for response indefinitely.",
+          timeout
+      );
+
+      remoteCommandResponseTimeout = 0;
+    }
+
+    catch (ConfigurationException e)
+    {
+      log.warn(
+          "Unable to parse remote command response timeout value ''{0}'', " +
+          "using default {1} milliseconds...",
+          timeout, DEFAULT_REMOTE_COMMAND_RESPONSE_TIMEOUT);
+    }
+  }
+
+
+  /**
+   * Returns the configured remote command request interval value in milliseconds.
+   *
+   * @return  remote command request interval value in milliseconds
+   */
+  public int getRemoteCommandRequestIntervalMillis()
+  {
+    return preferAttrCustomValue(REMOTE_COMMAND_REQUEST_INTERVAL, remoteCommandRequestInterval);
+  }
+
+  /**
+   * This method returns the configured string value (uninterpreted, including potential suffices
+   * for minutes, seconds or milliseconds) for remote command request interval. <p>
+   *
+   * It is included to satisfy Spring framework configuration requirements but it is not used
+   * otherwise. See {@link #getRemoteCommandRequestIntervalMillis()} instead for the actual
+   * timeout value in milliseconds.
+   *
+   * @return    configuration string for remote command request interval, uninterpreted
+   *            including user convenience suffices for minutes, seconds or milliseconds
+   */
+  public String getRemoteCommandRequestInterval()
+  {
+    return preferAttrCustomValue(
+        REMOTE_COMMAND_REQUEST_INTERVAL,
+        Integer.toString(remoteCommandRequestInterval)
+    );
+  }
+
+  /**
+   * Sets the remote command request interval value. The string value must be parseable to
+   * an integer value and is interpreted as seconds. For smaller millisecond values, postfix the
+   * integer string with 'ms', e.g. '100ms'. For longer minute values postfix the integer
+   * string with 'm', e.g. '1m' for one minute (60 seconds, 60,000 milliseconds). An explicit
+   * 's' suffix is also accepted for seconds but is not required; any number value without
+   * a suffix is interpreted as a second value.
+   *
+   * @param interval  number string such as '10' for ten seconds or a number string with
+   *                  time-unit qualifier such as '2m' for two minutes, '1500ms' for
+   *                  1,500 milliseconds or '10s' for ten seconds
+   */
+  public void setRemoteCommandRequestInterval(String interval)
+  {
+    try
+    {
+      this.remoteCommandRequestInterval = timeStringToMillis(interval);
+    }
+
+    catch (Exception e)
+    {
+      log.info(
+          "Remote command request interval was set to {0}, using default value {1} instead. ",
+          interval, DEFAULT_REMOTE_COMMAND_REQUEST_INTERVAL
+      );
+
+      remoteCommandRequestInterval = DEFAULT_REMOTE_COMMAND_REQUEST_INTERVAL;
+    }
+  }
+
+
+
+
+  public boolean getBeehiveSyncing()
+  {
+    return preferAttrCustomValue(BEEHIVE_SYNCING, beehiveSyncing);
+  }
+
+  public void setBeehiveSyncing(boolean beehiveSyncing)
+  {
+    this.beehiveSyncing = beehiveSyncing;
+  }
+
+  public int getProxyTimeout()
   {
     return preferAttrCustomValue(PROXY_TIMEOUT, proxyTimeout);
   }
@@ -567,14 +907,5 @@ public class ControllerConfiguration extends Configuration
     this.proxyTimeout = proxyTimeout;
   }
 
-  public void setBeehiveCommandServiceCheckInterval(int interval) 
-  {
-    this.beehiveCommandServiceCheckInterval = interval;
-  }
-   
-  public int getBeehiveCommandServiceCheckInterval() 
-  {
-    return preferAttrCustomValue(BEEHIVE_COMMAND_SERVICE_CHECK_INTERVAL, beehiveCommandServiceCheckInterval);
-  }
 
 }
