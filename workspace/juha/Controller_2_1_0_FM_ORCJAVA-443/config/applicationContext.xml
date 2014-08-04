@@ -3,7 +3,7 @@
 <!--
  **
  * OpenRemote, the Home of the Digital Home.
- * Copyright 2008-2013, OpenRemote Inc.
+ * Copyright 2008-2014, OpenRemote Inc.
  *
  * See the contributors.txt file in the distribution for a
  * full listing of individual contributors.
@@ -76,13 +76,17 @@
     <property name = "beehiveRESTRootUrl" value="${beehive.REST.Root.Url}" />
     <property name = "beehiveAccountServiceRESTRootUrl" value="${beehiveAccountService.REST.Root.Url}" />
     <property name = "beehiveDeviceDiscoveryServiceRESTRootUrl" value="${beehiveDeviceDiscoveryService.REST.Root.Url}" />
-    <property name = "beehiveControllerCommandServiceRESTRootUrl" value="${beehiveControllerCommandService.REST.Root.Url}" />
     <property name = "beehiveSyncing" value="${controller.performBeehiveSyncing}" />
     <property name = "webappName" value="${controller.applicationname}" />
     <property name = "comPort" value = "${com.port}"/>
     <property name = "lagartoBroadcastAddr" value = "${lagarto_network.broadcast}"/>
     <property name = "proxyTimeout" value = "${proxy.timeout}"/>
-    <property name = "beehiveCommandServiceCheckInterval" value = "${beehiveCommandService.check.interval}"/>
+
+    <property name = "remoteCommandServiceURI" value = "${remote.command.service.uri}"/>
+    <property name = "remoteCommandRequestInterval" value = "${remote.command.request.interval}"/>
+    <property name = "remoteCommandConnectionTimeout" value = "${remote.command.connection.timeout}"/>
+    <property name = "remoteCommandResponseTimeout" value = "${remote.command.response.timeout}"/>
+
   </bean>
 
   <!-- round-robin variables -->
@@ -187,7 +191,6 @@
     <constructor-arg value = "Default Deployer"/>
     <constructor-arg ref = "statusCache"/>
     <constructor-arg ref = "configuration"/>
-    <constructor-arg ref = "beehiveCmdCheckService"/>
     <constructor-arg>
       <map>
         <entry key = "2.0" value-ref = "schema20"/>
@@ -197,9 +200,6 @@
 
   </bean>
 
-  <bean id = "beehiveCmdCheckService" class = "org.openremote.controller.service.BeehiveCommandCheckService">
-    <constructor-arg ref = "configuration"/>
-  </bean>
 
   <!--
    | TODO   : XML mappers
