@@ -18,7 +18,7 @@
 # ============================================================================
 #
 # Modifications added for specific OpenRemote use scenarios. 
-# Copyright 2008-2012 OpenRemote, Inc.
+# Copyright 2008-2014 OpenRemote, Inc.
 #
 # Authors:
 #   Juha Lindfors (juha@openremote.org)
@@ -208,6 +208,25 @@ LD_LIBRARY_PATH="$LD_LIBRARY_PATH:$CATALINA_BASE/webapps/controller/WEB-INF/lib/
 
 
 ##
+# TODO
+##
+setBeehiveServiceConfigurations()
+{
+  if [ -z "${BEEHIVE_BASE_URI}" ] ; then
+    BEEHIVE_BASE_URI="https://beehive.openremote.org"
+  fi
+
+  if [ -z "${BEEHIVE_REMOTE_SERVICE_PATH}" ] ; then
+    BEEHIVE_REMOTE_SERVICE_PATH="remote"
+  fi
+
+  if [ -z "${BEEHIVE_REMOTE_SERVICE_URI}" ] ; then
+    BEEHIVE_REMOTE_SERVICE_URI="$BEEHIVE_BASE_URI/$BEEHIVE_REMOTE_SERVICE_PATH"
+  fi
+}
+
+
+##
 # Set Tomcat's console logging to match controller's console output threshold.
 # Note that TC uses JUL log level names where as the controller uses Log4j
 # threshold names so we need to do some mapping of values below...
@@ -300,6 +319,7 @@ executeTomcat()
             -Dtomcat.server.console.log.level="$TOMCAT_SERVER_CONSOLE_LOG_LEVEL" \
             -Dopenremote.controller.startup.log.level="$CONTROLLER_STARTUP_LOG_LEVEL" \
             -Dopenremote.controller.console.threshold="$CONTROLLER_CONSOLE_THRESHOLD" \
+            -Dopenremote.remote.command.service.uri="$BEEHIVE_REMOTE_SERVICE_URI" \
             -Djava.library.path=\"$CATALINA_BASE/webapps/controller/WEB-INF/lib/native\" \
             \"$LOGGING_CONFIG\" $2  -classpath \"$3\" org.apache.catalina.startup.Bootstrap start $PID_REDIRECT $REDIRECT
 
@@ -330,6 +350,12 @@ if [ "$1" = "run" ]; then
 
   setTomcatConsoleLevel
   printTomcatEnvVariables
+
+
+  # Parameterize Beehive Service URIs...
+
+  setBeehiveServiceConfigurations
+
 
   # Let the user know how the logging has been configured...
 
@@ -374,6 +400,12 @@ elif [ "$1" = "start" ]; then
 
   setTomcatConsoleLevel
   printTomcatEnvVariables
+
+
+  # Parameterize Beehive Service URIs...
+
+  setBeehiveServiceConfigurations
+
 
   # run Tomcat as service...
 
