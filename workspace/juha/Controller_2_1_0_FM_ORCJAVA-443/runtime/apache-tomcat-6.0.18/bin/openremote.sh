@@ -208,20 +208,59 @@ LD_LIBRARY_PATH="$LD_LIBRARY_PATH:$CATALINA_BASE/webapps/controller/WEB-INF/lib/
 
 
 ##
+# Prints a variable name and its value. Mostly used for printing external environment
+# values to communicate settings on the standard output stream.
+#
+# $1 is expected to contain the variable name to print.
+##
+printVariable()
+{
+  if [ -z "${PRINTING_VARIABLES}" ] ; then
+    PRINTING_VARIABLES="true"
+
+    echo ""
+    echo "Configured Variable Values:"
+  fi
+
+  echo "  $1 = ${!1}"
+}
+
+##
 # TODO
 ##
 setBeehiveServiceConfigurations()
 {
+  local PRINT_VALUES
+
+  if [ "$1" = "printValues" ]; then
+    local PRINT_VALUES="true"
+  fi
+
+
+  # Remote Command Service Variables...
+
   if [ -z "${BEEHIVE_BASE_URI}" ] ; then
     BEEHIVE_BASE_URI="https://beehive.openremote.org"
+
+  elif [ -n "${PRINT_VALUES}" ] ; then
+    printVariable BEEHIVE_BASE_URI
+
   fi
 
   if [ -z "${BEEHIVE_REMOTE_SERVICE_PATH}" ] ; then
     BEEHIVE_REMOTE_SERVICE_PATH="remote"
+
+  elif [ -n "${PRINT_VALUES}" ] ; then
+    printVariable BEEHIVE_REMOTE_SERVICE_PATH
+
   fi
 
   if [ -z "${BEEHIVE_REMOTE_SERVICE_URI}" ] ; then
     BEEHIVE_REMOTE_SERVICE_URI="$BEEHIVE_BASE_URI/$BEEHIVE_REMOTE_SERVICE_PATH"
+
+  elif [ -n "${PRINT_VALUES}" ] ; then
+    printVariable BEEHIVE_REMOTE_SERVICE_URI
+
   fi
 }
 
@@ -352,11 +391,6 @@ if [ "$1" = "run" ]; then
   printTomcatEnvVariables
 
 
-  # Parameterize Beehive Service URIs...
-
-  setBeehiveServiceConfigurations
-
-
   # Let the user know how the logging has been configured...
 
   echo ""
@@ -370,6 +404,13 @@ if [ "$1" = "run" ]; then
   echo "     "
   echo ""
   echo "-----------------------------------------------------------------------"
+
+
+  # Parameterize Beehive Service URIs...
+
+  setBeehiveServiceConfigurations printValues
+  echo ""
+  echo ""
 
   # run tomcat...
 
