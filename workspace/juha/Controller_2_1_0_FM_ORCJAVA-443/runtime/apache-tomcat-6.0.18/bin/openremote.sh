@@ -264,6 +264,24 @@ setBeehiveServiceConfigurations()
   fi
 }
 
+setControllerID()
+{
+  local PRINT_VALUES
+
+  if [ "$1" = "printValues" ]; then
+    local PRINT_VALUES="true"
+  fi
+
+
+  if [ -z "${OPENREMOTE_CONTROLLER_ID}" ] ; then
+    OPENREMOTE_CONTROLLER_ID="1"
+
+  elif [ -n "${PRINT_VALUES}" ] ; then
+    printVariable OPENREMOTE_CONTROLLER_ID
+
+  fi
+}
+
 
 ##
 # Set Tomcat's console logging to match controller's console output threshold.
@@ -359,6 +377,7 @@ executeTomcat()
             -Dopenremote.controller.startup.log.level="$CONTROLLER_STARTUP_LOG_LEVEL" \
             -Dopenremote.controller.console.threshold="$CONTROLLER_CONSOLE_THRESHOLD" \
             -Dopenremote.remote.command.service.uri="$BEEHIVE_REMOTE_SERVICE_URI" \
+            -Dopenremote.controller.id="$OPENREMOTE_CONTROLLER_ID" \
             -Djava.library.path=\"$CATALINA_BASE/webapps/controller/WEB-INF/lib/native\" \
             \"$LOGGING_CONFIG\" $2  -classpath \"$3\" org.apache.catalina.startup.Bootstrap start $PID_REDIRECT $REDIRECT
 
@@ -409,6 +428,11 @@ if [ "$1" = "run" ]; then
   # Parameterize Beehive Service URIs...
 
   setBeehiveServiceConfigurations printValues
+
+  # Parameterize fixed controller ID...
+
+  setControllerID printValues
+
   echo ""
   echo ""
 
@@ -447,7 +471,11 @@ elif [ "$1" = "start" ]; then
 
   setBeehiveServiceConfigurations
 
+  # Parameterize Controller ID...
 
+  setControllerID
+
+  
   # run Tomcat as service...
 
   executeTomcat "$_RUNJAVA" "$JAVA_OPTS" "$CLASSPATH" service
@@ -490,6 +518,13 @@ elif [ "$1" = "config" ] ; then
   echo "    Set to use a different default base URI for all Beehive services. Setting the base"
   echo "    URI will not affect Beehive service application paths. Individual services may be"
   echo "    configured with separate domains and paths using their specific environment variables."
+  echo ""
+  echo "  OPENREMOTE_CONTROLLER_ID:"
+  echo ""
+  echo "    Set when a non-interactive controller registration with a fixed controller ID is"
+  echo "    required. Value should be an integer representing a unique controller ID for this"
+  echo "    controller instance."
+  echo ""
   echo ""
   echo "Beehive Remote Command Service"
   echo "------------------------------"
