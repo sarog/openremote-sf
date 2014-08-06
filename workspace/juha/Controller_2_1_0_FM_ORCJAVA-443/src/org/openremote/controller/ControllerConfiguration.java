@@ -687,6 +687,8 @@ public class ControllerConfiguration extends Configuration
    */
   public void setRemoteCommandServiceURI(String remoteCommandServiceURI)
   {
+System.err.println("\n\n\n " + remoteCommandServiceURI + "\n\n\n");
+
     this.remoteCommandServiceURI = remoteCommandServiceURI.trim();
   }
 
