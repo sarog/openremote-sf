@@ -478,6 +478,33 @@ elif [ "$1" = "stop" ] ; then
     fi
   fi
 
+elif [ "$1" = "config" ] ; then
+
+  echo "The following environment variables can be set to configure controller behavior:"
+  echo ""
+  echo "General"
+  echo "-------"
+  echo ""
+  echo "  BEEHIVE_BASE_URI:"
+  echo ""
+  echo "    Set to use a different default base URI for all Beehive services. Setting the base"
+  echo "    URI will not affect Beehive service application paths. Individual services may be"
+  echo "    configured with separate domains and paths using their specific environment variables."
+  echo ""
+  echo "Beehive Remote Command Service"
+  echo "------------------------------"
+  echo ""
+  echo "  BEEHIVE_REMOTE_SERVICE_PATH:"
+  echo ""
+  echo "    Set to modify the application path of Beehive remote command service. This path is"
+  echo "    appended to BEEHIVE_BASE_URI value. Value should *not* include a leading URI slash."
+  echo ""
+  echo "  BEEHIVE_REMOTE_SERVICE_URI:"
+  echo ""
+  echo "    Set to use custom URI for Beehive remote service. This variable will override both"
+  echo "    BEEHIVE_BASE_URI and BEEHIVE_REMOTE_SERVICE_PATH settings."
+  echo ""
+
 else
 
   echo "Usage: openremote.sh ( commands ... )"
@@ -493,6 +520,13 @@ else
   echo ""
   echo "  stop -force"
   echo "       Stop OpenRemote Controller (followed by kill -KILL)"
+  echo ""
+  echo "  config"
+  echo "       Display information about OpenRemote Controller environment variable"
+  echo "       configuration."
+  echo ""
+  echo ""
+
   exit 1
 
 fi
