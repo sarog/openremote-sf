@@ -226,7 +226,8 @@ printVariable()
 }
 
 ##
-# TODO
+# Sets up connection properties for Beehive services from environment variables, if they
+# have been set. Otherwise uses default values.
 ##
 setBeehiveServiceConfigurations()
 {
@@ -286,7 +287,28 @@ setBeehiveServiceConfigurations()
 
   fi
 
+
+
+  # Beehive Device Discovery Variables...
+
+  if [ -z "${BEEHIVE_DEVICE_DISCOVERY_SERVICE_PATH}" ] ; then
+    BEEHIVE_DEVICE_DISCOVERY_SERVICE_PATH="dds/rest/"
+
+  elif [ -n "${PRINT_VALUES}" ] ; then
+    printVariable BEEHIVE_DEVICE_DISCOVERY_SERVICE_PATH
+
+  fi
+
+  if [ -z "${BEEHIVE_DEVICE_DISCOVERY_SERVICE_URI}" ] ; then
+    BEEHIVE_DEVICE_DISCOVERY_SERVICE_URI="$BEEHIVE_BASE_URI/$BEEHIVE_DEVICE_DISCOVERY_SERVICE_PATH"
+
+  elif [ -n "${PRINT_VALUES}" ] ; then
+    printVariable BEEHIVE_DEVICE_DISCOVERY_SERVICE_URI
+
+  fi
+
 }
+
 
 setControllerID()
 {
@@ -401,6 +423,7 @@ executeTomcat()
             -Dopenremote.controller.startup.log.level="$CONTROLLER_STARTUP_LOG_LEVEL" \
             -Dopenremote.controller.console.threshold="$CONTROLLER_CONSOLE_THRESHOLD" \
             -Dopenremote.remote.command.service.uri="$BEEHIVE_REMOTE_SERVICE_URI" \
+            -Dopenremote.device.discovery.service.uri="$BEEHIVE_DEVICE_DISCOVERY_SERVICE_URI" \
             -Dopenremote.sync.service.uri="$BEEHIVE_SYNC_SERVICE_URI" \
             -Dopenremote.controller.id="$OPENREMOTE_CONTROLLER_ID" \
             -Djava.library.path=\"$CATALINA_BASE/webapps/controller/WEB-INF/lib/native\" \
@@ -577,6 +600,21 @@ elif [ "$1" = "config" ] ; then
   echo ""
   echo "    Set to use custom URI for Beehive remote service. This variable will override both"
   echo "    BEEHIVE_BASE_URI and BEEHIVE_REMOTE_SERVICE_PATH settings."
+  echo ""
+  echo ""
+  echo "Beehive Device Discovery Service"
+  echo "--------------------------------"
+  echo ""
+  echo "  BEEHIVE_DEVICE_DISCOVERY_SERVICE_PATH:"
+  echo ""
+  echo "    Set to modify the application path of Beehive device discovery service. This path is"
+  echo "    appended to BEEHIVE_BASE_URI value. Value should *not* include a leading URI slash."
+  echo ""
+  echo "  BEEHIVE_DEVICE_DISCOVERY_SERVICE_URI:"
+  echo ""
+  echo "    Set to use custom URI for Beehive device discovery service. This variable will override"
+  echo "    both BEEHIVE_BASE_URI and BEEHIVE_DEVICE_DISCOVERY_SERVICE_PATH settings."
+  echo ""
   echo ""
 
 else
