@@ -237,7 +237,8 @@ setBeehiveServiceConfigurations()
   fi
 
 
-  # Remote Command Service Variables...
+  # Base URI for all Beehive services. This base URI will be used to construct service URIs
+  # unless a service-specific override has been set...
 
   if [ -z "${BEEHIVE_BASE_URI}" ] ; then
     BEEHIVE_BASE_URI="https://beehive.openremote.org"
@@ -246,6 +247,9 @@ setBeehiveServiceConfigurations()
     printVariable BEEHIVE_BASE_URI
 
   fi
+
+
+  # Remote Command Service Variables...
 
   if [ -z "${BEEHIVE_REMOTE_SERVICE_PATH}" ] ; then
     BEEHIVE_REMOTE_SERVICE_PATH="remote"
@@ -262,6 +266,26 @@ setBeehiveServiceConfigurations()
     printVariable BEEHIVE_REMOTE_SERVICE_URI
 
   fi
+
+
+  # Beehive Sync Service Variables...
+
+  if [ -z "${BEEHIVE_SYNC_SERVICE_PATH}" ] ; then
+    BEEHIVE_SYNC_SERVICE_PATH="3.0/alpha5/rest/"
+
+  elif [ -n "${PRINT_VALUES}" ] ; then
+    printVariable BEEHIVE_SYNC_SERVICE_PATH
+
+  fi
+
+  if [ -z "${BEEHIVE_SYNC_SERVICE_URI}" ] ; then
+    BEEHIVE_SYNC_SERVICE_URI="$BEEHIVE_BASE_URI/$BEEHIVE_SYNC_SERVICE_PATH"
+
+  elif [ -n "${PRINT_VALUES}" ] ; then
+    printVariable BEEHIVE_SYNC_SERVICE_URI
+
+  fi
+
 }
 
 setControllerID()
@@ -377,6 +401,7 @@ executeTomcat()
             -Dopenremote.controller.startup.log.level="$CONTROLLER_STARTUP_LOG_LEVEL" \
             -Dopenremote.controller.console.threshold="$CONTROLLER_CONSOLE_THRESHOLD" \
             -Dopenremote.remote.command.service.uri="$BEEHIVE_REMOTE_SERVICE_URI" \
+            -Dopenremote.sync.service.uri="$BEEHIVE_SYNC_SERVICE_URI" \
             -Dopenremote.controller.id="$OPENREMOTE_CONTROLLER_ID" \
             -Djava.library.path=\"$CATALINA_BASE/webapps/controller/WEB-INF/lib/native\" \
             \"$LOGGING_CONFIG\" $2  -classpath \"$3\" org.apache.catalina.startup.Bootstrap start $PID_REDIRECT $REDIRECT
@@ -475,7 +500,7 @@ elif [ "$1" = "start" ]; then
 
   setControllerID
 
-  
+
   # run Tomcat as service...
 
   executeTomcat "$_RUNJAVA" "$JAVA_OPTS" "$CLASSPATH" service
@@ -524,6 +549,20 @@ elif [ "$1" = "config" ] ; then
   echo "    Set when a non-interactive controller registration with a fixed controller ID is"
   echo "    required. Value should be an integer representing a unique controller ID for this"
   echo "    controller instance."
+  echo ""
+  echo ""
+  echo "Beehive Sync Service"
+  echo "--------------------"
+  echo ""
+  echo "  BEEHIVE_SYNC_SERVICE_PATH:"
+  echo ""
+  echo "    Set to modify the application path of Beehive download/sync service. This path is"
+  echo "    appended to BEEHIVE_BASE_URI value. Value should *not* include a leading URI slash."
+  echo ""
+  echo "  BEEHIVE_SYNC_SERVICE_URI:"
+  echo ""
+  echo "    Set to use custom URI with Beehive sync service. This variable will override both"
+  echo "    BEEHIVE_BASE_URI and BEEHIVE_SYN_SERVICE_PATH settings."
   echo ""
   echo ""
   echo "Beehive Remote Command Service"
