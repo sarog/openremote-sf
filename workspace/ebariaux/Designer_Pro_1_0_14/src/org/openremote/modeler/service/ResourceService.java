@@ -73,14 +73,6 @@ public interface ResourceService
   String getPanelsJson(Collection<Panel> panels);
 
   /**
-   * Goes over the whole object graph, replacing all DTO references with pointer to the real BusinessEntity object.
-   * This is for all "building modeler" objects, because we don't want any Hibernate entities to go over the wire.
-   * 
-   * @param panels
-   */
-  void resolveDTOReferences(Collection<Panel> panels);  
-
-  /**
    * @deprecated Can be replaced with direct call to
    * {@link org.openremote.modeler.service.impl.DesignerState#restore()}
    */
