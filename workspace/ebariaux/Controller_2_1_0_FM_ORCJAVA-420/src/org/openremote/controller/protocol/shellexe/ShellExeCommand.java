@@ -110,13 +110,15 @@ public class ShellExeCommand implements ExecutableCommand, EventListener, Runnab
    private String executeCommand() {
       logger.debug("Will start shell command: " + commandPath + " and use params: " + commandParams);
       String result = "";
+      Process proc = null;
+      
       try {
          // Use the commons-exec to parse correctly the arguments, respecting quotes and spaces to separate parameters
          final CommandLine cmdLine = new CommandLine(commandPath);
          if (commandParams != null) {
             cmdLine.addArguments(commandParams);
          }
-         final Process proc = Runtime.getRuntime().exec(cmdLine.toStrings());
+         proc = Runtime.getRuntime().exec(cmdLine.toStrings());
          final BufferedReader reader = new BufferedReader(new InputStreamReader(proc.getInputStream()));
          final StringBuffer resultBuffer = new StringBuffer();
          boolean first = true;
@@ -128,6 +130,9 @@ public class ShellExeCommand implements ExecutableCommand, EventListener, Runnab
          result = resultBuffer.toString();
       } catch (IOException e) {
          logger.error("Could not execute shell command: " + commandPath, e);
+      } finally {
+         if (proc != null)
+            proc.destroy();         
       }
       logger.debug("Shell command: " + commandPath + " returned: " + result);
       return result;
