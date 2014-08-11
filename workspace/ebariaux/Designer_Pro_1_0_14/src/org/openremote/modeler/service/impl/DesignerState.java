@@ -20,40 +20,39 @@
  */
 package org.openremote.modeler.service.impl;
 
-import java.io.File;
-import java.io.ObjectInputStream;
 import java.io.BufferedInputStream;
+import java.io.EOFException;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.StreamCorruptedException;
 import java.io.IOException;
 import java.io.InvalidClassException;
+import java.io.ObjectInputStream;
 import java.io.OptionalDataException;
-import java.io.EOFException;
+import java.io.StreamCorruptedException;
+import java.text.DecimalFormat;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
-import java.text.DecimalFormat;
-import java.text.MessageFormat;
 
-import org.openremote.modeler.configuration.PathConfig;
+import org.openremote.modeler.beehive.Beehive30API;
+import org.openremote.modeler.beehive.BeehiveService;
+import org.openremote.modeler.cache.CacheOperationException;
+import org.openremote.modeler.cache.LocalFileCache;
 import org.openremote.modeler.client.Configuration;
 import org.openremote.modeler.client.utils.PanelsAndMaxOid;
+import org.openremote.modeler.configuration.PathConfig;
 import org.openremote.modeler.domain.Account;
 import org.openremote.modeler.domain.Panel;
 import org.openremote.modeler.domain.User;
-import org.openremote.modeler.exception.UIRestoreException;
-import org.openremote.modeler.exception.NetworkException;
 import org.openremote.modeler.exception.ConfigurationException;
-import org.openremote.modeler.beehive.Beehive30API;
-import org.openremote.modeler.beehive.BeehiveService;
-import org.openremote.modeler.cache.LocalFileCache;
-import org.openremote.modeler.cache.ResourceCache;
-import org.openremote.modeler.cache.CacheOperationException;
-import org.openremote.modeler.logging.LogFacade;
+import org.openremote.modeler.exception.NetworkException;
+import org.openremote.modeler.exception.UIRestoreException;
 import org.openremote.modeler.logging.AdministratorAlert;
+import org.openremote.modeler.logging.LogFacade;
 
 
 /**
@@ -304,6 +303,12 @@ class DesignerState
    */
   private Configuration configuration;
 
+  /**
+   * Local cache.
+   */
+  private LocalFileCache cache;
+  
+  // TODO EBR : should really be ResourceCache<File> but using some methods that are not public on the interface at this stage of refactoring
 
   // Constructors ---------------------------------------------------------------------------------
 
@@ -313,11 +318,13 @@ class DesignerState
    *
    * @param config    Designer configuration
    * @param user      current user associated with the incoming HTTP request thread
+   * @param cache	  LocalFileCache associated with the user
    */
-  protected DesignerState(Configuration config, User user)
+  protected DesignerState(Configuration config, User user, LocalFileCache cache)
   {
     this.configuration = config;
     this.user = user;
+    this.cache = cache;
   }
 
 
@@ -371,8 +378,6 @@ class DesignerState
 
 
       // synchronize user data from Beehive server...
-
-      LocalFileCache cache = new LocalFileCache(configuration, user);
       cache.update();
 
       boolean hasLegacyDesignerUIState = cache.hasLegacyDesignerUIState();
@@ -520,7 +525,7 @@ class DesignerState
    *
    * @throws UIRestoreException   TODO : should use appropriate checked exception type or return value
    */
-  protected void save(Set<Panel> panels)
+  protected void save(Set<Panel> panels, long maxOid)
   {
 
     PerformanceLog perf = new PerformanceLog(PerformanceLog.Category.SAVE_PERFORMANCE);
@@ -532,7 +537,8 @@ class DesignerState
 
       addContextLog();
 
-      // TODO : assumes cache state is in sync, see MODELER-287
+      // Pushes in-memory model to our local cache, as this is used as the source to save to beehive
+      cache.replace(panels, maxOid);
 
       Account acct = user.getAccount();
 
@@ -592,18 +598,16 @@ class DesignerState
 
 
       // Fetch the required resource files from the user's cache...
-
-      ResourceCache<File> fileCache = new LocalFileCache(configuration, user);
-
+       
       try
       {
         // Will only save images that are included in the current in-memory domain model...
 
-        fileCache.markInUseImages(imageFiles);
+        cache.markInUseImages(imageFiles);
 
         // Upload ZIP to Beehive server...
 
-        beehive.uploadResources(fileCache.openReadStream(), user);
+        beehive.uploadResources(cache.openReadStream(), user);
 
         saveLog.info("Saved resources for {0}", printUserAccountLog(user));
       }
