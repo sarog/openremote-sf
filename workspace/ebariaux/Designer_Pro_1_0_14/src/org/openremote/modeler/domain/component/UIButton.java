@@ -225,7 +225,7 @@ public class UIButton extends UIControl implements ImageSourceOwner{
     result = prime * result + ((navigate == null) ? 0 : navigate.hashCode());
     result = prime * result + ((pressImage == null) ? 0 : pressImage.hashCode());
     result = prime * result + (repeate ? 1231 : 1237);
-    result = prime * result + ((uiCommandDTO == null) ? 0 : uiCommandDTO.hashCode());
+    result = prime * result + ((uiCommandDTO == null) ? 0 : uiCommandDTO.equalityHashCode());
     return result;
   }
 
@@ -263,7 +263,7 @@ public class UIButton extends UIControl implements ImageSourceOwner{
     if (uiCommandDTO == null) {
       if (other.uiCommandDTO != null)
         return false;
-    } else if (!uiCommandDTO.equals(other.uiCommandDTO))
+    } else if (!uiCommandDTO.equalityEquals(other.uiCommandDTO))
       return false;
     return true;
   }

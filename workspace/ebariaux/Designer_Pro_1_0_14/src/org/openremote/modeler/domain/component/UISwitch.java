@@ -208,7 +208,7 @@ public class UISwitch extends UIControl implements SensorOwner ,ImageSourceOwner
     int result = super.hashCode();
     result = prime * result + ((offImage == null) ? 0 : offImage.hashCode());
     result = prime * result + ((onImage == null) ? 0 : onImage.hashCode());
-    result = prime * result + ((switchDTO == null) ? 0 : switchDTO.hashCode());
+    result = prime * result + ((switchDTO == null) ? 0 : switchDTO.equalityHashCode());
     return result;
   }
 
@@ -234,7 +234,7 @@ public class UISwitch extends UIControl implements SensorOwner ,ImageSourceOwner
     if (switchDTO == null) {
       if (other.switchDTO != null)
         return false;
-    } else if (!switchDTO.equals(other.switchDTO))
+    } else if (!switchDTO.equalityEquals(other.switchDTO))
       return false;
     return true;
   }
