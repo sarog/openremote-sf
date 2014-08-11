@@ -7,6 +7,7 @@ Fixes:
  - Fixed: Controller and panel XML files incorrectly generated after MODELER-452 changes (MODELER-480)
  - Fixed: Display errors in device tree, commands not appearing in sensor or switch details (MODELER-500)
  - Add/review unit tests around UI components equality and controller/panel XML generation (MODELER-496)
+ - Adapt unit tests to pass with changes made in MODELER-500 (MODELER-501)
 
 Pro 1.0.13
 ==========
