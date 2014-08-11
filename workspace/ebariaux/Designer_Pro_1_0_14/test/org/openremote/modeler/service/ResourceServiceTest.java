@@ -19,17 +19,35 @@
 */
 package org.openremote.modeler.service;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
+import javax.transaction.TransactionManager;
+import javax.xml.parsers.SAXParserFactory;
+
+import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
+import org.apache.velocity.app.VelocityEngine;
+import org.dom4j.Document;
+import org.dom4j.DocumentException;
+import org.dom4j.Element;
+import org.dom4j.io.SAXReader;
+import org.hibernate.Hibernate;
+import org.junit.Assert;
 import org.openremote.modeler.SpringTestContext;
+import org.openremote.modeler.cache.LocalFileCache;
 import org.openremote.modeler.client.Configuration;
 import org.openremote.modeler.client.Constants;
 import org.openremote.modeler.client.utils.IDUtil;
 import org.openremote.modeler.configuration.PathConfig;
 import org.openremote.modeler.domain.Absolute;
+import org.openremote.modeler.domain.Account;
 import org.openremote.modeler.domain.Cell;
 import org.openremote.modeler.domain.CommandDelay;
 import org.openremote.modeler.domain.DeviceCommand;
@@ -64,8 +82,14 @@ import org.openremote.modeler.domain.component.UILabel;
 import org.openremote.modeler.domain.component.UISwitch;
 import org.openremote.modeler.domain.component.UITabbar;
 import org.openremote.modeler.domain.component.UITabbarItem;
+import org.openremote.modeler.server.lutron.importmodel.Project;
+import org.springframework.orm.hibernate3.HibernateTransactionManager;
 import org.springframework.security.context.SecurityContextHolder;
 import org.springframework.security.providers.UsernamePasswordAuthenticationToken;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
+import org.springframework.transaction.support.TransactionTemplate;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
@@ -73,36 +97,105 @@ import org.testng.annotations.Test;
 public class ResourceServiceTest {
    
    private static final Logger log = Logger.getLogger(ResourceServiceTest.class);
+   
    private Configuration configuration;
    private ResourceService resourceService;
    private DeviceCommandService deviceCommandService;
    private DeviceMacroService deviceMacroService;
    private UserService userService;
+   
+   private DeviceService deviceService;
+   private ControllerConfigService controllerConfigService;
+   private VelocityEngine velocity;
+   
+   private LocalFileCache cache;
+     
+   private TransactionTemplate transactionTemplate;
+   
    @BeforeClass
    public void setUp() {
+	    PathConfig.WEBROOTPATH = System.getProperty("java.io.tmpdir");
+
+	    PlatformTransactionManager transactionManager = (HibernateTransactionManager)SpringTestContext.getInstance().getBean("transactionManager");
+	    System.out.println("Transaction manager is " + transactionManager);
+	    transactionTemplate = new TransactionTemplate(transactionManager);
+	    
       resourceService = (ResourceService)SpringTestContext.getInstance().getBean("resourceService");
       deviceCommandService = (DeviceCommandService) SpringTestContext.getInstance().getBean("deviceCommandService");
       deviceMacroService = (DeviceMacroService) SpringTestContext.getInstance().getBean("deviceMacroService");
+      
+      deviceService = (DeviceService) SpringTestContext.getInstance().getBean("deviceService");
+      controllerConfigService = (ControllerConfigService) SpringTestContext.getInstance().getBean("controllerConfigService");
+      velocity = (VelocityEngine) SpringTestContext.getInstance().getBean("velocity");
+      
       userService = (UserService) SpringTestContext.getInstance().getBean("userService");
       userService.createUserAccount("ResourceServiceTest", "ResourceServiceTest", "dummy@openremote.org");
       SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken("ResourceServiceTest", "ResourceServiceTest"));
-      /*------------xml validation-------------*/
-      configuration = (Configuration) SpringTestContext.getInstance().getBean("configuration");
       
-      PathConfig.WEBROOTPATH = System.getProperty("java.io.tmpdir");
+      configuration = (Configuration) SpringTestContext.getInstance().getBean("configuration");
+
+      // This must execute in a transaction to get access to DB
+      // As we're not using a JUnit test integrated with Spring,
+      // there is no default transaction provided and we need to manage it ourself.
+      transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+        @Override
+        protected void doInTransactionWithoutResult(TransactionStatus arg0) {
+          Account account = userService.getCurrentUser().getAccount();
+          Hibernate.initialize(account.getDevices());
+          Hibernate.initialize(account.getSensors());
+          Hibernate.initialize(account.getSliders());
+          Hibernate.initialize(account.getSwitches());
+          Hibernate.initialize(account.getDeviceMacros());
+
+          cache = new LocalFileCache(configuration, userService.getCurrentUser());
+
+          cache.setDeviceService(deviceService);
+          cache.setDeviceMacroService(deviceMacroService);
+          cache.setDeviceCommandService(deviceCommandService);
+          cache.setControllerConfigService(controllerConfigService);
+          cache.setVelocity(velocity);
+         
+          // Make sure required folder structure exists
+          cache.getPanelXmlFile().getParentFile().mkdirs();
+        }
+      });
    }
    
    @Test
-   public void testNopanel() {
-      Collection<Panel> emptyPanel = new ArrayList<Panel>();
-// EBR TEMP      resourceService.initResources(emptyPanel, IDUtil.nextID());
-   }
+   public void testNopanel() throws DocumentException {
+      Set<Panel> emptyPanels = new HashSet<Panel>();
+      
+      cache.replace(emptyPanels, IDUtil.nextID());
+  
+      SAXReader reader = new SAXReader();
+      SAXParserFactory factory = SAXParserFactory.newInstance();
+      factory.setValidating(true);
+      factory.setNamespaceAware(true);
+  
+      Document panelXmlDocument = reader.read(cache.getPanelXmlFile());
+      Element topElement = panelXmlDocument.getRootElement();
+      Assert.assertEquals(1, topElement.elements("panels").size());
+      Element panelsElement = topElement.element("panels");
+      Assert.assertEquals(0, panelsElement.elements().size());
+      Assert.assertEquals(1, topElement.elements("screens").size());
+      Element screensElement = topElement.element("screens");
+      Assert.assertEquals(0, screensElement.elements().size());
+      Assert.assertEquals(1, topElement.elements("groups").size());
+      Element groupsElement = topElement.element("groups");
+      Assert.assertEquals(0, groupsElement.elements().size());
+
+      Document controllerXmlDocument = reader.read(cache.getControllerXmlFile());
+      topElement = controllerXmlDocument.getRootElement();
+      Assert.assertEquals(1, topElement.elements("components").size());
+      Element componentsElement = topElement.element("components");
+      Assert.assertEquals(0, componentsElement.elements().size());
+  }
    
    @Test
    public void testPanelHasGroupScreenControl()throws Exception {
       List<ScreenPairRef> screenRefs = new ArrayList<ScreenPairRef>();
       List<GroupRef> groupRefs = new ArrayList<GroupRef>();
-      List<Panel> panels = new ArrayList<Panel>();
+      Set<Panel> panels = new HashSet<Panel>();
       
       /*---------------widget-------------------*/
       UIButton absBtn = new UIButton();            //UIButton
@@ -226,12 +319,16 @@ public class ResourceServiceTest {
       
       panels.add(panel1);
       panels.add(panel2);
+      
 // EBR TEMP      resourceService.initResources(panels, IDUtil.nextID());
+      
+          cache.replace(panels, IDUtil.nextID());
+      
    }
 
    @Test
-   public void testPanelTabbarWithNavigateToGroupAndScreen() {
-      Collection<Panel> panelWithJustOneNavigate = new ArrayList<Panel>();
+   public void testPanelTabbarWithNavigateToGroupAndScreen() throws DocumentException {
+      Set<Panel> panels = new HashSet<Panel>();
       Navigate nav = new Navigate();
       nav.setOid(IDUtil.nextID());
       nav.setToGroup(1L);
@@ -247,12 +344,53 @@ public class ResourceServiceTest {
       UITabbar tabbar = new UITabbar();
       tabbar.setTabbarItems(items);
       p.setTabbar(tabbar);
-      panelWithJustOneNavigate.add(p);
-// EBR TEMP      resourceService.initResources(panelWithJustOneNavigate, IDUtil.nextID());
+      panels.add(p);
+
+      cache.replace(panels, IDUtil.nextID());
+      
+      SAXReader reader = new SAXReader();
+      SAXParserFactory factory = SAXParserFactory.newInstance();
+      factory.setValidating(true);
+      factory.setNamespaceAware(true);
+  
+      Document panelXmlDocument = reader.read(cache.getPanelXmlFile());
+      Element topElement = panelXmlDocument.getRootElement();
+      Assert.assertEquals(1, topElement.elements("panels").size());
+      Element panelsElement = topElement.element("panels");
+      Assert.assertEquals(1, panelsElement.elements().size());
+      Assert.assertEquals(1, panelsElement.elements("panel").size());
+      Element panelElement = panelsElement.element("panel");
+      Assert.assertEquals(p.getName(), panelElement.attribute("name").getText());
+      Assert.assertEquals(1, panelElement.elements().size());
+      Assert.assertEquals(1, panelElement.elements("tabbar").size());
+      Element tabbarElement = panelElement.element("tabbar");
+      Assert.assertEquals(1, tabbarElement.elements().size());
+      Assert.assertEquals(1, tabbarElement.elements("item").size());
+      Element itemElement = tabbarElement.element("item");
+      Assert.assertEquals(item.getName(), itemElement.attribute("name").getText());
+      Assert.assertEquals(1, itemElement.elements().size());
+      Assert.assertEquals(1, itemElement.elements("navigate").size());
+      Element navigateElement = itemElement.element("navigate");
+      Assert.assertEquals(Long.toString(nav.getToGroup()), navigateElement.attribute("toGroup").getText());
+      Assert.assertEquals(Long.toString(nav.getToScreen()), navigateElement.attribute("toScreen").getText());
+
+      Assert.assertEquals(1, topElement.elements("screens").size());
+      Element screensElement = topElement.element("screens");
+      Assert.assertEquals(0, screensElement.elements().size());
+      Assert.assertEquals(1, topElement.elements("groups").size());
+      Element groupsElement = topElement.element("groups");
+      Assert.assertEquals(0, groupsElement.elements().size());
+
+      Document controllerXmlDocument = reader.read(cache.getControllerXmlFile());
+      topElement = controllerXmlDocument.getRootElement();
+      Assert.assertEquals(1, topElement.elements("components").size());
+      Element componentsElement = topElement.element("components");
+      Assert.assertEquals(0, componentsElement.elements().size());
    }
+   
 @Test
-public void testScreenHasGesture() {
-   Collection<Panel> panelWithJustOneNavigate = new ArrayList<Panel>();
+public void testScreenHasGesture() throws DocumentException {
+   Set<Panel> panelWithJustOneNavigate = new HashSet<Panel>();
    List<ScreenPairRef> screenRefs = new ArrayList<ScreenPairRef>();
    List<GroupRef> groupRefs = new ArrayList<GroupRef>();
    
@@ -291,7 +429,64 @@ public void testScreenHasGesture() {
    p.setGroupRefs(groupRefs);
    
    panelWithJustOneNavigate.add(p);
-// EBR TEMP   resourceService.initResources(panelWithJustOneNavigate, IDUtil.nextID());
+
+   cache.replace(panelWithJustOneNavigate, IDUtil.nextID());
+   
+   SAXReader reader = new SAXReader();
+   SAXParserFactory factory = SAXParserFactory.newInstance();
+   factory.setValidating(true);
+   factory.setNamespaceAware(true);
+
+   Document panelXmlDocument = reader.read(cache.getPanelXmlFile());
+   Element topElement = panelXmlDocument.getRootElement();
+   Assert.assertEquals("Expecting 1 panels element", 1, topElement.elements("panels").size());
+   Element panelsElement = topElement.element("panels");
+   Assert.assertEquals("Expecting 1 child for panels element", 1, panelsElement.elements().size());
+   Assert.assertEquals("Expecting 1 panel element", 1, panelsElement.elements("panel").size());
+   Element panelElement = panelsElement.element("panel");
+   Assert.assertEquals(p.getName(), panelElement.attribute("name").getText());
+   Assert.assertEquals(Long.toString(p.getOid()), panelElement.attribute("id").getText());
+   Assert.assertEquals("Expecting 1 child for panel element", 1, panelElement.elements().size());
+   Assert.assertEquals("Expecting no tab bar in panel element", 0, panelElement.elements("tabbar").size());
+   Assert.assertEquals("Expecting 1 include element", 1, panelElement.elements("include").size());
+   Element includeElement = panelElement.element("include");
+   Assert.assertEquals("group", includeElement.attribute("type").getText());
+   Assert.assertEquals(Long.toString(group1.getOid()), includeElement.attribute("ref").getText());
+
+   Assert.assertEquals("Expecting 1 screens element", 1, topElement.elements("screens").size());
+   Element screensElement = topElement.element("screens");
+   Assert.assertEquals("Expecting 1 child for screens element", 1, screensElement.elements().size());
+   Assert.assertEquals("Expecting 1 screen element",  1, screensElement.elements("screen").size());
+   Element screenElement = screensElement.element("screen");
+   Assert.assertEquals("Expectiing 1 child for screen element", 1, screenElement.elements().size());
+   Assert.assertEquals("Expecting 1 gesture element", 1, screenElement.elements("gesture").size());
+   Element gestureElement = screenElement.element("gesture");
+   Assert.assertEquals(Long.toString(gesture.getOid()), gestureElement.attribute("id").getText());
+   Assert.assertEquals(gesture.getType().toString(), gestureElement.attribute("type").getText());
+   Assert.assertEquals("Expecting 1 child for gesture element", 1, gestureElement.elements().size());
+   Assert.assertEquals("Expexting 1 navigate element", 1, gestureElement.elements("navigate").size());
+   Element navigateElement = gestureElement.element("navigate");
+   Assert.assertEquals(Long.toString(nav.getToGroup()), navigateElement.attribute("toGroup").getText());
+   Assert.assertEquals(Long.toString(nav.getToScreen()), navigateElement.attribute("toScreen").getText());
+   
+   Assert.assertEquals("Expecting 1 groups element", 1, topElement.elements("groups").size());
+   Element groupsElement = topElement.element("groups");
+   Assert.assertEquals("Expecting 1 child for groups element", 1, groupsElement.elements().size());
+   Assert.assertEquals("Expecting 1 group element", 1, groupsElement.elements("group").size());
+   Element groupElement = groupsElement.element("group");
+   Assert.assertEquals(Long.toString(group1.getOid()), groupElement.attribute("id").getText());
+   Assert.assertEquals(group1.getName(), groupElement.attribute("name").getText());
+   Assert.assertEquals("Expecting 1 child for group element", 1, groupElement.elements().size());
+   Assert.assertEquals("Expecting 1 include element", 1, groupElement.elements("include").size());
+   includeElement = groupElement.element("include");
+   Assert.assertEquals("screen", includeElement.attribute("type").getText());
+   Assert.assertEquals(Long.toString(screen1.getOid()), includeElement.attribute("ref").getText());
+
+   Document controllerXmlDocument = reader.read(cache.getControllerXmlFile());
+   topElement = controllerXmlDocument.getRootElement();
+   Assert.assertEquals("Expecting 1 components element", 1, topElement.elements("components").size());
+   Element componentsElement = topElement.element("components");
+   Assert.assertEquals("Expecting 1 child for components element", 1, componentsElement.elements().size()); // Gesture is included in component
  }
    
    @Test
