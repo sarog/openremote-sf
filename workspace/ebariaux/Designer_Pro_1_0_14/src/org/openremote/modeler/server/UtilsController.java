@@ -99,10 +99,10 @@ public class  UtilsController extends BaseGWTSpringController implements UtilsRP
 
     resourceService.resolveDTOReferences(panelList);
 
-    resourceService.saveResourcesToBeehive(panelList, maxId);
-
-    // TODO : should be injected
-    ResourceCache cache = new LocalFileCache(configuration, userService.getCurrentUser());
+    // Saving the resources provides us with a valid local cache that can be used to produce the export file.
+    // This is a depency to make sure all files that are part of the export are correctly generated.
+    // Will go away with MODELER-288
+    LocalFileCache cache = resourceService.saveResourcesToBeehive(panelList, maxId);
 
     try
     {
@@ -146,7 +146,7 @@ public class  UtilsController extends BaseGWTSpringController implements UtilsRP
     }
 
     // TODO : should never come from cache in the first place but from Beehive
-    return resourceService.downloadZipResource(maxId, getThreadLocalRequest().getSession().getId(), panelList);
+    return resourceService.downloadZipResource(cache, panelList, maxId);
   }
 
 
