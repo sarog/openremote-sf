@@ -34,32 +34,32 @@ public class SliderWithInfoDTOTest {
     SliderWithInfoDTO sliderDTO1 = new SliderWithInfoDTO();
     SliderWithInfoDTO sliderDTO2 = new SliderWithInfoDTO();
     
-    Assert.assertEquals(sliderDTO1, sliderDTO2, "Expected the SliderWithInfoDTO to be equal");
+    Assert.assertTrue(sliderDTO1.equalityEquals(sliderDTO2), "Expected the SliderWithInfoDTO to be equal");
     
     sliderDTO1.setOid(IDUtil.nextID());
     sliderDTO2.setOid(sliderDTO1.getOid());
 
-    Assert.assertEquals(sliderDTO1, sliderDTO2, "Expected the SliderWithInfoDTO to be equal");
+    Assert.assertTrue(sliderDTO1.equalityEquals(sliderDTO2), "Expected the SliderWithInfoDTO to be equal");
 
     sliderDTO1.setDisplayName("Name");
     sliderDTO2.setDisplayName("Name");
 
-    Assert.assertEquals(sliderDTO1, sliderDTO2, "Expected the SliderWithInfoDTO to be equal");
+    Assert.assertTrue(sliderDTO1.equalityEquals(sliderDTO2), "Expected the SliderWithInfoDTO to be equal");
 
     sliderDTO1.setCommandName("Command name");
     sliderDTO2.setCommandName("Command name");
 
-    Assert.assertEquals(sliderDTO1, sliderDTO2, "Expected the SliderWithInfoDTO to be equal");
+    Assert.assertTrue(sliderDTO1.equalityEquals(sliderDTO2), "Expected the SliderWithInfoDTO to be equal");
 
     sliderDTO1.setSensorName("Sensor name");
     sliderDTO2.setSensorName("Sensor name");
 
-    Assert.assertEquals(sliderDTO1, sliderDTO2, "Expected the SliderWithInfoDTO to be equal");
+    Assert.assertTrue(sliderDTO1.equalityEquals(sliderDTO2), "Expected the SliderWithInfoDTO to be equal");
 
     sliderDTO1.setDeviceName("Device name");
     sliderDTO2.setDeviceName("Device name");
 
-    Assert.assertEquals(sliderDTO1, sliderDTO2, "Expected the SliderWithInfoDTO to be equal");
+    Assert.assertTrue(sliderDTO1.equalityEquals(sliderDTO2), "Expected the SliderWithInfoDTO to be equal");
   }
   
   @Test
@@ -78,49 +78,49 @@ public class SliderWithInfoDTOTest {
     sliderDTO2.setSensorName("Sensor name");
     sliderDTO2.setDeviceName("Device name");
 
-    Assert.assertEquals(sliderDTO1, sliderDTO2, "Expected the SliderWithInfoDTO to be equal");
+    Assert.assertTrue(sliderDTO1.equalityEquals(sliderDTO2), "Expected the SliderWithInfoDTO to be equal");
     
     sliderDTO2.setOid(null);
-    Assert.assertFalse(sliderDTO1.equals(sliderDTO2), "Expected the SliderWithInfoDTO to be different, second id is not set");
+    Assert.assertFalse(sliderDTO1.equalityEquals(sliderDTO2), "Expected the SliderWithInfoDTO to be different, second id is not set");
 
     sliderDTO2.setOid(IDUtil.nextID());
-    Assert.assertFalse(sliderDTO1.equals(sliderDTO2), "Expected the SliderWithInfoDTO to be different, id is different");
+    Assert.assertFalse(sliderDTO1.equalityEquals(sliderDTO2), "Expected the SliderWithInfoDTO to be different, id is different");
 
     sliderDTO2.setOid(sliderDTO1.getOid());
-    Assert.assertEquals(sliderDTO1, sliderDTO2, "Expected the SliderWithInfoDTO to be equal");
+    Assert.assertTrue(sliderDTO1.equalityEquals(sliderDTO2), "Expected the SliderWithInfoDTO to be equal");
     
     sliderDTO2.setDisplayName(null);
-    Assert.assertFalse(sliderDTO1.equals(sliderDTO2), "Expected the SliderWithInfoDTO to be different, second displayName is not set");
+    Assert.assertFalse(sliderDTO1.equalityEquals(sliderDTO2), "Expected the SliderWithInfoDTO to be different, second displayName is not set");
 
     sliderDTO2.setDisplayName("Name 2");
-    Assert.assertFalse(sliderDTO1.equals(sliderDTO2), "Expected the SliderWithInfoDTO to be different, displayName is different");
+    Assert.assertFalse(sliderDTO1.equalityEquals(sliderDTO2), "Expected the SliderWithInfoDTO to be different, displayName is different");
 
     sliderDTO2.setDisplayName("Name");
-    Assert.assertEquals(sliderDTO1, sliderDTO2, "Expected the SliderWithInfoDTO to be equal");
+    Assert.assertTrue(sliderDTO1.equalityEquals(sliderDTO2), "Expected the SliderWithInfoDTO to be equal");
     
     sliderDTO2.setCommandName(null);
-    Assert.assertFalse(sliderDTO1.equals(sliderDTO2), "Expected the SliderWithInfoDTO to be different, second commandName is not set");
+    Assert.assertFalse(sliderDTO1.equalityEquals(sliderDTO2), "Expected the SliderWithInfoDTO to be different, second commandName is not set");
 
     sliderDTO2.setCommandName("Command name 2");
-    Assert.assertFalse(sliderDTO1.equals(sliderDTO2), "Expected the SliderWithInfoDTO to be different, commandName is different");
+    Assert.assertFalse(sliderDTO1.equalityEquals(sliderDTO2), "Expected the SliderWithInfoDTO to be different, commandName is different");
 
     sliderDTO2.setCommandName("Command name");
-    Assert.assertEquals(sliderDTO1, sliderDTO2, "Expected the SliderWithInfoDTO to be equal");
+    Assert.assertTrue(sliderDTO1.equalityEquals(sliderDTO2), "Expected the SliderWithInfoDTO to be equal");
     
     sliderDTO2.setSensorName(null);
-    Assert.assertFalse(sliderDTO1.equals(sliderDTO2), "Expected the SliderWithInfoDTO to be different, second sensorName is not set");
+    Assert.assertFalse(sliderDTO1.equalityEquals(sliderDTO2), "Expected the SliderWithInfoDTO to be different, second sensorName is not set");
 
     sliderDTO2.setSensorName("Sensor name 2");
-    Assert.assertFalse(sliderDTO1.equals(sliderDTO2), "Expected the SliderWithInfoDTO to be different, sensorName is different");
+    Assert.assertFalse(sliderDTO1.equalityEquals(sliderDTO2), "Expected the SliderWithInfoDTO to be different, sensorName is different");
 
     sliderDTO2.setSensorName("Sensor name");
-    Assert.assertEquals(sliderDTO1, sliderDTO2, "Expected the SliderWithInfoDTO to be equal");
+    Assert.assertTrue(sliderDTO1.equalityEquals(sliderDTO2), "Expected the SliderWithInfoDTO to be equal");
     
     sliderDTO2.setDeviceName(null);
-    Assert.assertFalse(sliderDTO1.equals(sliderDTO2), "Expected the SliderWithInfoDTO to be different, second deviceName is not set");
+    Assert.assertFalse(sliderDTO1.equalityEquals(sliderDTO2), "Expected the SliderWithInfoDTO to be different, second deviceName is not set");
 
     sliderDTO2.setDeviceName("Device name 2");
-    Assert.assertFalse(sliderDTO1.equals(sliderDTO2), "Expected the SliderWithInfoDTO to be different, deviceName is different");
+    Assert.assertFalse(sliderDTO1.equalityEquals(sliderDTO2), "Expected the SliderWithInfoDTO to be different, deviceName is different");
   }
 
   @Test
@@ -134,7 +134,7 @@ public class SliderWithInfoDTOTest {
     
     SliderWithInfoDTO sliderDTO2 = new SliderWithInfoDTO(sliderDTO1.getOid(), "Name", "Command name", "Sensor name", "Device name");
 
-    Assert.assertEquals(sliderDTO1, sliderDTO2, "Expected the SliderWithInfoDTO to be equal");
+    Assert.assertTrue(sliderDTO1.equalityEquals(sliderDTO2), "Expected the SliderWithInfoDTO to be equal");
   }
 
 }
