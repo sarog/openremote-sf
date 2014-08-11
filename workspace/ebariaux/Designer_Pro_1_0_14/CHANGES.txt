@@ -3,6 +3,7 @@ Pro 1.0.14
 
 Fixes:
  - ResourceServiceImpl.initResources Should Be Internalized as Part of LocalFileCache Implementation (MODELER-287)
+ - Rework populate / resolve DTO references (MODELER-452)
 
 Pro 1.0.13
 ==========
