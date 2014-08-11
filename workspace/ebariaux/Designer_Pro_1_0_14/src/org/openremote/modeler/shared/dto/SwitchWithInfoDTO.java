@@ -93,8 +93,7 @@ public class SwitchWithInfoDTO implements DTO {
     this.oid = oid;
   }
 
-  @Override
-  public int hashCode() {
+  public int equalityHashCode() {
     final int prime = 31;
     int result = 1;
     result = prime * result + ((deviceName == null) ? 0 : deviceName.hashCode());
@@ -106,8 +105,7 @@ public class SwitchWithInfoDTO implements DTO {
     return result;
   }
 
-  @Override
-  public boolean equals(Object obj) {
+  public boolean equalityEquals(Object obj) {
     if (this == obj)
       return true;
     if (obj == null)

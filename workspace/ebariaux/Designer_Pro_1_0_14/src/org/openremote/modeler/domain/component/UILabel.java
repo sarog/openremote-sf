@@ -194,7 +194,7 @@ public class UILabel extends UIComponent implements SensorOwner, SensorLinkOwner
     int result = super.hashCode();
     result = prime * result + ((color == null) ? 0 : color.hashCode());
     result = prime * result + fontSize;
-    result = prime * result + ((sensorDTO == null) ? 0 : sensorDTO.hashCode());
+    result = prime * result + ((sensorDTO == null) ? 0 : sensorDTO.equalityHashCode());
     result = prime * result + ((text == null) ? 0 : text.hashCode());
     return result;
   }
@@ -218,7 +218,7 @@ public class UILabel extends UIComponent implements SensorOwner, SensorLinkOwner
     if (sensorDTO == null) {
       if (other.sensorDTO != null)
         return false;
-    } else if (!sensorDTO.equals(other.sensorDTO))
+    } else if (!sensorDTO.equalityEquals(other.sensorDTO))
       return false;
     if (text == null) {
       if (other.text != null)
