@@ -21,6 +21,8 @@ package org.openremote.modeler.domain.component;
 
 import javax.persistence.Transient;
 
+import org.openremote.modeler.domain.ConfigurationFilesGenerationContext;
+
 /**
  * UITabbarItem defines a image, a name and a navigation.
  * It can navigates to screen or logical targets.
@@ -63,23 +65,51 @@ public class UITabbarItem extends UIComponent {
    }
    
    @Override
-   public String getPanelXml() {
+   public String getPanelXml(ConfigurationFilesGenerationContext context) {
       return null;
    }
-
+   
    @Override
-   public boolean equals(Object obj) {
-      if (this == obj) {
-         return true;
-      }
-      if (obj == null) {
-         return false;
-      }
-      if (getClass() != obj.getClass()) {
-         return false;
-      }
-      UITabbarItem other = (UITabbarItem)obj;
-      return other.getName().equals(getName()) && other.getNavigate().equals(getNavigate());
-   }
+  public int hashCode() {
+    final int prime = 31;
+    int result = super.hashCode();
+    result = prime * result + ((image == null) ? 0 : image.hashCode());
+    result = prime * result + ((name == null) ? 0 : name.hashCode());
+    result = prime * result + ((navigate == null) ? 0 : navigate.hashCode());
+    return result;
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj)
+      return true;
+    if (obj == null) {
+      return false;
+    }
+    /*
+     TODO: this can be used instead of above test once equals on super implementation has been cleaned.
+    if (!super.equals(obj))
+      return false;
+    */
+    if (getClass() != obj.getClass())
+      return false;
+    UITabbarItem other = (UITabbarItem) obj;
+    if (image == null) {
+      if (other.image != null)
+        return false;
+    } else if (!image.equals(other.image))
+      return false;
+    if (name == null) {
+      if (other.name != null)
+        return false;
+    } else if (!name.equals(other.name))
+      return false;
+    if (navigate == null) {
+      if (other.navigate != null)
+        return false;
+    } else if (!navigate.equals(other.navigate))
+      return false;
+    return true;
+  }
 
 }

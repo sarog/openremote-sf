@@ -32,5 +32,33 @@ public class MacroItemDTO implements DTO {
   public void setType(MacroItemType type) {
     this.type = type;
   }
+
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + ((displayName == null) ? 0 : displayName.hashCode());
+    result = prime * result + ((type == null) ? 0 : type.hashCode());
+    return result;
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj)
+      return true;
+    if (obj == null)
+      return false;
+    if (getClass() != obj.getClass())
+      return false;
+    MacroItemDTO other = (MacroItemDTO) obj;
+    if (displayName == null) {
+      if (other.displayName != null)
+        return false;
+    } else if (!displayName.equals(other.displayName))
+      return false;
+    if (type != other.type)
+      return false;
+    return true;
+  }
   
 }
