@@ -97,4 +97,33 @@ public class Navigate extends BusinessEntity {
       this.toGroup = -1;
       this.toScreen = -1;
    }
+   
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + (int) (toGroup ^ (toGroup >>> 32));
+    result = prime * result + ((toLogical == null) ? 0 : toLogical.hashCode());
+    result = prime * result + (int) (toScreen ^ (toScreen >>> 32));
+    return result;
+  }
+  
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj)
+      return true;
+    if (obj == null)
+      return false;
+    if (getClass() != obj.getClass())
+      return false;
+    Navigate other = (Navigate) obj;
+    if (toGroup != other.toGroup)
+      return false;
+    if (toLogical != other.toLogical)
+      return false;
+    if (toScreen != other.toScreen)
+      return false;
+    return true;
+  }
+
 }

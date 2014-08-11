@@ -44,4 +44,41 @@ public class MacroDTO implements DTO, UICommandDTO {
     this.items = items;
   }
 
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + ((displayName == null) ? 0 : displayName.hashCode());
+    result = prime * result + ((items == null) ? 0 : items.hashCode());
+    result = prime * result + ((oid == null) ? 0 : oid.hashCode());
+    return result;
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj)
+      return true;
+    if (obj == null)
+      return false;
+    if (getClass() != obj.getClass())
+      return false;
+    MacroDTO other = (MacroDTO) obj;
+    if (displayName == null) {
+      if (other.displayName != null)
+        return false;
+    } else if (!displayName.equals(other.displayName))
+      return false;
+    if (items == null) {
+      if (other.items != null)
+        return false;
+    } else if (!items.equals(other.items))
+      return false;
+    if (oid == null) {
+      if (other.oid != null)
+        return false;
+    } else if (!oid.equals(other.oid))
+      return false;
+    return true;
+  }
+
 }
