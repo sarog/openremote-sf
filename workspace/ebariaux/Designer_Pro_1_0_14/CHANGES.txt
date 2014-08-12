@@ -10,6 +10,9 @@ Fixes:
  - Adapt unit tests to pass with changes made in MODELER-500 (MODELER-501)
  - Fixed: When using arrow keys to move selection, browser window is scrolled first (MODELER-309)
 
+New features: 
+ - In addition to version number, display SVN revision number in version string (MODELER-529)
+
 Pro 1.0.13
 ==========
 
