@@ -1,3 +1,8 @@
+MODELER-529
+===========
+
+  - In addition to version number, display SVN revision number in version string
+
 Designer 2.13.9 (2013-03-30 Rosemary)
 =====================================
 
