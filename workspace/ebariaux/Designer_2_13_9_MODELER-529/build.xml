@@ -111,10 +111,46 @@
 		<delete dir="${test.build.dir}"/>
 	</target>
 
+  <!-- ==================================================================== -->
+  <!-- Gets the revision from the repository                                -->
+  <!-- ==================================================================== -->
+  <target name="find_revision" description="Sets property 'revision.number' to the head svn revision">
+    <property name="revision" value="COMMITTED"/>
+
+    <exec executable="svn" output="svnlog.out">
+      <arg line="info -r ${revision}"/>
+    </exec>
+    <loadproperties srcFile="svnlog.out">
+      <filterchain>
+        <linecontains>
+          <contains value="Revision"/>
+        </linecontains>
+      </filterchain>
+    </loadproperties>
+    <delete file="svnlog.out"/>
+
+    <fail message="Failed to get revision info from SVN">
+      <condition>
+        <not>
+          <isset property="Revision"/>
+        </not>
+      </condition>
+    </fail>
+
+    <copy file="login.jsp.template" tofile="war/login.jsp" overwrite="true">
+      <filterset>
+        <!-- Replace @SVN_REVISION@ with the revision number -->
+        <filter token="SVN_REVISION" value="${Revision}" />
+      </filterset>
+    </copy>
+		
+    <echo>Revision found: ${Revision}</echo>
+  </target>
+
 	<!-- ==================================================================== -->
 	<!-- Prepare lib for build                                                -->
 	<!-- ==================================================================== -->
-	<target name="libs" depends="clean" description="Copy libs to WEB-INF/lib">
+	<target name="libs" depends="clean, find_revision" description="Copy libs to WEB-INF/lib">
 		<mkdir dir="${output.dir}" />
 		<mkdir dir="${web-inf.dir}/lib" />
 		<copy todir="${web-inf.dir}/lib" flatten="true">
