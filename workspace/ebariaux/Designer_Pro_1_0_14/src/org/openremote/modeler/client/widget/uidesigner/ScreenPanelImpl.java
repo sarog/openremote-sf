@@ -73,21 +73,25 @@ public class ScreenPanelImpl extends LayoutContainer implements ScreenPanel {
         public void onRight(ComponentEvent ce) {
           if (presenter != null) {
             presenter.onRightKeyPressed();
+            ce.stopEvent();
           }
         }
         public void onLeft(ComponentEvent ce) {
           if (presenter != null) {
             presenter.onLeftKeyPressed();
+            ce.stopEvent();
           }
         }
         public void onUp(ComponentEvent ce) {
           if (presenter != null) {
             presenter.onUpKeyPressed();
+            ce.stopEvent();
           }
         }
         public void onDown(ComponentEvent ce) {
           if (presenter != null) {
             presenter.onDownKeyPressed();
+            ce.stopEvent();
           }
         }                 
       }.bind(this);
