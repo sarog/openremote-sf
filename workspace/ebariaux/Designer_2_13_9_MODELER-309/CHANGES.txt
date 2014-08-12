@@ -1,3 +1,8 @@
+MODELER-309
+===========
+
+  - Fixed: When using arrow keys to move selection, browser window is scrolled first
+
 Designer 2.13.9 (2013-03-30 Rosemary)
 =====================================
 
