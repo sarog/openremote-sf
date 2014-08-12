@@ -337,7 +337,7 @@
 
         <p class = "copyright">
             Copyright &copy; 2008-<fmt:formatDate value = "${now}" pattern = "yyyy"/>
-            <a href="http://www.openremote.org">OpenRemote</a> -- Version @VERSION@ r9967 (@BUILD.DATE@ @VERSION.NAME@)
+            <a href="http://www.openremote.org">OpenRemote</a> -- Version @VERSION@ r@SVN_REVISION@ (@BUILD.DATE@ @VERSION.NAME@)
 
         </p>
 
