@@ -7,6 +7,7 @@ import java.util.Set;
 import org.openremote.modeler.SpringTestContext;
 import org.openremote.modeler.domain.ConfigCategory;
 import org.openremote.modeler.domain.ControllerConfig;
+import org.openremote.modeler.shared.dto.ControllerConfigDTO;
 import org.openremote.modeler.utils.XmlParser;
 import org.springframework.security.context.SecurityContextHolder;
 import org.springframework.security.providers.UsernamePasswordAuthenticationToken;
@@ -53,19 +54,19 @@ public class ControllerConfigServiceTest {
    @Test
    public void update(){
       String addStr = "...updated";
-      Set<ControllerConfig> cfgs = configService.listAllConfigsByCategory("advance");
-      Assert.assertTrue(cfgs.size()>0);
-      for(ControllerConfig cfg : cfgs){
+      Set<ControllerConfigDTO> configDTOs = configService.listAllConfigDTOsByCategory("advance");
+      Assert.assertTrue(configDTOs.size()>0);
+      for(ControllerConfigDTO cfg : configDTOs){
          if(cfg.getOptions().equals("")&&(addStr+cfg.getValue()).matches(cfg.getValidation())){
             cfg.setValue(cfg.getValue()+addStr);
          }
       }
       
-      configService.saveAll(cfgs);
+      configService.saveAllDTOs(configDTOs);
       
-      Collection<ControllerConfig> cfgs2 = configService.listAllConfigsByCategory("advance");
-      Assert.assertTrue(cfgs2.size()>0);
-      for(ControllerConfig cfg : cfgs2){
+      Collection<ControllerConfigDTO> configDTOs2 = configService.listAllConfigDTOsByCategory("advance");
+      Assert.assertTrue(configDTOs2.size()>0);
+      for(ControllerConfigDTO cfg : configDTOs2){
          if(cfg.getValue().endsWith(addStr)){
             Assert.assertTrue(cfg.getValue().substring(0,cfg.getValue().indexOf(addStr)-1).matches(cfg.getValidation()));
          }
