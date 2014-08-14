@@ -24,6 +24,7 @@ import java.util.List;
 import org.openremote.modeler.domain.Account;
 import org.openremote.modeler.domain.Slider;
 import org.openremote.modeler.shared.dto.SliderDetailsDTO;
+import org.openremote.modeler.shared.dto.SliderWithInfoDTO;
 
 public interface SliderService {
   
@@ -37,4 +38,11 @@ public interface SliderService {
    List<Slider> saveAllSliders(List<Slider> sliderList, Account account);
 
    void updateSliderWithDTO(SliderDetailsDTO slider);
+   
+   SliderDetailsDTO loadSliderDetailsDTO(long id);
+
+   List<SliderWithInfoDTO> loadAllSliderWithInfosDTO();
+
+   void saveNewSlider(SliderDetailsDTO sliderDTO, long deviceId);
+
 }
