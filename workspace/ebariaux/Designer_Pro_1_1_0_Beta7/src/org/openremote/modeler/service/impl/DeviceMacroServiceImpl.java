@@ -86,6 +86,7 @@ public class DeviceMacroServiceImpl extends BaseAbstractService<DeviceMacro> imp
     * {@inheritDoc}
     * @see org.openremote.modeler.service.BaseAbstractService#loadAll()
     */
+   @Override
    public List<DeviceMacroItem> loadByDeviceMacro(long id) {
       return loadById(id).getDeviceMacroItems();
    }
@@ -95,6 +96,7 @@ public class DeviceMacroServiceImpl extends BaseAbstractService<DeviceMacro> imp
     * @see org.openremote.modeler.service.BaseAbstractService#loadAll()
     * @see org.openremote.modeler.service.DeviceMacroService#loadAll(org.openremote.modeler.domain.Account)
     */
+   @Override
    public List<DeviceMacro> loadAll(Account account) {
       List<DeviceMacro> list = account.getDeviceMacros();
       for (DeviceMacro deviceMacro : list) {
@@ -118,6 +120,7 @@ public class DeviceMacroServiceImpl extends BaseAbstractService<DeviceMacro> imp
     * {@inheritDoc}
     * @see org.openremote.modeler.service.DeviceMacroService#saveDeviceMacro(org.openremote.modeler.domain.DeviceMacro)
     */
+   @Override
    @Transactional
    public DeviceMacro saveDeviceMacro(DeviceMacro deviceMacro) {
       deviceMacro.setAccount(userService.getAccount());
@@ -129,6 +132,7 @@ public class DeviceMacroServiceImpl extends BaseAbstractService<DeviceMacro> imp
     * {@inheritDoc}
     * @see org.openremote.modeler.service.DeviceMacroService#updateDeviceMacro(org.openremote.modeler.domain.DeviceMacro, List<org.openremote.modeler.domain.DeviceMacroItem> items)
     */
+   @Override
    @Transactional
    public DeviceMacro updateDeviceMacro(DeviceMacro deviceMacro, List<DeviceMacroItem> items) {
       DeviceMacro old = genericDAO.loadById(DeviceMacro.class, deviceMacro.getOid());
@@ -151,6 +155,7 @@ public class DeviceMacroServiceImpl extends BaseAbstractService<DeviceMacro> imp
     * {@inheritDoc}
     * @see org.openremote.modeler.service.DeviceMacroService#deleteDeviceMacro(long)
     */
+   @Override
    @Transactional
    public void deleteDeviceMacro(long id) {
       DeviceMacro deviceMacro = loadById(id);
@@ -158,7 +163,7 @@ public class DeviceMacroServiceImpl extends BaseAbstractService<DeviceMacro> imp
       genericDAO.delete(deviceMacro);
    }
 
-
+   @Override
    public List<DeviceMacro> loadSameMacro(DeviceMacro macro) {
       List<DeviceMacro> results = null;
       DetachedCriteria critera = DetachedCriteria.forClass(DeviceMacro.class);
@@ -213,6 +218,7 @@ public class DeviceMacroServiceImpl extends BaseAbstractService<DeviceMacro> imp
    }
     
    @Override
+   @Transactional
    public MacroDTO saveNewMacro(MacroDetailsDTO macro) {
      DeviceMacro macroBean = new DeviceMacro();
      macroBean.setName(macro.getName());
@@ -225,6 +231,7 @@ public class DeviceMacroServiceImpl extends BaseAbstractService<DeviceMacro> imp
    }
    
    @Override
+   @Transactional
    public MacroDTO updateMacroWithDTO(MacroDetailsDTO macro) {
      DeviceMacro macroBean = loadById(macro.getOid());
      macroBean.setName(macro.getName());
