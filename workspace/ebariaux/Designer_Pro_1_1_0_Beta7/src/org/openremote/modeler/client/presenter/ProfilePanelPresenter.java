@@ -247,8 +247,26 @@ public class ProfilePanelPresenter implements Presenter {
             }
          }
       }
-      panelTree.expandAll();
+      // MODELER-390, EBR, 20-Mar-2013
+      // Having expansion here causes an exception when this method is called in the context of an import
+      // Review this functionality when trees have been re-implemented as pure GWT
+      // Also seems to me that there might be issues with listeners being added and never removed
+//      panelTree.expandAll();
       eventBus.fireEvent(new ScreenTableLoadedEvent());
-    
- }
+  }
+  
+  /**
+   * Refreshes the tree displaying panels, groups and screens.
+   */
+  public void refreshPanelDisplay() {
+    initTreeWithAutoSavedPanels();
+  }
+  
+  /**
+   * Completely clears the tree displaying panels, groups and screens so it's empty.
+   */
+  public void clearPanelTree() {
+    view.clearPanelTree();
+  }
+
 }

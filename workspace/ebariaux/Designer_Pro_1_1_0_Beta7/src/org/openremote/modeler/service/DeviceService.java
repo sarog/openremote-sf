@@ -27,6 +27,7 @@ import org.openremote.modeler.domain.Device;
 import org.openremote.modeler.shared.dto.DeviceCommandDetailsDTO;
 import org.openremote.modeler.shared.dto.DeviceDTO;
 import org.openremote.modeler.shared.dto.DeviceDetailsDTO;
+import org.openremote.modeler.shared.dto.DeviceDetailsWithChildrenDTO;
 import org.openremote.modeler.shared.dto.DeviceWithChildrenDTO;
 import org.openremote.modeler.shared.dto.SensorDetailsDTO;
 import org.openremote.modeler.shared.dto.SliderDetailsDTO;
@@ -112,7 +113,7 @@ public interface DeviceService {
     * @param account the account owning the devices to load
     * @return a list of DTOs with information about the devices and their commands
     */
-   ArrayList<DeviceWithChildrenDTO> loadAllDeviceWithChildrenDTOs(Account account);
+   ArrayList<DeviceDetailsWithChildrenDTO> loadAllDeviceDetailsWithChildrenDTOs(Account account);
 
    List<DeviceDTO> loadAllDTOs(Account account);
 
