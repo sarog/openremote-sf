@@ -63,11 +63,16 @@ public class VeraCommandBuilder implements CommandBuilder {
       this.deployer = deployer;
       Map<String, String> properties = this.deployer.getConfigurationProperties();
       String address = properties.get("vera.address");
-      this.client = new VeraClient(address);
-      try {
-         startVeraClient();
-      } catch (Exception e) {
-         logger.error("Could not start VeraClient: ", e);
+
+      if (address != null && address.length() > 0) {
+         this.client = new VeraClient(address);
+         try {
+            startVeraClient();
+         } catch (Exception e) {
+            logger.error("Could not start VeraClient: ", e);
+         }
+      } else {         
+         logger.error("Could not start VeraClient: address is null or undefined");
       }
    }
 
