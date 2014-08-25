@@ -165,7 +165,7 @@ public class DenonAVRSerialCommand implements ExecutableCommand, StatusCommand
     try
     {
       CommPortIdentifier id = CommPortIdentifier.getPortIdentifier(comPort);
-      SerialPort serialPort = (SerialPort) id.open("ORBController", 2000);
+      SerialPort serialPort = (SerialPort) id.open("DenonAVRSerialCommand", 2000);
       serialPort.setSerialPortParams(9600, SerialPort.DATABITS_8, SerialPort.STOPBITS_1,
           SerialPort.PARITY_NONE);
       OutputStream outputStream = serialPort.getOutputStream();
