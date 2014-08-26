@@ -27,6 +27,7 @@ import java.net.Socket;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.concurrent.Semaphore;
+import java.util.concurrent.TimeUnit;
 
 import org.openremote.controller.model.sensor.Sensor;
 import org.openremote.controller.utils.Logger;
@@ -246,13 +247,24 @@ public class RussoundClient {
    }
    
    private void sendData(int[] data) {
+      boolean aquiredLock = false;
+      boolean timedout = false;
       if (data[7] != 0x02) {
          // Unless it is an acknowledge a lock is acquired
-         try {
-            sendCommandSemaphore.acquire();
-            logger.debug("Aquired Lock");
-         } catch (InterruptedException e) {
-            logger.error("Failed aquire lock");
+         while (!(aquiredLock || timedout)) {
+            try {
+               // For keypadId 0x70 the controller does not expect an timeout. 100ms is sufficent to give it time to consume the message.
+               // For other keypadId's we need to wait for the reply and send an Acknowledge, but maximum 2500 ms, since this is also how long the controller will be waiting. 
+               int timeout = (keypadId == 0x70)?100:2500;
+               aquiredLock = sendCommandSemaphore.tryAcquire(timeout, TimeUnit.MILLISECONDS);
+               if (!aquiredLock) {
+                  // There was a timeout
+                  timedout = true;
+               }
+               logger.debug("Aquired Lock");
+            } catch (InterruptedException e) {
+               logger.error("Failed aquire lock");
+            }
          }
       }
       
