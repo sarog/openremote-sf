@@ -1,0 +1,5 @@
+2013-05-05 Created this branch as a copy of svn+ssh://tosterdahl@svn.code.sf.net/p/openremote/code/workspace/mredeker/Controller_2_1_0_Integration@8101
+
+
+2014-02-12 Propose a merge with Controller_2_1_0_FM_SNAPSHOT-20130617
+svn merge --dry-run svn+ssh://tosterdahl@svn.code.sf.net/p/openremote/code/tags/snapshot/Controller_2_1_0_FM_SNAPSHOT-20130617
