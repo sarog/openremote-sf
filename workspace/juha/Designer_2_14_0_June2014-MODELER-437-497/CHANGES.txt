@@ -1,3 +1,10 @@
+MODELER-537
+===========
+
+  - When restoring the panel configuration,
+    compute the maxOid value by walking the restored tree
+    and use to validate (and fix) the restored maxOid value
+
 MODELER-497
 ===========
 
