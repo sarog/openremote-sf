@@ -265,6 +265,7 @@ The needed classes have to be provided as a jar file and copied to lib folder.
         <entry key = "udpListener"      value-ref = "udpListenerCommandBuilder"/>
         <entry key = "enocean"          value-ref = "enoceanCommandBuilder"/>
         <entry key = "rrdGraphUrl"      value-ref = "rrdGraphUrlCommandBuilder"/>
+        <entry key = "serial"           value-ref = "serialCommandBuilder"/>
       </map>
     </constructor-arg>
 
@@ -393,6 +394,9 @@ The needed classes have to be provided as a jar file and copied to lib folder.
     <constructor-arg index="3" value="${russound.serialDevice}" />
     <constructor-arg index="4" value="${russound.statusPollingInterval}" />
   </bean>
+
+  <!-- RS232 Command Builder -->
+  <bean id = "serialCommandBuilder" class = "org.openremote.controller.protocol.serial.SerialCommandBuilder" />
 
   <!-- HSC-40 Command Builder -->
   <bean id = "hsc40CommandBuilder" class = "org.openremote.controller.protocol.hsc40.Hsc40CommandBuilder">
