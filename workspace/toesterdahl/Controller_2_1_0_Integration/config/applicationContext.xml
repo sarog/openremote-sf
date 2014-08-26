@@ -345,7 +345,7 @@ The needed classes have to be provided as a jar file and copied to lib folder.
   <!-- OpenRemote Virtual Command Builder -->
   <bean id = "virtualCommandBuilder" class = "org.openremote.controller.protocol.virtual.VirtualCommandBuilder"/>
 
-  <!-- Russound Command Builder -->
+  <!-- Denon Command Builder -->
   <bean id = "denonAVRSerialCommandBuilder"
         class = "org.openremote.controller.protocol.denonavrserial.DenonAVRSerialCommandBuilder"
         scope = "prototype"/>
