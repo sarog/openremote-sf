@@ -20,17 +20,16 @@
  */
 package org.openremote.controller.protocol.enocean;
 
+import java.security.AccessController;
+import java.security.PrivilegedAction;
+
 import org.openremote.controller.protocol.enocean.packet.Esp2Processor;
 import org.openremote.controller.protocol.enocean.packet.Esp3Processor;
 import org.openremote.controller.protocol.enocean.port.Esp2ComPortAdapter;
 import org.openremote.controller.protocol.enocean.port.Esp3ComPortAdapter;
 import org.openremote.controller.protocol.enocean.port.EspPortConfiguration;
-import org.openremote.controller.protocol.enocean.port.RXTXPort;
+import org.openremote.controller.protocol.port.RXTXPort;
 import org.openremote.controller.utils.Logger;
-
-import java.security.AccessController;
-import java.security.PrivilegedAction;
-import java.util.HashMap;
 
 /**
  * EnOcean connection manager for providing an established connection to the EnOcean module.

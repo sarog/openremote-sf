@@ -17,6 +17,7 @@ public class AbstractPort implements Port, PortListener {
    public final static String PORT_SPEED = "speed";
    public final static String PORT_NB_BITS = "nbBits";
    public final static String PORT_PARITY = "parity";
+   public final static String PORT_STOPBIT = "stopbit";
    public final static int PORT_RX_DATA_HAND_OFF_TIMEOUT = 500;
    private PadClient padClient;
    private SynchronousQueue<NotifyMessage> queue = new SynchronousQueue<NotifyMessage>();
