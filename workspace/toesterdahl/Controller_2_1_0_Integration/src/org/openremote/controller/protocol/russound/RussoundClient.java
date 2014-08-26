@@ -157,6 +157,7 @@ public class RussoundClient {
                parseData();
             } catch (Exception e) {
                logger.error("Could not receive Russound data", e);
+               try { Thread.sleep(200); } catch (InterruptedException eX) { eX.printStackTrace(); }
             }
          }
       }
