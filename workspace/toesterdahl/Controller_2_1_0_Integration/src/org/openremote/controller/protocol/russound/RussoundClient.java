@@ -74,7 +74,7 @@ public class RussoundClient {
          os = clientSocket.getOutputStream();
       } else {
          CommPortIdentifier id = CommPortIdentifier.getPortIdentifier(serialDevice);
-         SerialPort serialPort = (SerialPort) id.open("ORBController", 2000);
+         SerialPort serialPort = (SerialPort) id.open("RussoundClient", 2000);
          serialPort.setSerialPortParams(19200, SerialPort.DATABITS_8, SerialPort.STOPBITS_1, SerialPort.PARITY_NONE);
          is = serialPort.getInputStream();
          os = serialPort.getOutputStream();
