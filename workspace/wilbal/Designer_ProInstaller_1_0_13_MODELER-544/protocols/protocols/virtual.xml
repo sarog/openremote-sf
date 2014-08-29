@@ -45,7 +45,7 @@
         <allowBlank>false</allowBlank>
         <maxLength>254</maxLength>
 
-        <regex message = "Use on/off or status">on|On|ON|off|Off|OFF|status|Status|STATUS</regex>
+        <regex message = "Use on/off, status, INCREMENT int, DECREMENT int, SET int">on|On|ON|off|Off|OFF|status|Status|STATUS|INCREMENT\s{0,1}\d{0,3}|DECREMENT\s{0,1}\d{0,3}|SET\s{0,1}\d{1,3}</regex>
 
       </validations>
     </attr>
@@ -61,6 +61,27 @@
 
         <regex message="Use any arbitrary address string. Commands that are used in the same switch component should use an identical address.">[a-zA-Z]*</regex>
 
+      </validations>
+    </attr>
+
+    <attr name = "type" label = "Type" options="String,Integer" value="String">
+      <validations>
+        <allowBlank>false</allowBlank>
+        <maxLength>254</maxLength>
+      </validations>
+    </attr>
+    
+    <attr name = "minValue" label = "Min value" >
+      <validations>
+        <maxLength>254</maxLength>
+        <regex message = "Enter integer value">\d{0,3}</regex>
+      </validations>
+    </attr>
+    
+    <attr name = "maxValue" label = "Max value" >
+      <validations>
+        <maxLength>254</maxLength>
+        <regex message = "Enter integer value">\d{0,3}</regex>
       </validations>
     </attr>
   </protocol>
