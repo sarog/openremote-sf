@@ -9,6 +9,7 @@ Fixes:
  - Add/review unit tests around UI components equality and controller/panel XML generation (MODELER-496)
  - Adapt unit tests to pass with changes made in MODELER-500 (MODELER-501)
  - Fixed: When using arrow keys to move selection, browser window is scrolled first (MODELER-309)
+ - Fixed: Username label is displayed on top of input field instead of to its left (MODELER-547)
 
 New features: 
  - In addition to version number, display SVN revision number in version string (MODELER-529)
