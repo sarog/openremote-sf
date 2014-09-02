@@ -204,7 +204,7 @@
       p.input
       {
         text-align:         right;
-        width:              240px;
+        width:              250px;
       }
 
       a, a:hover
