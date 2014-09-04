@@ -252,7 +252,7 @@ public class DeployerTest
     Map<String, ModelBuilder> modelBuilders = new HashMap<String, ModelBuilder>();
     modelBuilders.put(ModelBuilder.SchemaVersion.VERSION_2_0.toString(), builder);
 
-    return new Deployer(deployerName, cache, config, null, modelBuilders);
+    return new Deployer(deployerName, cache, config, new BeehiveCommandCheckService(config), modelBuilders);
   }
 
 

@@ -37,7 +37,7 @@ public class TestDeployer extends Deployer
                        ControllerConfiguration controllerConfig, Map<String, ModelBuilder> builders)
        throws InitializationException
    {
-      super(serviceName, deviceStateCache, controllerConfig, builders);
+      super(serviceName, deviceStateCache, controllerConfig, null, builders);
    }
 
    public List<DiscoveredDeviceDTO> getDiscoveredDevicesToAnnounce()
