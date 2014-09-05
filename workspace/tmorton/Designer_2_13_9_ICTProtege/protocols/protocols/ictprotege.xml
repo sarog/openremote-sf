@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openremote xmlns="http://www.openremote.org" 
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xsi:schemaLocation="http://www.openremote.org protocol.xsd">
+
+  <protocol displayName="ICT Protege" tagName="ictprotege">
+
+    <attr name="record-type" label="Record Type" tooltipmessage="Choose: Door, Area, Output, Input, Variable">
+      <validations>
+        <allowBlank>false</allowBlank>
+        <regex message = "Enter one of: Door, Area, Output, Input, Variable or System (for monitoring)">(?i)(Door|Area|Output|PGM|Input|Zone|Variable|System){1}</regex>
+      </validations>
+    </attr>
+	
+    <attr name="record-command" label="Command" 
+			tooltipmessage="Door: Lock, Unlock, Latch\nArea: Disarm, Disarm 24hr, Disarm All, Arm, Force Arm, Stay Arm, Instant Arm\nOutput: Off, On, On Timed\nInput: Remove Bypass, Temporary Bypass, Permanent Bypass\nVariable: Set">
+      <validations>
+        <allowBlank>false</allowBlank>
+        <regex message="Valid options are:\nDoor: Lock, Unlock, Latch\nArea: Disarm, Disarm 24hr, Disarm All, Arm, Force Arm, Stay Arm, Instant Arm\nOutput: Off, On, On Timed\nInput: Remove Bypass, Temporary Bypass, Permanent Bypass\nVariable: Set">(?i)(Lock|Unlock|Latch|Disarm|Disarm 24hr|Disarm All|Arm|Force Arm|Stay Arm|Instant Arm|Off|on|on Timed|Remove Bypass|Temporary Bypass|Permanent Bypass|Set){1}</regex>
+      </validations>
+    </attr>
+
+    <attr name="record-index" label="Record Index" tooltipmessage="Select the record index from the Protege Controller">
+      <validations>
+        <allowBlank>true</allowBlank>
+        <regex message="Only numbers allowed">[0-9]</regex>
+      </validations>
+    </attr>
+
+    <attr name="record-value" label="Record Value" tooltipmessage="For outputs and variables, set a numeric value.  For input monitoring select from Door, Area, Output, Input and Variable">
+      <validations>
+        <allowBlank>true</allowBlank>
+        <regex message="Valid entries are 0-9 or Door, Area, Output, Input, Variable">(?i)([0-9]*|Door|Area|Output|PGM|Input|Zone|Variable){1}</regex>
+      </validations>
+    </attr>
+	
+  </protocol>
+</openremote> 
