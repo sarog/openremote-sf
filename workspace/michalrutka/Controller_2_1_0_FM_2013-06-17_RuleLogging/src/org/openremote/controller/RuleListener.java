@@ -116,6 +116,7 @@ public class RuleListener extends DefaultAgendaEventListener {
       }
       if(antecedent instanceof Event)
       {
+         @SuppressWarnings("rawtypes")
          Event theEvent = (Event) antecedent;
          String sourceName = theEvent.getSource();
          String eventValue = theEvent.getValue().toString(); //assumes all values can directly cast to String      
@@ -132,6 +133,7 @@ public class RuleListener extends DefaultAgendaEventListener {
     * @param declarationValue - The object associated with a drools LHS declaration
     * @return
     */
+   @SuppressWarnings("rawtypes")
    private String declarationValueToString(Object declarationValue)
    {
       String convertedDeclarationValue = null;
@@ -144,7 +146,7 @@ public class RuleListener extends DefaultAgendaEventListener {
       if(declarationValue instanceof Event)
       {
          String sensorName = ((Event) declarationValue).getSource();
-         String sensorValue = (String) ((Event) declarationValue).getValue();
+         String sensorValue = ((Event) declarationValue).getValue().toString();
          convertedDeclarationValue = String.format("Sensor Name: \"%s\"\n\t\t\tSensor Value: \"%s\"", sensorName, sensorValue);
       }
       
