@@ -147,6 +147,11 @@ public class SwitchStatusTest
 
     ele.addContent(propAddr2);
 
+    Element propAddr3 = new Element(CommandBuilder.XML_ELEMENT_PROPERTY);
+    propAddr3.setAttribute(CommandBuilder.XML_ATTRIBUTENAME_NAME, "type");
+    propAddr3.setAttribute(CommandBuilder.XML_ATTRIBUTENAME_VALUE, "String");
+
+    ele.addContent(propAddr3);
 
 
     Command cmd = builder.build(ele);
@@ -186,6 +191,11 @@ public class SwitchStatusTest
     ele.addContent(propAddr2);
 
 
+    Element propAddr3 = new Element(CommandBuilder.XML_ELEMENT_PROPERTY);
+    propAddr3.setAttribute(CommandBuilder.XML_ATTRIBUTENAME_NAME, "type");
+    propAddr3.setAttribute(CommandBuilder.XML_ATTRIBUTENAME_VALUE, "String");
+
+    ele.addContent(propAddr3);
 
     Command command = builder.build(ele);
 

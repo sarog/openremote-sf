@@ -22,6 +22,7 @@ package org.openremote.controller.suite;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
+import org.openremote.controller.protocol.virtual.IntegerTypeTest;
 import org.openremote.controller.protocol.virtual.SwitchStatusTest;
 import org.openremote.controller.protocol.virtual.LevelStatusTest;
 import org.openremote.controller.protocol.virtual.RangeStatusTest;
@@ -38,7 +39,8 @@ import org.openremote.controller.protocol.virtual.CustomStatusTest;
        SwitchStatusTest.class,
        LevelStatusTest.class,
        RangeStatusTest.class,
-       CustomStatusTest.class
+       CustomStatusTest.class,
+       IntegerTypeTest.class
    }
 )
 public class VirtualProtocolTests

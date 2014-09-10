@@ -1,6 +1,6 @@
 /*
  * OpenRemote, the Home of the Digital Home.
- * Copyright 2008-2012, OpenRemote Inc.
+ * Copyright 2008-2011, OpenRemote Inc.
  *
  * See the contributors.txt file in the distribution for a
  * full listing of individual contributors.
@@ -23,26 +23,25 @@ package org.openremote.controller.protocol.virtual;
 import java.util.HashMap;
 
 import org.junit.Before;
-import org.junit.Test;
 import org.junit.Assert;
+import org.junit.Test;
 import org.openremote.controller.command.StatusCommand;
 import org.openremote.controller.command.CommandBuilder;
 import org.openremote.controller.command.Command;
 import org.openremote.controller.command.ExecutableCommand;
 import org.openremote.controller.component.EnumSensorType;
+import org.openremote.controller.protocol.virtual.VirtualCommandBuilder.Type;
 import org.jdom.Element;
 
 /**
- * Test 'custom' sensor state reads and writes on OpenRemote virtual room/device protocol.
+ * Test 'level' sensor state reads and writes on OpenRemote virtual room/device protocol.
  *
  * @see org.openremote.controller.protocol.virtual.VirtualCommand
  *
- *
  * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
  */
-public class CustomStatusTest
+public class IntegerTypeTest
 {
-
 
   // Instance Fields ------------------------------------------------------------------------------
 
@@ -65,70 +64,112 @@ public class CustomStatusTest
   // Tests ----------------------------------------------------------------------------------------
 
   /**
-   * Tests protocol read command behavior for 'custom' sensor type when no explict command to
-   * set state has been sent yet. Expecting a 'custom' sensor to return an empty string in such
-   * case.
+   * Tests protocol read command behavior for 'level' sensor type when no explict command to
+   * set state has been sent yet. Expecting a 'level' sensor to return '0' in such a case.
    */
-  @Test public void testStatusDefaultValue()
+  @Test public void testStatusDefaultValueInteger()
   {
-    StatusCommand cmd = getReadCommand("test range default value");
+    StatusCommand cmd = getReadCommand("test level with integer default value", null, null, null, null);
 
-    String value = cmd.read(EnumSensorType.CUSTOM, new HashMap<String, String>());
+    String value = cmd.read(EnumSensorType.LEVEL, new HashMap<String, String>());
 
-    Assert.assertTrue(value.equals(""));
+    Assert.assertTrue(value.equals("0"));
   }
 
 
 
   /**
-   * Tests 'custom' sensor read/write behavior. Note that we are testing directly on the
-   * 'raw' protocol implementation, therefore custom state mapping such as provided by
-   * the sensor implementation does not apply. More or less we're just testing that arbitrary
-   * values are returned correctly.
+   * Tests 'level' sensor read/write behavior.
    */
-  @Test public void testCustomState()
+  @Test public void testLevelState()
   {
-    final String ADDRESS = "custom read/write tests";
+    final String ADDRESS = "level read/write with integer tests";
 
-    // Read command in uninitialized state, should return an empty string...
+    // Read command in uninitialized state, should return '0'...
 
-    StatusCommand readCmd = getReadCommand(ADDRESS);
+    StatusCommand readCmd = getReadCommand(ADDRESS, "INCREMENT 0", Type.Integer.toString(), null, null);
 
-    String value = readCmd.read(EnumSensorType.CUSTOM, new HashMap<String, String>());
+    String value = readCmd.read(EnumSensorType.LEVEL, new HashMap<String, String>());
 
-    Assert.assertTrue(value.equalsIgnoreCase(""));
+    Assert.assertTrue(value,value.equalsIgnoreCase("0"));
 
 
-    // Send write command 'foo' to the same address...
+    // Send write command '1' to the same address...
 
-    ExecutableCommand writeLevel1 = getWriteCommand(ADDRESS, "foo");
+    ExecutableCommand writeLevel1 = getWriteCommand(ADDRESS, "INCREMENT 10", Type.Integer, null, null);
 
     writeLevel1.send();
 
 
-    // Read state, should return 'foo'...
+    // Read state, should return '1'...
 
-    value = readCmd.read(EnumSensorType.CUSTOM, new HashMap<String, String>());
+    value = readCmd.read(EnumSensorType.LEVEL, new HashMap<String, String>());
 
-    Assert.assertTrue(value.equals("foo"));
-
-
-    // Send write command 'STATUS' to the same address...
-
-    ExecutableCommand writeLevel10001 = getWriteCommand(ADDRESS, "STATUS");
-
-    writeLevel10001.send();
+    Assert.assertTrue(value.equals("10"));
 
 
+    // Send write command '80' to the same address...
 
-    // Read state, should return 'STATUS'...
+    ExecutableCommand writeLevel80 = getWriteCommand(ADDRESS, "SET 80", Type.Integer, null, null);
 
-    value = readCmd.read(EnumSensorType.CUSTOM, new HashMap<String, String>());
+    writeLevel80.send();
 
-    Assert.assertTrue("Was expecting 'STATUS', got '" + value + "'.", value.equals("STATUS"));
+
+
+    // Read state, should return '80'...
+
+    value = readCmd.read(EnumSensorType.LEVEL, new HashMap<String, String>());
+
+    Assert.assertTrue(value.equals("80"));
   }
 
 
+
+
+  /**
+   * Tests 'level' sensor read/write behavior with out of bounds values.
+   */
+  @Test public void testLevelOutOfBoundsState()
+  {
+    final String ADDRESS = "level out of bounds integer tests";
+
+    // Read command in uninitialized state, should return '0'...
+
+    StatusCommand readCmd = getReadCommand(ADDRESS, "INCREMENT 1", Type.Integer.toString(), 0, 80);
+
+    String value = readCmd.read(EnumSensorType.LEVEL, new HashMap<String, String>());
+
+    Assert.assertTrue(value,value.equalsIgnoreCase("0"));
+
+
+    // Send write command '-1' to the same address...
+
+    ExecutableCommand writeLevelNeg1 = getWriteCommand(ADDRESS, "INCREMENT -1", Type.String, 0, 80);
+
+    writeLevelNeg1.send();
+
+
+    // Read state, should return '0'...
+
+    value = readCmd.read(EnumSensorType.LEVEL, new HashMap<String, String>());
+
+    Assert.assertTrue(value.equals("0"));
+
+
+    // Send write command '101' to the same address...
+
+    ExecutableCommand writeLevel101 = getWriteCommand(ADDRESS, "ANYCOMMAND", Type.Integer, null, null);
+
+    writeLevel101.send();
+
+
+
+    // Read state, should return '100'...
+
+    value = readCmd.read(EnumSensorType.LEVEL, new HashMap<String, String>());
+
+    Assert.assertTrue(value.equals("1000"));
+  }
 
 
   // Helpers --------------------------------------------------------------------------------------
@@ -140,7 +181,7 @@ public class CustomStatusTest
    *
    * @return  status command instance for the given address
    */
-  private StatusCommand getReadCommand(String address)
+  private StatusCommand getReadCommand(String address,String command, String type, Integer  minValue, Integer maxValue)
   {
     Element ele = new Element("command");
     ele.setAttribute("id", "test");
@@ -186,15 +227,16 @@ public class CustomStatusTest
    *
    * @param address   arbitrary address string
    * @param cmd       arbitrary command name
+   * @param value     command value
    *
    * @return  write command instance with given parameters
    */
-  private ExecutableCommand getWriteCommand(String address, String cmd)
+  private ExecutableCommand getWriteCommand(String address, String cmd, Type type, Integer minValue, Integer maxValue)
   {
     Element ele = new Element("command");
     ele.setAttribute("id", "test");
 
-    ele.setAttribute(CommandBuilder.PROTOCOL_ATTRIBUTE_NAME, "virtual");
+
 
     Element propAddr = new Element(CommandBuilder.XML_ELEMENT_PROPERTY);
     propAddr.setAttribute(CommandBuilder.XML_ATTRIBUTENAME_NAME, "address");
@@ -211,10 +253,27 @@ public class CustomStatusTest
 
     Element propAddr3 = new Element(CommandBuilder.XML_ELEMENT_PROPERTY);
     propAddr3.setAttribute(CommandBuilder.XML_ATTRIBUTENAME_NAME, "type");
-    propAddr3.setAttribute(CommandBuilder.XML_ATTRIBUTENAME_VALUE, "String");
+    propAddr3.setAttribute(CommandBuilder.XML_ATTRIBUTENAME_VALUE, type.toString());
 
     ele.addContent(propAddr3);
 
+    if (minValue != null)
+    {
+      Element propAddr4 = new Element(CommandBuilder.XML_ELEMENT_PROPERTY);
+      propAddr4.setAttribute(CommandBuilder.XML_ATTRIBUTENAME_NAME, "minValue");
+      propAddr4.setAttribute(CommandBuilder.XML_ATTRIBUTENAME_VALUE, minValue.toString());
+      
+      ele.addContent(propAddr4);      
+    }
+
+    if (maxValue != null)
+    {
+      Element propAddr5 = new Element(CommandBuilder.XML_ELEMENT_PROPERTY);
+      propAddr5.setAttribute(CommandBuilder.XML_ATTRIBUTENAME_NAME, "maxValue");
+      propAddr5.setAttribute(CommandBuilder.XML_ATTRIBUTENAME_VALUE, maxValue.toString());
+      ele.addContent(propAddr5);
+    }
+    
     Command command = builder.build(ele);
 
     if (!(command instanceof ExecutableCommand))
@@ -228,7 +287,6 @@ public class CustomStatusTest
       return (ExecutableCommand)command;
     }
   }
-  
 
 }
 

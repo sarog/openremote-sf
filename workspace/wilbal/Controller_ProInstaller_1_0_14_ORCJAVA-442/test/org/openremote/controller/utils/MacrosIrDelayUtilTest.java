@@ -47,7 +47,7 @@ public class MacrosIrDelayUtilTest {
          add(new IRCommand());
          add(new DelayCommand());
          add(new IRCommand());
-         add(new VirtualCommand("address", "command"));
+         add(new VirtualCommand("address", "command", null, null, 0, 0));
       }
    };
 
