@@ -123,13 +123,21 @@ public class ControllerConfigServiceImpl extends BaseAbstractService<ControllerC
       Set<ConfigCategory> categories = new HashSet<ConfigCategory>();
       Set<ControllerConfig> allDefaultConfigs = new HashSet<ControllerConfig>();
       XmlParser.initControllerConfig(categories, allDefaultConfigs);
+
+      // First collect name of config entries already existing for this category
+      Set<ControllerConfigDTO> existingConfigurations = this.listAllConfigDTOsByCategory(categoryName);
+      Set<String> existingConfigEntryNames = new HashSet<String>();
+      for (ControllerConfigDTO configDTO : existingConfigurations) {
+        if (configDTO.getCategory().equals(categoryName)) {
+          existingConfigEntryNames.add(configDTO.getName());
+        }
+      }
       
-      Set<ControllerConfigDTO> unMissedConfigs = this.listAllConfigDTOsByCategory(categoryName);
       Set<ControllerConfigDTO> missedConfigs = new HashSet<ControllerConfigDTO> ();
       for (ControllerConfig cfg : allDefaultConfigs) {
-    	 if (cfg.getCategory().equals(categoryName) && !unMissedConfigs.contains(cfg.getControllerConfigDTO())) {
-            missedConfigs.add(cfg.getControllerConfigDTO());
-         }
+        if (cfg.getCategory().equals(categoryName) && !existingConfigEntryNames.contains(cfg.getName())) {
+          missedConfigs.add(cfg.getControllerConfigDTO());
+        }
       }
       return missedConfigs;
    }
