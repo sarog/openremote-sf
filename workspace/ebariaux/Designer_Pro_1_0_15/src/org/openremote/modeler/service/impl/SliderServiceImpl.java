@@ -131,6 +131,7 @@ public class SliderServiceImpl extends BaseAbstractService<Slider> implements Sl
      genericDAO.saveOrUpdate(slider);
    }
    
+   @Override
    public List<Slider> loadSameSliders(Slider slider) {
       List<Slider> result = null;
       DetachedCriteria critera = DetachedCriteria.forClass(Slider.class);
@@ -164,6 +165,7 @@ public class SliderServiceImpl extends BaseAbstractService<Slider> implements Sl
     return dtos;
   }
 
+   @Override
    @Transactional
    public List<Slider> saveAllSliders(List<Slider> sliderList, Account account) {
        for (Slider slider : sliderList) {
@@ -173,6 +175,8 @@ public class SliderServiceImpl extends BaseAbstractService<Slider> implements Sl
        return sliderList;
    }
 
+  @Override
+  @Transactional
   public void saveNewSlider(SliderDetailsDTO sliderDTO, long deviceId) {
     Sensor sensor = sensorService.loadById(sliderDTO.getSensor().getId());
     DeviceCommand command = null;

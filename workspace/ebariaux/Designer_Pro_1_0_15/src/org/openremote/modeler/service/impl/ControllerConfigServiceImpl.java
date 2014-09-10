@@ -67,6 +67,7 @@ public class ControllerConfigServiceImpl extends BaseAbstractService<ControllerC
       return config;
    }
    
+   @Override
    @Transactional
    public Set<ControllerConfig> saveAll(Set<ControllerConfig> configs) {
       Set<ControllerConfig> cfgs = new LinkedHashSet<ControllerConfig>();
@@ -116,6 +117,7 @@ public class ControllerConfigServiceImpl extends BaseAbstractService<ControllerC
       XmlParser.initControllerConfig(categories, allDefaultConfigs);
       return categories;
    }
+   
    @Override
    public Set<ControllerConfigDTO> listMissedConfigDTOsByCategoryName(String categoryName) {
       Set<ConfigCategory> categories = new HashSet<ConfigCategory>();
@@ -148,6 +150,7 @@ public class ControllerConfigServiceImpl extends BaseAbstractService<ControllerC
       return missedConfigs;
    }
    
+   @Override
    public Set<ControllerConfig> listAllexpiredConfigs() {
       Set<ControllerConfig> allDefaultConfigs = new HashSet<ControllerConfig>();
       XmlParser.initControllerConfig(new HashSet<ConfigCategory>(), allDefaultConfigs);
@@ -161,9 +164,11 @@ public class ControllerConfigServiceImpl extends BaseAbstractService<ControllerC
       
       return expiredConfigs;
    }
+   
    public void setUserService(UserService userService) {
       this.userService = userService;
    }
+   
    private static void initializeConfigs(Set<ControllerConfig> configs){
       Set<ConfigCategory> categories = new HashSet<ConfigCategory>();
       Set<ControllerConfig> allDefaultConfigs = new HashSet<ControllerConfig>();
@@ -182,7 +187,7 @@ public class ControllerConfigServiceImpl extends BaseAbstractService<ControllerC
       }
    }
    
-   
+   @Override
    @Transactional
    public Set<ControllerConfigDTO> saveAllDTOs(Set<ControllerConfigDTO> configDTOs) {
      Set<ControllerConfig> configs = new HashSet<ControllerConfig>();
