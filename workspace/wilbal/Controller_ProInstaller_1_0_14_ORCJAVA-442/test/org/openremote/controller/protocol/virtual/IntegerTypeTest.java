@@ -34,11 +34,11 @@ import org.openremote.controller.protocol.virtual.VirtualCommandBuilder.Type;
 import org.jdom.Element;
 
 /**
- * Test 'level' sensor state reads and writes on OpenRemote virtual room/device protocol.
+ * Test 'range' sensor state reads and writes on OpenRemote virtual room/device protocol.
  *
  * @see org.openremote.controller.protocol.virtual.VirtualCommand
  *
- * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
+ * @author <a href="mailto:wbalcaen@tinsys.com">Juha Lindfors</a>
  */
 public class IntegerTypeTest
 {
@@ -64,14 +64,14 @@ public class IntegerTypeTest
   // Tests ----------------------------------------------------------------------------------------
 
   /**
-   * Tests protocol read command behavior for 'level' sensor type when no explict command to
-   * set state has been sent yet. Expecting a 'level' sensor to return '0' in such a case.
+   * Tests protocol read command behavior for 'Range' sensor type when no explict command to
+   * set state has been sent yet. Expecting a 'Range' sensor to return '0' in such a case.
    */
   @Test public void testStatusDefaultValueInteger()
   {
-    StatusCommand cmd = getReadCommand("test level with integer default value", null, null, null, null);
+    StatusCommand cmd = getReadCommand("test range with integer default value", null, null, null, null);
 
-    String value = cmd.read(EnumSensorType.LEVEL, new HashMap<String, String>());
+    String value = cmd.read(EnumSensorType.RANGE, new HashMap<String, String>());
 
     Assert.assertTrue(value.equals("0"));
   }
@@ -79,97 +79,202 @@ public class IntegerTypeTest
 
 
   /**
-   * Tests 'level' sensor read/write behavior.
+   * Tests 'range' sensor read/write behavior.
    */
-  @Test public void testLevelState()
+  @Test public void testRangeStateWithoutRangeLimitInteger()
   {
-    final String ADDRESS = "level read/write with integer tests";
+    final String ADDRESS = "range read/write with integer type tests";
 
     // Read command in uninitialized state, should return '0'...
 
     StatusCommand readCmd = getReadCommand(ADDRESS, "INCREMENT 0", Type.Integer.toString(), null, null);
 
-    String value = readCmd.read(EnumSensorType.LEVEL, new HashMap<String, String>());
+    String value = readCmd.read(EnumSensorType.RANGE, new HashMap<String, String>());
 
     Assert.assertTrue(value,value.equalsIgnoreCase("0"));
 
 
-    // Send write command '1' to the same address...
+    // Send INCREMENT 10 to the same address...
 
-    ExecutableCommand writeLevel1 = getWriteCommand(ADDRESS, "INCREMENT 10", Type.Integer, null, null);
+    ExecutableCommand writeRange1 = getWriteCommand(ADDRESS, "INCREMENT 10", Type.Integer, null, null);
 
-    writeLevel1.send();
+    writeRange1.send();
 
 
-    // Read state, should return '1'...
+    // Read state, should return '10'...
 
-    value = readCmd.read(EnumSensorType.LEVEL, new HashMap<String, String>());
+    value = readCmd.read(EnumSensorType.RANGE, new HashMap<String, String>());
 
     Assert.assertTrue(value.equals("10"));
 
 
     // Send write command '80' to the same address...
 
-    ExecutableCommand writeLevel80 = getWriteCommand(ADDRESS, "SET 80", Type.Integer, null, null);
+    ExecutableCommand writeRange80 = getWriteCommand(ADDRESS, "SET 80", Type.Integer, null, null);
 
-    writeLevel80.send();
-
+    writeRange80.send();
 
 
     // Read state, should return '80'...
 
-    value = readCmd.read(EnumSensorType.LEVEL, new HashMap<String, String>());
+    value = readCmd.read(EnumSensorType.RANGE, new HashMap<String, String>());
 
     Assert.assertTrue(value.equals("80"));
+    
+    
+    // Send write command 'DECREMENT -10' to the same address...
+
+    ExecutableCommand writeRange100negative = getWriteCommand(ADDRESS, "SET -100", Type.Integer, null, null);
+
+    writeRange100negative.send();
+
+    // Read state, should return '-100'...
+
+    value = readCmd.read(EnumSensorType.RANGE, new HashMap<String, String>());
+
+    Assert.assertTrue(value,value.equals("-100"));
+    
+    
+    // Send write command 'DECREMENT' to the same address...
+
+    ExecutableCommand writeRangeDecrement = getWriteCommand(ADDRESS, "DECREMENT", Type.Integer, null, null);
+
+    writeRangeDecrement.send();
+
+    // Read state, should return '-101'...
+
+    value = readCmd.read(EnumSensorType.RANGE, new HashMap<String, String>());
+
+    Assert.assertTrue(value,value.equals("-101"));
+
+    
+    // Send write command 'INCREMENT' to the same address...
+
+    ExecutableCommand writeRangeIncrement = getWriteCommand(ADDRESS, "INCREMENT", Type.Integer, null, null);
+
+    writeRangeIncrement.send();
+
+    // Read state, should return '-100'...
+
+    value = readCmd.read(EnumSensorType.RANGE, new HashMap<String, String>());
+
+    Assert.assertTrue(value,value.equals("-100"));
+
+    
+    // Send write command 'DECREMENT 10' to the same address...
+
+    ExecutableCommand writeRangeDecrement10 = getWriteCommand(ADDRESS, "DECREMENT 10", Type.Integer, null, null);
+
+    writeRangeDecrement10.send();
+
+    // Read state, should return '-110'...
+
+    value = readCmd.read(EnumSensorType.RANGE, new HashMap<String, String>());
+
+    Assert.assertTrue(value,value.equals("-110"));
+    
   }
 
 
 
 
   /**
-   * Tests 'level' sensor read/write behavior with out of bounds values.
+   * Tests 'range' sensor read/write behavior with out of bounds values.
    */
-  @Test public void testLevelOutOfBoundsState()
+  @Test public void testRangeOutOfBoundsStateInteger()
   {
-    final String ADDRESS = "level out of bounds integer tests";
+    final String ADDRESS = "range out of bounds integer tests";
 
     // Read command in uninitialized state, should return '0'...
 
     StatusCommand readCmd = getReadCommand(ADDRESS, "INCREMENT 1", Type.Integer.toString(), 0, 80);
 
-    String value = readCmd.read(EnumSensorType.LEVEL, new HashMap<String, String>());
+    String value = readCmd.read(EnumSensorType.RANGE, new HashMap<String, String>());
 
     Assert.assertTrue(value,value.equalsIgnoreCase("0"));
 
 
     // Send write command '-1' to the same address...
 
-    ExecutableCommand writeLevelNeg1 = getWriteCommand(ADDRESS, "INCREMENT -1", Type.String, 0, 80);
+    ExecutableCommand writeRangeNeg1 = getWriteCommand(ADDRESS, "INCREMENT -1", Type.String, 0, 80);
 
-    writeLevelNeg1.send();
+    writeRangeNeg1.send();
 
 
     // Read state, should return '0'...
 
-    value = readCmd.read(EnumSensorType.LEVEL, new HashMap<String, String>());
+    value = readCmd.read(EnumSensorType.RANGE, new HashMap<String, String>());
 
     Assert.assertTrue(value.equals("0"));
 
 
-    // Send write command '101' to the same address...
+    // Send write command 'INCREMENT 91' to the same address...
 
-    ExecutableCommand writeLevel101 = getWriteCommand(ADDRESS, "ANYCOMMAND", Type.Integer, null, null);
+    ExecutableCommand writeRange91 = getWriteCommand(ADDRESS, "INCREMENT 91", Type.Integer, 0, 90);
 
-    writeLevel101.send();
+    writeRange91.send();
 
 
 
-    // Read state, should return '100'...
+    // Read state, should return '0' because out of range...
 
-    value = readCmd.read(EnumSensorType.LEVEL, new HashMap<String, String>());
+    value = readCmd.read(EnumSensorType.RANGE, new HashMap<String, String>());
 
-    Assert.assertTrue(value.equals("1000"));
-  }
+    Assert.assertTrue(value,value.equals("0"));
+    
+    
+    // Send write command 'SET -91' to the same address...
+
+    ExecutableCommand writeRangeMinus91 = getWriteCommand(ADDRESS, "SET 91", Type.Integer, 0, 90);
+
+    writeRangeMinus91.send();
+
+
+
+    // Read state, should return '0' because out of range...
+
+    value = readCmd.read(EnumSensorType.RANGE, new HashMap<String, String>());
+
+    Assert.assertTrue(value,value.equals("0"));
+ 
+  
+    //Send write command 'SET 90' to the same address...
+
+    ExecutableCommand writeRangeSET90 = getWriteCommand(ADDRESS, "SET 90", Type.Integer, 0, 90);
+
+    writeRangeSET90.send();  
+
+    // Read state, should return '90' 
+
+    value = readCmd.read(EnumSensorType.RANGE, new HashMap<String, String>());
+
+    Assert.assertTrue(value,value.equals("90"));
+    
+    
+  //Send write command 'DECREMENT 100' to the same address...
+
+    ExecutableCommand writeRangeDECREMENT100 = getWriteCommand(ADDRESS, "DECREMENT 100", Type.Integer, -20, 90);
+
+    writeRangeDECREMENT100.send();  
+
+    // Read state, should return '-10' ...
+
+    value = readCmd.read(EnumSensorType.RANGE, new HashMap<String, String>());
+
+    Assert.assertTrue(value,value.equals("-10"));
+    
+  //Send write command 'DECREMENT 125' to the same address out of bounds...
+
+    ExecutableCommand writeRangeDECREMENT125 = getWriteCommand(ADDRESS, "DECREMENT 125", Type.Integer, -20, 90);
+
+    writeRangeDECREMENT125.send();  
+
+    // Read state, should return '-10' ...
+
+    value = readCmd.read(EnumSensorType.RANGE, new HashMap<String, String>());
+
+    Assert.assertTrue(value,value.equals("-10"));
+}
 
 
   // Helpers --------------------------------------------------------------------------------------
@@ -235,8 +340,6 @@ public class IntegerTypeTest
   {
     Element ele = new Element("command");
     ele.setAttribute("id", "test");
-
-
 
     Element propAddr = new Element(CommandBuilder.XML_ELEMENT_PROPERTY);
     propAddr.setAttribute(CommandBuilder.XML_ATTRIBUTENAME_NAME, "address");
