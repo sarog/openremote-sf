@@ -1,0 +1,8 @@
+WebConsole 2.1.1
+================
+
+ Bug fix release:
+
+  - WEBCONSOLE-56: Fix to prevent Console from hanging at 
+    loading screen if an invalid response is received from 
+    Controller (Richard Turner)
