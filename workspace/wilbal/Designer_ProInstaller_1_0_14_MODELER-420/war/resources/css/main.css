@@ -18,7 +18,7 @@
    background-color: yellow;
 }
 .button-border {
-   border: 1px solid orange;
+   outline: 1px solid orange;
    opacity:0.9;
 }
 
