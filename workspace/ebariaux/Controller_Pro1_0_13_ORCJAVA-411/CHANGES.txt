@@ -1,8 +1,13 @@
+ORCJAVA-411
+===========
+
+  - Convert Beehive remote proxy service to blocking I/O 
+    (Marcus Redeker)
+
 Controller Pro 1.0.13
 =====================
 	  
 New Features:
-
   - Updated DSC Security System  to support EnvisaLink and improved current IT100 support
     (Greg Rapp, Phil Taylor, ORCJAVA-302)
   - Update logo to current version (ORCJAVA-429)
