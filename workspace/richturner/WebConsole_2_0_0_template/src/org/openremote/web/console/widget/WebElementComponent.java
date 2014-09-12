@@ -28,7 +28,7 @@ import com.google.gwt.user.client.ui.Frame;
  *  
  * @author <a href="mailto:richard@openremote.org">Richard Turner</a>
  */
-public class WebElementComponent extends PassiveConsoleComponent implements SensorChangeHandler {
+public class WebElementComponent extends InteractiveConsoleComponent implements SensorChangeHandler {
 	public static final String CLASS_NAME = "webElementComponent";
 	
 	private String urlPrefix = "";
