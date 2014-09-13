@@ -2,6 +2,7 @@ package org.openremote.controller.service;
 
 import java.io.IOException;
 import java.lang.reflect.Array;
+import java.net.Socket;
 import java.nio.channels.SocketChannel;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,7 +16,10 @@ import org.openremote.controllercommand.domain.ControllerCommandDTO;
 import org.openremote.rest.GenericResourceResultWithErrorMessage;
 import org.openremote.useraccount.domain.ControllerDTO;
 import org.openremote.useraccount.domain.UserDTO;
+import org.restlet.Client;
+import org.restlet.Context;
 import org.restlet.data.ChallengeScheme;
+import org.restlet.data.Protocol;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ClientResource;
 
@@ -61,7 +65,7 @@ public class BeehiveCommandCheckService {
       String url = command.getCommandParameter().get("url");
       String token = command.getCommandParameter().get("token");
       
-      SocketChannel beehiveSocket = null;
+      Socket beehiveSocket = null;
       boolean needsAck = true;
       try {
          log.info("Connecting to beehive at "+url+" for proxy");
@@ -152,10 +156,12 @@ public class BeehiveCommandCheckService {
       public void run() {
          //As long as we are not linked to an account we periodically try to receive account info
          int sleepTime = controllerConfig.getBeehiveCommandServiceCheckInterval();
+         Client c = new Client(new Context(), Protocol.HTTP);
          while (isRunning()) {
             ClientResource cr = null;
             try {
                cr = new ClientResource( controllerConfig.getBeehiveControllerCommandServiceRESTRootUrl() + "commands/" + controllerDTO.getOid());
+               cr.setNext(c);
                UserDTO user = controllerDTO.getAccount().getUsers().get(0);
                cr.setChallengeResponse(ChallengeScheme.HTTP_BASIC, user.getUsername(), user.getPassword());
                Representation r = cr.get();
