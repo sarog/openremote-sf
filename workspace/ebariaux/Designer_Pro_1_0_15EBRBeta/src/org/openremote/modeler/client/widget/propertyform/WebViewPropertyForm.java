@@ -90,7 +90,6 @@ public class WebViewPropertyForm extends PropertyForm {
       usernameField.addListener(Events.Blur, new Listener<BaseEvent>() {
           @Override
           public void handleEvent(BaseEvent be) {
-             if(usernameField.getValue()!=null&&usernameField.getValue().trim().length()!=0)
                uiWebView.setUserName(usernameField.getValue());
           }
        });      
@@ -103,7 +102,6 @@ public class WebViewPropertyForm extends PropertyForm {
       passwordField.addListener(Events.Blur, new Listener<BaseEvent>() {
           @Override
           public void handleEvent(BaseEvent be) {
-             if(passwordField.getValue()!=null&&passwordField.getValue().trim().length()!=0)
                uiWebView.setPassword(passwordField.getValue());
           }
        });         
