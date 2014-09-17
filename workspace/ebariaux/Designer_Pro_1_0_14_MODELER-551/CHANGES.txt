@@ -1,3 +1,8 @@
+MODELER-551
+===========
+
+  - Fixed: Panel.xml not correcty generated for widgets with custom sensors
+
 Pro 1.0.14
 ==========
 
