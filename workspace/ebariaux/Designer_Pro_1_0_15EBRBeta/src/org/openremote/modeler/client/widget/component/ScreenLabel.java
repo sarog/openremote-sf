@@ -77,6 +77,7 @@ public class ScreenLabel extends ScreenComponent {
    public void setText(String text) {
       uiLabel.setText(text);
       adjustTextLength();
+      syncSize();
    }
 
    public UILabel getUiLabel() {
@@ -95,6 +96,7 @@ public class ScreenLabel extends ScreenComponent {
    public void setFontSize(int size) {
       uiLabel.setFontSize(size);
       center.setStyleAttribute("fontSize", size + "px");
+      syncSize();
    }
 
    @Override
