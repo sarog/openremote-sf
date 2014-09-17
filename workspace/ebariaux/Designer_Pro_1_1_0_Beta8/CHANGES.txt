@@ -1,3 +1,9 @@
+Pro 1.0.15
+==========
+
+Fixes:
+ - Fixed: Panel.xml not correcty generated for widgets with custom sensors (MODELER-551)
+
 Pro 1.0.14
 ==========
 
