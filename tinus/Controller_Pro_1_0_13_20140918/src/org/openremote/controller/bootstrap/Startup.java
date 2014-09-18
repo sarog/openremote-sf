@@ -20,6 +20,9 @@
  */
 package org.openremote.controller.bootstrap;
 
+import java.security.Provider;
+import java.security.Security;
+import java.util.Set;
 import java.util.logging.Handler;
 import java.util.logging.LogRecord;
 import java.util.logging.Level;
@@ -32,6 +35,7 @@ import java.text.MessageFormat;
 import org.openremote.controller.Constants;
 import org.openremote.controller.service.ServiceContext;
 import org.openremote.controller.exception.InitializationException;
+import org.openremote.security.SecurityProvider;
 
 /**
  * Generic startup implementation for controller. Depending on deployment environment (servlet,
@@ -177,11 +181,49 @@ public class Startup
   }
 
 
+  /**
+   * Installs BouncyCastle as the primary security provider for this JVM.
+   *
+   * @throws InitializationException    if the initialization fails
+   */
+  public static void installBouncyCastleSecurityProvider() throws InitializationException
+  {
+    try
+    {
+      Provider provider = SecurityProvider.BC.getProviderInstance();
+
+      if (provider == null)
+      {
+        throw new InitializationException("Cannot load BouncyCastle security provider.");
+      }
+
+      // Log debugging information on existing system security providers and the keystore
+      // algorithms they support...
+
+      SecurityProviderLog.logProvidersAndKeyStores();
+
+      SecurityProviderLog.log.debug("Installing BouncyCastle security provider...");
+
+      Security.insertProviderAt(provider, 1);
+
+      // Log again after inserting BouncyCastle provider to verify the provider and additional
+      // algorithms were installed...
+
+      SecurityProviderLog.logProvidersAndKeyStores();
+    }
+
+    catch (SecurityException e)
+    {
+      throw new InitializationException(
+          "Security manager has prevented installing BouncyCastle security provider: {0}",
+          e, e.getMessage()
+      );
+    }
+  }
 
 
 
   // Nested Classes -------------------------------------------------------------------------------
-
 
   /**
    * Java util logging handler implementation to map JUL log records to log4j API and send
@@ -383,5 +425,70 @@ public class Startup
       }
     }
   }
+
+
+  /**
+   * Utility class that provides helpers to log the security provider names, and available
+   * keystore algorithms (extend to other information as necessary). This is useful in particular
+   * to troubleshoot security provider issues on virtual machines that do not originate
+   * from Sun/Oracle.
+   */
+  private static class SecurityProviderLog
+  {
+    private static org.openremote.controller.utils.Logger log =
+        org.openremote.controller.utils.Logger.getLogger(Constants.INIT_LOG_CATEGORY + ".security");
+
+    private static void logProvidersAndKeyStores()
+    {
+      if (log.isLoggable(Level.FINE))
+      {
+        logSecurityProviders();
+        logAvailableKeyStoreAlgorithms();
+      }
+    }
+
+    private static void logSecurityProviders()
+    {
+
+      Provider[] providers = Security.getProviders();
+
+      StringBuilder builder = new StringBuilder(256);
+      builder.append("Installed security providers:\n");
+
+      for (Provider p : providers)
+      {
+        builder.append("    ");
+        builder.append(p.getName());
+        builder.append("\n");
+      }
+
+      log.debug(builder.toString());
+    }
+
+    private static void logAvailableKeyStoreAlgorithms()
+    {
+      Provider[] providers = Security.getProviders();
+      StringBuilder builder = new StringBuilder(256);
+      builder.append("Available keystore algorithms:\n");
+
+      for (Provider p : providers)
+      {
+        Set<Provider.Service> services = p.getServices();
+
+        for (Provider.Service s : services)
+        {
+          if (s.getType().equalsIgnoreCase("KeyStore"))
+          {
+            builder.append("    ");
+            builder.append(s.getAlgorithm());
+            builder.append("\n");
+          }
+        }
+      }
+
+      log.debug(builder.toString());
+    }
+  }
+
 }
 
