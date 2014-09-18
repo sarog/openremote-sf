@@ -92,9 +92,11 @@ public class SensorLink extends BusinessEntity {
      }
      StringBuffer sb = new StringBuffer();
      sb.append("<link type=\"sensor\" ref=\"" + sensorDTO.getOffsetId() + "\">");
+     if (sensorDTO.getStateNames() != null) {
        for (String stateName : sensorDTO.getStateNames()) {
          sb.append("<state name=\"" + stateName + "\" value=\"" + getStateValueByStateName(stateName) + "\"/>");
        }
+     }
      sb.append("</link>");
      return sb.toString();
    }
