@@ -20,11 +20,16 @@
 package org.openremote.web.console.server;
 
 import java.awt.image.BufferedImage;
+import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+
 import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -61,18 +66,22 @@ public class ImageProxyService extends HttpServlet {
   			String basicAuth = "Basic " + userpass;
   			connection.setRequestProperty ("Authorization", basicAuth);
 	    }
-	    
-	    BufferedImage image = ImageIO.read(connection.getInputStream());
 
-	    if (image != null) {
-	    	response.setContentType("image/png");
-	      ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-	      ImageIO.write(image, "png", outputStream);
-	      outputStream.close();
-	      
-	    	response.getOutputStream().write(outputStream.toByteArray());
-	  		response.getOutputStream().flush();
+	    InputStream is = connection.getInputStream();
+      ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+
+	    byte[] b = new byte[2048];
+	    int length;
+
+	    while ((length = is.read(b)) != -1) {
+	      outputStream.write(b, 0, length);
 	    }
+
+	    is.close();
+	    outputStream.close();
+	    
+      response.getOutputStream().write(outputStream.toByteArray());
+      response.getOutputStream().flush();
 		} catch (MalformedURLException e) {
 		} catch (IOException e) {
 			System.out.println(e.getMessage());
