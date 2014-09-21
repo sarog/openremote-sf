@@ -29,7 +29,6 @@ public class ControllerListActivity extends GenericActivity {
     
 public void onCreate(Bundle savedState) {
     super.onCreate(savedState);
-    getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
     Log.d(LOG_CATEGORY, "onCreate()");
     
     setContentView(R.layout.ssl_field_view);
