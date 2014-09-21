@@ -41,7 +41,7 @@ public class LoginViewActivity extends GenericActivity {
    private boolean isFromMain;
    public void onCreate(Bundle savedInstanceState) {
       super.onCreate(savedInstanceState);
-      getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+      
       setTitle(R.string.login);
       if (Main.LOAD_RESOURCE.equals(getIntent().getDataString())) {
          isFromMain = true;

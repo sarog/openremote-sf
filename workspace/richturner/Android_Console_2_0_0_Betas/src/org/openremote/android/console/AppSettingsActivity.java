@@ -98,8 +98,7 @@ public class AppSettingsActivity extends GenericActivity {
   @Override
   public void onCreate(Bundle savedInstanceState) { 
     super.onCreate(savedInstanceState);
-    getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-    
+        
     setContentView(R.layout.controller_list);
     
     loadingPanelProgress = new ProgressDialog(this);

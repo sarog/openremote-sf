@@ -108,8 +108,6 @@ public class PanelSelectionActivity extends GenericActivity implements ORConnect
   public void onCreate(Bundle savedInstanceState) { 
     super.onCreate(savedInstanceState);
 
-    getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-    
     setContentView(R.layout.panel_list);
   	
     panelListView = (ListView) findViewById(R.id.panel_list_view);
