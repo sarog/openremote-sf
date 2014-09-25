@@ -105,6 +105,7 @@ public class ScreenCanvas extends ComponentContainer {
       TouchPanelCanvasDefinition canvas = screen.getTouchPanelDefinition().getCanvas();
       setSize(canvas.getWidth(), canvas.getHeight());
       setBorders(true);
+      addStyleName("bordered-widget");
       setStyleAttribute("position", "relative");
       if (screen.getGrids().size() > 0) {
          List<UIGrid> grids = screen.getGrids();
