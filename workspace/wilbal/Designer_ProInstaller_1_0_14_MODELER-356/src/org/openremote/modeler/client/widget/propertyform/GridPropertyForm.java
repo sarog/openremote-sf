@@ -129,6 +129,7 @@ public class GridPropertyForm extends PropertyForm {
          public void handleEvent(BaseEvent be) {
             grid.setWidth(Integer.parseInt(widthField.getValue()));
             updateGrid();
+            resizeGridContainer();
          }
       });
 
@@ -143,6 +144,7 @@ public class GridPropertyForm extends PropertyForm {
          public void handleEvent(BaseEvent be) {
             grid.setHeight(Integer.parseInt(heightField.getValue()));
             updateGrid();
+            resizeGridContainer();
          }
       });
       if (screen != null) {
@@ -171,6 +173,11 @@ public class GridPropertyForm extends PropertyForm {
       }
 
       gridContainer.update();
+   }
+   
+   protected void resizeGridContainer() {
+       gridContainer.setWidth(GridLayoutContainerHandle.DEFALUT_HANDLE_WIDTH+1+gridContainer.getGridlayoutContainer().getGrid().getWidth());
+       gridContainer.setHeight(GridLayoutContainerHandle.DEFALUT_HANDLE_WIDTH+1+gridContainer.getGridlayoutContainer().getGrid().getHeight());
    }
    
    @Override
