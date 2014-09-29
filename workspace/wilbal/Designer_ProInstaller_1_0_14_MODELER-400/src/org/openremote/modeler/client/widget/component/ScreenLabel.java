@@ -58,6 +58,7 @@ public class ScreenLabel extends ScreenComponent {
       center.setText(uiLabel.getText());
       initial();
       adjustTextLength();
+      syncSize();
    }
 
    /**
@@ -78,6 +79,7 @@ public class ScreenLabel extends ScreenComponent {
       uiLabel.setText(text);
       adjustTextLength();
       syncSize();
+      layout(true);
    }
 
    public UILabel getUiLabel() {
@@ -96,7 +98,9 @@ public class ScreenLabel extends ScreenComponent {
    public void setFontSize(int size) {
       uiLabel.setFontSize(size);
       center.setStyleAttribute("fontSize", size + "px");
+      adjustTextLength();
       syncSize();
+      layout(true);
    }
 
    @Override
@@ -117,6 +121,7 @@ public class ScreenLabel extends ScreenComponent {
       } else {
          adjustTextLength();
       }
+      layout(true);
    }
 
    /**
@@ -135,7 +140,9 @@ public class ScreenLabel extends ScreenComponent {
 
    private void adjustTextLength(int width) {
       if (center.isVisible()) {
-         int ajustLength = (width - 6) / 6;
+         String fontSizeString = center.getElement().getStyle().getFontSize();
+         int fontSize = Integer.parseInt(fontSizeString.substring(0, fontSizeString.length()-2)); 
+         int ajustLength = width / (fontSize-6);
          if (ajustLength < uiLabel.getText().length()) {
             center.setText(uiLabel.getText().substring(0, ajustLength) + "..");
          } else {
