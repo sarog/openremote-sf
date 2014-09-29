@@ -92,6 +92,9 @@ public class ProtocolParser {
    /** The Constant TAG_NAME_ATTR_NAME. */
    private static final String TAG_NAME_ATTR_NAME = "tagName"; 
    
+   /** The Constant ALLOWED_ACCOUNT_IDS. */
+   private static final String ALLOWED_ACCOUNT_IDS = "allowedAccountIds"; 
+   
    /** The Constant MESSAGE_ATTR_NAME. */
    private static final String MESSAGE_ATTR_NAME = "message";
 
@@ -141,7 +144,10 @@ public class ProtocolParser {
          protocolDefinition.setDisplayName(protocolElement.attributeValue(DISPLAY_NAME_ATTR_NAME));
          // set protocol tagName
          protocolDefinition.setTagName(protocolElement.attributeValue(TAG_NAME_ATTR_NAME));
-
+         // set allowedAccountIds
+         if (protocolElement.attributeValue(ALLOWED_ACCOUNT_IDS) != null && !protocolElement.attributeValue(ALLOWED_ACCOUNT_IDS).isEmpty()) {
+            protocolDefinition.setAllowedAccountIds(Arrays.asList(protocolElement.attributeValue(ALLOWED_ACCOUNT_IDS).split("\\s*,\\s*")));            
+         }
          // parse attr element start
          protocolDefinition.getAttrs().addAll(parseAttributs(protocolElement));
          map.put(protocolDefinition.getDisplayName(), protocolDefinition);
