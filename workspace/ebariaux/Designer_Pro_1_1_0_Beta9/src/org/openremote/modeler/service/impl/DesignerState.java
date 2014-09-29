@@ -25,11 +25,14 @@ import java.io.EOFException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.InvalidClassException;
 import java.io.ObjectInputStream;
 import java.io.OptionalDataException;
 import java.io.StreamCorruptedException;
+import java.io.UnsupportedEncodingException;
 import java.text.DecimalFormat;
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -46,18 +49,21 @@ import org.openremote.modeler.cache.LocalFileCache;
 import org.openremote.modeler.client.Configuration;
 import org.openremote.modeler.client.utils.PanelsAndMaxOid;
 import org.openremote.modeler.configuration.PathConfig;
+import org.openremote.modeler.domain.Absolute;
 import org.openremote.modeler.domain.Account;
 import org.openremote.modeler.domain.DeviceCommand;
 import org.openremote.modeler.domain.DeviceCommandRef;
 import org.openremote.modeler.domain.DeviceMacro;
 import org.openremote.modeler.domain.DeviceMacroRef;
+import org.openremote.modeler.domain.GroupRef;
 import org.openremote.modeler.domain.Panel;
+import org.openremote.modeler.domain.Panel.UIComponentOperation;
+import org.openremote.modeler.domain.ScreenPairRef;
 import org.openremote.modeler.domain.Sensor;
 import org.openremote.modeler.domain.Slider;
 import org.openremote.modeler.domain.Switch;
 import org.openremote.modeler.domain.UICommand;
 import org.openremote.modeler.domain.User;
-import org.openremote.modeler.domain.Panel.UIComponentOperation;
 import org.openremote.modeler.domain.component.ColorPicker;
 import org.openremote.modeler.domain.component.Gesture;
 import org.openremote.modeler.domain.component.SensorLinkOwner;
@@ -82,6 +88,9 @@ import org.openremote.modeler.service.SwitchService;
 import org.openremote.modeler.shared.dto.DeviceCommandDTO;
 import org.openremote.modeler.shared.dto.MacroDTO;
 import org.openremote.modeler.shared.dto.UICommandDTO;
+
+import com.thoughtworks.xstream.XStream;
+import com.thoughtworks.xstream.io.xml.StaxDriver;
 
 
 /**
@@ -286,7 +295,6 @@ class DesignerState
     }
   }
 
-
   protected static String uglyImageSourcePathHack(User user, String str)
   {
     // TODO :
@@ -376,11 +384,14 @@ class DesignerState
 
 
   /**
-   * Restores designer UI state to match the data found from Beehive. <p>
+   * Restores designer UI state to match the data found from the local cache or Beehive (if update is requested). <p>
    *
    * Note the various problems with this current implementation described in this class'
    * documentation.  <p>
    *
+   * @param updateLocalCache indicates local cache should be updated from Beehive before restore
+   * @param refreshDTOReferences indicates if DTOs linked to from UI elements should be refreshed from database.
+   *          This only applies if restoring the configuration from the new XML format.
    *
    * @throws NetworkException
    *            If any errors occur with the network connection when updating the cache
@@ -390,7 +401,7 @@ class DesignerState
    *            provides a {@link NetworkException.Severity severity level} which can be used
    *            to indicate the likelyhood that the network error can be recovered from.
    */
-  protected void restore() throws NetworkException
+  protected void restore(boolean updateLocalCache, boolean refreshDTOReferences) throws NetworkException
   {
 
     // collect some performance stats...
@@ -412,11 +423,13 @@ class DesignerState
 
 
       // synchronize user data from Beehive server...
-      cache.update();
+      if (updateLocalCache) {
+    	  cache.update();
+      }
 
       boolean hasLegacyDesignerUIState = cache.hasLegacyDesignerUIState();
       boolean hasCachedState = cache.hasState();
-      boolean hasXMLUIState = hasXMLUIState();
+      boolean hasXMLUIState = cache.hasXMLUIState();
 
 
       // If we can't find any serialization binary (panels.obj), XML serialization file and
@@ -438,11 +451,39 @@ class DesignerState
         return;
       }
 
-      // Migrate conservately and make as little waves as possible... therefore attempt
-      // to restore from the legacy binary serialization format first (even if better
-      // options are available). This restore order can be modified once we are more
-      // confident in the implementation.
+      // Restore XML state first, as this is now the format used for saving
+      if (hasXMLUIState)
+      {
+        
+        restoreXMLUIState(cache.getXMLUIFile());
+                
+        restoreLog.info("Restored UI state from XML : {0}", this);
 
+        // TODO, should we delete legacy file if it exists ?
+        // Otherwise we'll just have outdated legacy files laying around
+
+        if (refreshDTOReferences) {
+          try {
+            // The UI state does store full definition (e.g. including names) of the modeler elements it references         
+            // The current UI does not properly update those linked DTOs, it only updates properly the database.
+            // See MODELER-322
+            // Calling this here ensures the DTOs are recreated from the DB objects when loading a configuration.
+            refreshLinkedDTOReferences(panels);
+          } catch (Throwable t) {
+            // This exception type and message will propagate to the user...
+  
+            throw new UIRestoreException(
+                "Restoring your account data has failed. Please contact an administrator for " +
+                "assistance. Avoid making further changes to your account and design to prevent " +
+                "any potential data corruption issues: " + t.getMessage(), t
+            );
+          }
+        }
+
+        return;
+      }
+
+      
       if (hasLegacyDesignerUIState)
       {
         try
@@ -501,12 +542,6 @@ class DesignerState
           );
         }
       }
-
-      if (hasXMLUIState)
-      {
-        // TODO
-      }
-
 
       // TODO :
       //
@@ -712,7 +747,111 @@ class DesignerState
 
     });
   }
+  
+  /**
+   * Walks through all the UI elements of the given panels and refresh the DTOs of the building modeler objects linked to them.
+   * The refresh is done by looking up, by id, the corresponding entity objects in the database,
+   * recreating the DTOs and using those new DTOs in the UI elements.
+   *
+   * @param panels
+   */
+  private void refreshLinkedDTOReferences(Collection<Panel> panels) {
+    Panel.walkAllUIComponents(panels, new UIComponentOperation() {
 
+      @Override
+      public void execute(UIComponent component) {
+        if (component instanceof SensorOwner) {
+          SensorOwner owner = (SensorOwner) component;
+          if (owner.getSensorDTO() != null && owner.getSensorDTO().getOid() != null) {
+            Sensor sensor = sensorService.loadById(owner.getSensorDTO().getOid());
+
+            if (sensor != null) {
+              owner.setSensorDTO(SensorController.createSensorWithInfoDTO(sensor));
+            }
+
+            if (owner instanceof SensorLinkOwner) {
+              ((SensorLinkOwner) owner).getSensorLink().setSensorDTO(owner.getSensorDTO());
+            }
+          }
+        }
+        if (component instanceof UISlider) {
+          UISlider uiSlider = (UISlider)component;
+          if (uiSlider.getSliderDTO() != null && uiSlider.getSliderDTO().getOid() != null) {
+            // We must load slider because referenced sensor / command are not serialized, this reloads from DB
+            Slider slider = sliderService.loadById(uiSlider.getSliderDTO().getOid());
+            if (slider != null) { // Just in case we have a dangling pointer
+              uiSlider.setSliderDTO(SliderController.createSliderWithInfoDTO(slider));
+            }
+          }
+        }
+        if (component instanceof UISwitch) {
+          UISwitch uiSwitch = (UISwitch)component;
+          if (uiSwitch.getSwitchDTO() != null && uiSwitch.getSwitchDTO().getOid() != null) {
+            Switch switchBean = switchService.loadById(uiSwitch.getSwitchDTO().getOid());
+            if (switchBean != null) { // Just in case we have a dangling pointer
+              uiSwitch.setSwitchDTO(SwitchController.createSwitchWithInfoDTO(switchBean));
+            }
+          }
+        }
+        if (component instanceof UIButton) {
+          UIButton uiButton = (UIButton)component;
+          if (uiButton.getUiCommandDTO() != null && uiButton.getUiCommandDTO().getOid() != null) {
+            uiButton.setUiCommandDTO(createUiCommandDTO(uiButton.getUiCommandDTO()));
+          }
+        }
+        if (component instanceof ColorPicker) {
+          ColorPicker colorPicker = (ColorPicker)component;
+          if (colorPicker.getUiCommandDTO() != null && colorPicker.getUiCommandDTO().getOid() != null) {
+            colorPicker.setUiCommandDTO(createUiCommandDTO(colorPicker.getUiCommandDTO()));
+          }
+        }
+        if (component instanceof Gesture) {
+          Gesture gesture = (Gesture)component;
+          if (gesture.getUiCommandDTO() != null && gesture.getUiCommandDTO().getOid() != null) {
+            gesture.setUiCommandDTO(createUiCommandDTO(gesture.getUiCommandDTO()));
+          }
+        }
+      }
+
+      private UICommandDTO createUiCommandDTO(UICommandDTO uiCommandDTO)
+      {
+        if (uiCommandDTO instanceof DeviceCommandDTO)
+        {
+          try
+          {
+            DeviceCommand dc = deviceCommandService.loadById(uiCommandDTO.getOid());
+            return (dc != null)?new DeviceCommandDTO(dc.getOid(), dc.getDisplayName(), dc.getFullyQualifiedName(), dc.getProtocol().getType()):null;
+          }
+          catch (ObjectNotFoundException e)
+          {
+            restoreLog.warn("Button is referencing inexistent command with id " + uiCommandDTO.getOid(), e);
+            return null;
+          }
+        }
+
+        else if (uiCommandDTO instanceof MacroDTO)
+        {
+          try
+          {
+            DeviceMacro dm = deviceMacroService.loadById(uiCommandDTO.getOid());
+
+            return (dm != null) ? new MacroDTO(dm.getOid(), dm.getDisplayName()) : null;
+
+          }
+
+          catch (ObjectNotFoundException e)
+          {
+            restoreLog.warn("Button is referencing inexistent macro with id " + uiCommandDTO.getOid(), e);
+            return null;
+          }
+        }
+
+        throw new RuntimeException("We don't expect any other type of UICommandDTO"); // TODO : review that exception type
+      }
+
+    });
+  }
+  
   /**
    * Saves the account artifacts from the current in-memory domain model to Beehive server.
    *
@@ -925,6 +1064,37 @@ class DesignerState
             "Failed to close input stream to " + legacyPanelsObjFile.getAbsolutePath() +
             " : " + e.getMessage(), e
         );
+      }
+    }
+  }
+  
+  private void restoreXMLUIState(File xmlUIFile) throws RestoreFailureException
+  {
+    XStream xstream = new XStream(new StaxDriver());
+    xstream.alias("panel", Panel.class);
+    xstream.alias("group", GroupRef.class);
+    xstream.alias("screenPair", ScreenPairRef.class);
+    xstream.alias("absolute", Absolute.class);
+    InputStreamReader isr = null;
+    try {
+      // Going through a StreamReader to enforce UTF-8 encoding
+      isr = new InputStreamReader(new FileInputStream(xmlUIFile), "UTF-8");
+      PanelsAndMaxOid panelsAndMaxOid = (PanelsAndMaxOid)xstream.fromXML(isr);
+      panels = panelsAndMaxOid.getPanels();
+      maxOID = panelsAndMaxOid.getMaxOid();
+    } catch (UnsupportedEncodingException e) {
+      throw new RestoreFailureException("Issue reading file " + xmlUIFile.getAbsoluteFile() + " in UTF-8 : " + e.getMessage(), e);
+    } catch (FileNotFoundException e) {
+      throw new RestoreFailureException("Previously checked " + xmlUIFile.getAbsoluteFile() +
+          " can no longer be found, or was not a proper file : " + e.getMessage(), e
+      );
+    } finally {
+      if (isr != null) {
+        try {
+          isr.close();
+        } catch (IOException e) {
+          restoreLog.warn("Failed to close reader to " + xmlUIFile.getAbsolutePath() + " : " + e.getMessage(), e);
+        }
       }
     }
   }

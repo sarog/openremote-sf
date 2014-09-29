@@ -26,9 +26,11 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectOutputStream;
+import java.io.OutputStreamWriter;
 import java.io.StringWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -60,6 +62,7 @@ import org.openremote.modeler.beehive.BeehiveService;
 import org.openremote.modeler.beehive.BeehiveServiceException;
 import org.openremote.modeler.client.Configuration;
 import org.openremote.modeler.client.model.Command;
+import org.openremote.modeler.client.utils.PanelsAndMaxOid;
 import org.openremote.modeler.configuration.PathConfig;
 import org.openremote.modeler.domain.Absolute;
 import org.openremote.modeler.domain.Account;
@@ -75,9 +78,11 @@ import org.openremote.modeler.domain.DeviceMacro;
 import org.openremote.modeler.domain.DeviceMacroItem;
 import org.openremote.modeler.domain.DeviceMacroRef;
 import org.openremote.modeler.domain.Group;
+import org.openremote.modeler.domain.GroupRef;
 import org.openremote.modeler.domain.Panel;
 import org.openremote.modeler.domain.ProtocolAttr;
 import org.openremote.modeler.domain.Screen;
+import org.openremote.modeler.domain.ScreenPairRef;
 import org.openremote.modeler.domain.Sensor;
 import org.openremote.modeler.domain.Slider;
 import org.openremote.modeler.domain.Switch;
@@ -110,12 +115,16 @@ import org.openremote.modeler.service.SwitchService;
 import org.openremote.modeler.shared.dto.DeviceCommandDTO;
 import org.openremote.modeler.shared.dto.MacroDTO;
 import org.openremote.modeler.shared.dto.UICommandDTO;
+import org.openremote.modeler.service.DeviceService;
 import org.openremote.modeler.utils.FileUtilsExt;
 import org.openremote.modeler.utils.ProtocolCommandContainer;
 import org.openremote.modeler.utils.UIComponentBox;
 import org.openremote.modeler.utils.XmlParser;
 import org.openremote.modeler.utils.dtoconverter.SwitchDTOConverter;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.thoughtworks.xstream.XStream;
+import com.thoughtworks.xstream.io.xml.StaxDriver;
 
 /**
  * Resource cache based on local file system access. This class provides an API for handling
@@ -217,7 +226,8 @@ public class LocalFileCache implements ResourceCache<File>
   private SwitchService switchService;
   private SensorService sensorService;
   private SliderService sliderService;
-
+  private DeviceService deviceService;
+  
   // Dependencies introduced as part of MODELER-287
   private DeviceMacroService deviceMacroService;
   private DeviceCommandService deviceCommandService;
@@ -459,6 +469,85 @@ public class LocalFileCache implements ResourceCache<File>
   public void replace(Set<Panel> panels, long maxOid) {
     initResources(panels, maxOid);
   }
+  
+  /**
+   * Replaces the local cached Beehive archive with the provided file. If there are
+   * existing previous cached copies of the Beehive archive on the local system, those are backed
+   * up first. After the Beehive archive has been downloaded, it is extracted in the given
+   * account's cache folder.
+   * 
+   * @param configurationArchive File the configuration file to use as the local cached copy of Beehive archive
+   *
+   * @throws NetworkException
+   *            If any errors occur with the network connection to Beehive server -- the basic
+   *            assumption here is that network exceptions are recoverable (within a certain
+   *            time period) and the method call can optionally be re-attempted at later time.
+   *            Do note that the exception class provides a severity level which can be used
+   *            to indicate the likelihood that the network error can be recovered from.
+   *
+   * @throws ConfigurationException
+   *            If any of the cache operations cannot be performed due to security restrictions
+   *            on the local file system.
+   *
+   * @throws CacheOperationException
+   *            If any runtime I/O errors occur during the sync.
+   */
+  public void replace(File configurationArchive) throws NetworkException, ConfigurationException, CacheOperationException
+  {
+	  // TODO - EBR: should do some basic validation on provided file: zip file, contains OR file, ...
+	  
+	  
+    // Backup existing cached archives.
+    //
+    // TODO: MODELER-285
+    //
+    //   - We are over-cautious with cached copies here (which should be throw-away copies under
+    //     normal circumstances) because of the issues with state synchronization between
+    //     Designer and Beehive that currently exists -- these issues are commented on the
+    //     DesignerState class in more detail. Once the implementations have been reviewed on
+    //     both sides, the backup functionality can be made less aggressive (sparser) or disabled
+    //     altogeher.
+
+    try
+    {
+      backup();
+    }
+
+    // Handle errors from local cache operations (File I/O) explicitly here, and do not propagate
+    // them higher up in the call stack. Errors in backups do not prevent normal operation but
+    // does mean we've lost the usual recovery mechanisms so admins should be notified and act
+    // to correct the problem as soon as possible.
+
+    catch (CacheOperationException e)
+    {
+      haltAccountBackups.add(account.getOid());
+
+      admin.alert("Local cache operation error : {0}", e, e.getMessage());
+    }
+
+
+    cacheLog.info("Replacing account cache for {0}.", printUserAccountLog(currentUser));
+
+
+    // We want to be sure we don't have any leftovers in the cache
+    // Delete cache folder if it exists
+    if (hasCacheFolder()) {
+      removeCacheFolder();      
+    }
+    
+    createCacheFolder();      
+
+    configurationArchive.renameTo(getCachedArchive());
+
+    // If we made through all the error checking, we're ready to go. Unzip the archive and finish.
+
+    extract(getCachedArchive(), cacheFolder);
+
+    cacheLog.info(
+        "Extracted ''{0}'' to ''{1}''.",
+        getCachedArchive().getAbsolutePath(), cacheFolder.getAbsolutePath()
+    );
+  }
 
   /**
    * Indicates if we've found any resource artifacts in the cache that would imply an existing,
@@ -565,7 +654,10 @@ public class LocalFileCache implements ResourceCache<File>
    *   <li>panel.xml</li>
    *   <li>controller.xml</li>
    *   <li>panels.obj</li>
+   *   <li>ui_state.xml</li>
+   *   <li>building_modeler.xml</li> // EBR this is not yet part of this branch
    *   <li>lircd.conf</li>
+   *   <li>rules</li>
    *   <li>image resources</li>
    * </ul>
    *
@@ -582,25 +674,24 @@ public class LocalFileCache implements ResourceCache<File>
   public File createExportArchive() throws CacheOperationException, ConfigurationException
   {
 
-    // File paths to add to export/upload archive...
-    //   - panel.xml
-    //   - controller.xml
-    //   - panels.obj
-    //   - lircd.conf
-    //   - image resources
-    //   - rules
-
     File panelXMLFile = new File("panel.xml");
     File controllerXMLFile = new File("controller.xml");
     File panelsObjFile = new File("panels.obj");
     File lircdFile = new File("lircd.conf");
     File rulesFile = new File("rules", "modeler_rules.drl");
 
+    File uiXMLFile = new File("ui_state.xml");
+    File buildingXMLFile = new File("building_modeler.xml");
 
     // Collect all the files going into the archive...
 
     Set<File> exportFiles = new HashSet<File>();
     exportFiles.addAll(this.imageFiles);
+    
+    exportFiles.add(uiXMLFile);
+    exportFiles.add(buildingXMLFile);
+    
+    
     exportFiles.add(panelXMLFile);
     exportFiles.add(controllerXMLFile);
 
@@ -763,7 +854,42 @@ public class LocalFileCache implements ResourceCache<File>
       createBackupFolder();
     }
   }
+  
+  /**
+   * Removes the local filesystem directory structure to store a cached
+   * Beehive archive associated with a given account. <p>
+   *
+   * @see #createCacheFolder
+   * @see #hasCacheFolder
+   *
+   * @throws ConfigurationException
+   *            if the deletion of the directories fail for any reason
+   */
+  private void removeCacheFolder() throws ConfigurationException
+  {
+    try
+    {
+      FileUtils.deleteDirectory(cacheFolder);
+      cacheLog.info(
+          "Deleted account {0} cache folder (Users: {1}).", account.getOid(), account.getUsers()
+      );
+    }
 
+    catch (SecurityException e)
+    {
+      throw new ConfigurationException(
+          "Security manager has denied read/write access to local user cache in ''{0}'' : {1}",
+          e, cacheFolder.getAbsolutePath(), e.getMessage()
+      );
+    }
+    
+    catch (IOException e)
+    {
+    	throw new ConfigurationException(
+            "Unable to delete cache directory for ''{0}''.", cacheFolder.getAbsolutePath()
+        );
+    }	
+  }
 
   /**
    * Checks for the existence of local cache folder this cache implementation uses for its
@@ -1716,6 +1842,22 @@ public class LocalFileCache implements ResourceCache<File>
   }
   
   /**
+   * @return File for storing UI elements state in XML format.
+   */
+  public File getXMLUIFile() {
+    PathConfig pathConfig = PathConfig.getInstance(configuration);
+    return new File(pathConfig.userFolder(account) + "ui_state.xml");
+  }
+  
+  /**
+   * @return File for storing building configuration elements in XML format.
+   */
+  public File getBuildingModelerXmlFile() {
+    PathConfig pathConfig = PathConfig.getInstance(configuration);
+    return new File(pathConfig.userFolder(account) + "building_modeler.xml");
+  }
+
+  /**
    * @return File for panel XML description (panel.xml)
    */
   public File getPanelXmlFile() {
@@ -1741,9 +1883,6 @@ public class LocalFileCache implements ResourceCache<File>
   
   /**
    * Detects the presence of legacy binary panels.obj designer UI state serialization file.
-   *
-   * @param pathConfig      Designer path configuration
-   * @param panelsObjFile   file path to the legacy binary panels.objs UI state serialization file
    *
    * @return      true if the panels.obj file is present in local beehive archive cache folder,
    *              false otherwise
@@ -1773,39 +1912,66 @@ public class LocalFileCache implements ResourceCache<File>
   }
   
   /**
-   * Persists the given UI information in legacy binary panels.obj format.
-   * 
-   * @param panels
-   * @param maxOid
+   * Detects the presence of XML designer UI state serialization file.
+   *
+   * @return      true if the ui_state.xml file is present in local beehive archive cache folder,
+   *              false otherwise
+   *
+   * @throws ConfigurationException
+   *              if read access to the file system is denied for any reason
    */
-  public void serializePanelsAndMaxOid(Collection<Panel> panels, long maxOid) {
-     File panelsObjFile = getLegacyPanelObjFile();
-     ObjectOutputStream oos = null;
-     try {
-        FileUtilsExt.deleteQuietly(panelsObjFile);
-        if (panels == null || panels.size() < 1) {
-           return;
+  public boolean hasXMLUIState() throws ConfigurationException
+  {
+    File xmlUIStateFile = getXMLUIFile();
+    try
+    {
+      return xmlUIStateFile.exists();
+    }
+
+    catch (SecurityException e)
+    {
+      PathConfig pathConfig = PathConfig.getInstance(configuration);
+      // convert the potential security exception to a checked exception...
+
+      throw new ConfigurationException(
+          "Security manager denied access to " + xmlUIStateFile.getAbsoluteFile() +
+          ". File read/write access must be enabled to " + pathConfig.tempFolder() + ".", e
+      );
+    }
+  }
+  
+  private void persistUIState(Collection<Panel> panels, long maxOid) {
+    File xmlUIFile = getXMLUIFile();
+    
+    XStream xstream = new XStream(new StaxDriver());
+    xstream.alias("panel", Panel.class);
+    xstream.alias("group", GroupRef.class);
+    xstream.alias("screenPair", ScreenPairRef.class);
+    xstream.alias("absolute", Absolute.class);
+    
+    OutputStreamWriter osw = null;
+    try {
+      // Going through a StreamWriter to enforce UTF-8 encoding
+      osw = new OutputStreamWriter(new FileOutputStream(xmlUIFile), "UTF-8");
+      xstream.toXML(new PanelsAndMaxOid(panels, maxOid), osw);
+    } catch (IOException e) {
+      throw new FileOperationException("Failed to write UI state to file " + xmlUIFile.getAbsolutePath() + " : " + e.getMessage(), e);
+    } finally {
+      try {
+        if (osw != null) {
+          osw.close();
         }
-        oos = new ObjectOutputStream(new FileOutputStream(panelsObjFile));
-        oos.writeObject(panels);
-        oos.writeLong(maxOid);
-     } catch (FileNotFoundException e) {
-        cacheLog.error(e.getMessage(), e);
-     } catch (IOException e) {
-    	 cacheLog.error(e.getMessage(), e);
-     } finally {
-        try {
-           if (oos != null) {
-              oos.close();
-           }
-        } catch (IOException e) {
-        	cacheLog.warn("Unable to close output stream to '" + panelsObjFile + "'.");
-        }
-     }
+      } catch (IOException e) {
+        cacheLog.warn("Unable to close writer to '" + xmlUIFile + "'.");
+      }
+    }
   }
   
   @Transactional
   private void initResources(Collection<Panel> panels, long maxOid) {
+    // EBR - 20130213 - Left this old comment dating when persistence was done to 
+    // Java serialization format.
+    // 
     // 1, we must serialize panels at first, otherwise after integrating panel's
     // ui component and commands(such as
     // device command, sensor ...)
@@ -1815,7 +1981,9 @@ public class LocalFileCache implements ResourceCache<File>
     // sensors will have different oid, if so, when we export controller.xml we
     // my find that there are two (or more
     // sensors) with all the same property except oid.
-    serializePanelsAndMaxOid(panels, maxOid);
+    
+    
+    persistUIState(panels, maxOid);
 
     Set<Group> groups = new LinkedHashSet<Group>();
     Set<Screen> screens = new LinkedHashSet<Screen>();
@@ -1884,7 +2052,31 @@ public class LocalFileCache implements ResourceCache<File>
      * validate and output controller.xml
      */
     try {
-      FileUtilsExt.deleteQuietly(panelXMLFile);
+        Map<String, Object> map = new HashMap<String, Object>();
+        map.put("devices", deviceService.loadAllDeviceDetailsWithChildrenDTOs(account));
+        map.put("macros", deviceMacroService.loadAllMacroDetailsDTOs(account));
+        map.put("configuration", controllerConfigService.listAllConfigDTOs());
+        
+        XStream xstream = new XStream(new StaxDriver());
+        
+        OutputStreamWriter osw = null;
+        try {
+          // Going through a StreamWriter to enforce UTF-8 encoding
+          osw = new OutputStreamWriter(new FileOutputStream(getBuildingModelerXmlFile()), "UTF-8");
+          xstream.toXML(map, osw);
+        } catch (IOException e) {
+          throw new FileOperationException("Failed to write building modeler state to file " + getBuildingModelerXmlFile().getAbsolutePath() + " : " + e.getMessage(), e);
+        } finally {
+          try {
+            if (osw != null) {
+              osw.close();
+            }
+          } catch (IOException e) {
+            cacheLog.warn("Unable to close writer to '" + getBuildingModelerXmlFile() + "'.");
+          }
+        }
+
+        FileUtilsExt.deleteQuietly(panelXMLFile);
       FileUtilsExt.deleteQuietly(controllerXMLFile);
       FileUtilsExt.deleteQuietly(lircdFile);
       FileUtilsExt.deleteQuietly(rulesFile);
@@ -2452,6 +2644,10 @@ public class LocalFileCache implements ResourceCache<File>
    velocity.mergeTemplate(templateLocation, "UTF8", velocityContext, result);
    return result.toString();
  }
+ 
+  public void setDeviceService(DeviceService deviceService) {
+	this.deviceService = deviceService;
+  }
 
   public void setSwitchService(SwitchService switchService) {
     this.switchService = switchService;

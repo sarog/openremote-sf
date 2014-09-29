@@ -21,6 +21,7 @@
 package org.openremote.modeler.shared.dto;
 
 import java.io.Serializable;
+import java.util.Map;
 
 /**
  * Used so that one DTO can reference another one (e.g. sensor referencing its command).
@@ -72,4 +73,23 @@ public class DTOReference implements Serializable {
     this.id = id;
   }
   
+  /**
+   * Given that the receiver stores an id, looks up the corresponding DTO and links to it (instead of id).
+   * The DTO is looked-up in the provided map, which has ids as key and DTOs as values.
+   * 
+   *  If the receiver does not store an id, this method does nothing.
+   *  If a mapped DTO is found, the receiver will reference it and have the id set to null.
+   * 
+   * @param lookupMap Map key is id, value is DTO
+   */
+  public void resolveIdToDTO(Map<Long, ? extends DTO> lookupMap) {
+    if (id != null) {
+      DTO lookedUpDTO = lookupMap.get(id);
+      if (lookedUpDTO != null) {
+        setDto(lookedUpDTO);
+        setId(null);
+      }
+    }
+  }
+
 }
