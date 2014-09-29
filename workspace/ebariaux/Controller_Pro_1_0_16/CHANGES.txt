@@ -6,10 +6,16 @@ New Features:
   - Manage User Credentials in Controller. (Juha Lindfors, ORCJAVA-422)
   - Convert Beehive remote proxy service to blocking I/O (Marcus Redeker, ORCJAVA-411)
 
+Bug Fixes:
+
+  - Fix broken changes introduced to test suite in 
+    mredeker/Controller_2_0_1_Beehive_Proxy branch, as 
+    part of ORCJAVA-424  (Juha Lindfors, ORCJAVA-425)
+
 Controller Pro 1.0.14
 =====================
 
-	Bug Fixes:
+Bug Fixes:
 
   - Fixed: Shell Execution Protocol does not destroy the spawned process (ORCJAVA-420)
   - Fixed: RRD4J URL Protocol generates incorrect URLs (ORCJAVA-441)
