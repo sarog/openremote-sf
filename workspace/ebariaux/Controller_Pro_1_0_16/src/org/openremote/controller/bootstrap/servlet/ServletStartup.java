@@ -107,6 +107,11 @@ public class ServletStartup implements ServletContextListener
       // The default service context in a servlet runtime is based on Spring library.
 
       initializeServiceContext(event.getServletContext());
+
+
+      // Install BouncyCastle as the primary security provider for this JVM...
+
+      Startup.installBouncyCastleSecurityProvider();
     }
 
     catch (Throwable t)
