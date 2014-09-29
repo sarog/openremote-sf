@@ -4,6 +4,7 @@ Controller Pro 1.0.16
 New Features:
 
   - Manage User Credentials in Controller. (Juha Lindfors, ORCJAVA-422)
+  - Convert Beehive remote proxy service to blocking I/O (Marcus Redeker, ORCJAVA-411)
 
 Controller Pro 1.0.14
 =====================
