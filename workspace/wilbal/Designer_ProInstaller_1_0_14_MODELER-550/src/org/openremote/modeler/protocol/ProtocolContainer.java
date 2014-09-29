@@ -26,6 +26,10 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Logger;
+
+import org.springframework.security.Authentication;
+import org.springframework.security.context.SecurityContextHolder;
 
 /**
  * The Class is used for containing <b>ProtocolDefinition</b> of different protocol types.</br>
@@ -46,15 +50,20 @@ public class ProtocolContainer implements Serializable {
    private static ArrayList<ProtocolDefinition> protocolsList;
 
    public synchronized ArrayList<ProtocolDefinition> getProtocolsSortedByDisplayName() {
-     if (ProtocolContainer.protocolsList == null) {       
-       ProtocolContainer.protocolsList =  new ArrayList<ProtocolDefinition>(ProtocolContainer.getInstance().getProtocols().values());
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String name = auth.getName();
+        ProtocolContainer.protocolsList = new ArrayList<ProtocolDefinition>();
+        for (ProtocolDefinition protocolDefinition : ProtocolContainer.getInstance().getProtocols().values()) {
+         if (protocolDefinition.getAllowedAccountIds() == null || protocolDefinition.getAllowedAccountIds().contains(name)) {
+            ProtocolContainer.protocolsList.add(protocolDefinition);
+         }
+      }
        Collections.sort(ProtocolContainer.protocolsList, new Comparator<ProtocolDefinition>() {
          @Override
          public int compare(ProtocolDefinition protocol1, ProtocolDefinition protocol2) {
            return protocol1.getDisplayName().compareToIgnoreCase(protocol2.getDisplayName());
          }
        });
-     }
      return ProtocolContainer.protocolsList;
    }
    
