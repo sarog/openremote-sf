@@ -78,22 +78,27 @@ public class SensorLink extends BusinessEntity {
    public void clear() {
       linkerChildren.removeAll(linkerChildren);
    }
+
    /**
-    * Get the XML string 
+    * Generate XML string related to sensor for inclusion in panel.xml file.
+    * This is the <link> tag and any required child <state> element.
+    * 
+    * @return String link tag XML snippet to include in panel.xml
     */
    @JSON(include=false)
    public String getXMLString() {
-      if (sensor != null) {
-         StringBuilder sb = new StringBuilder();
-         sb.append("<link type=\"sensor\" ref=\"" + sensor.getOffsetId() + "\">");
-         for (LinkerChild child : linkerChildren) {
-            sb.append(child.toString());
-         }
-         sb.append("</link>");
-         return sb.toString();
-      } else {
-         return "";
-      }
+     if (sensorDTO == null) {
+       return "";
+     }
+     StringBuffer sb = new StringBuffer();
+     sb.append("<link type=\"sensor\" ref=\"" + sensorDTO.getOffsetId() + "\">");
+     if (sensorDTO.getStateNames() != null) {
+       for (String stateName : sensorDTO.getStateNames()) {
+         sb.append("<state name=\"" + stateName + "\" value=\"" + getStateValueByStateName(stateName) + "\"/>");
+       }
+     }
+     sb.append("</link>");
+     return sb.toString();
    }
    
    /**
