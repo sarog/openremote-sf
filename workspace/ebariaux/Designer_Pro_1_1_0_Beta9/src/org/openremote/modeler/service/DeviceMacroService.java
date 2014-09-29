@@ -26,6 +26,7 @@ import java.util.List;
 import org.openremote.modeler.domain.Account;
 import org.openremote.modeler.domain.DeviceMacro;
 import org.openremote.modeler.domain.DeviceMacroItem;
+import org.openremote.modeler.exception.ConfigurationException;
 import org.openremote.modeler.shared.dto.MacroDTO;
 import org.openremote.modeler.shared.dto.MacroDetailsDTO;
 
@@ -117,5 +118,11 @@ public interface DeviceMacroService {
     MacroDTO saveNewMacro(MacroDetailsDTO macro);
 
     MacroDTO updateMacroWithDTO(MacroDetailsDTO macro);
+
+    /**
+     * 
+     * @param account
+     */
+    void deleteAll(Account account) throws ConfigurationException;
 
 }

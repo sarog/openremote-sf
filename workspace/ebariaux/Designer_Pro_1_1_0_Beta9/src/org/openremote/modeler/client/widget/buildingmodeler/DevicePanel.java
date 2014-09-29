@@ -29,6 +29,8 @@ import org.openremote.modeler.client.event.DeviceUpdatedEvent;
 import org.openremote.modeler.client.event.DeviceUpdatedEventHandler;
 import org.openremote.modeler.client.event.DevicesCreatedEvent;
 import org.openremote.modeler.client.event.DevicesCreatedEventHandler;
+import org.openremote.modeler.client.event.DevicesDeletedEvent;
+import org.openremote.modeler.client.event.DevicesDeletedEventHandler;
 import org.openremote.modeler.client.event.DoubleClickEvent;
 import org.openremote.modeler.client.event.SubmitEvent;
 import org.openremote.modeler.client.gxtextends.SelectionServiceExt;
@@ -166,9 +168,24 @@ public class DevicePanel extends ContentPanel {
      eventBus.addHandler(DevicesCreatedEvent.TYPE, new DevicesCreatedEventHandler() {
       @Override
       public void onDevicesCreated(DevicesCreatedEvent event) {
-        List<BeanModel> bms = DTOHelper.createModels(event.getDevices());
-        tree.getStore().add(bms, true);
+        if (tree.isRendered()) {
+          List<BeanModel> bms = DTOHelper.createModels(event.getDevices());
+          tree.getStore().add(bms, true);
+        }
       } 
+     });
+     eventBus.addHandler(DevicesDeletedEvent.TYPE, new DevicesDeletedEventHandler() {
+       @Override
+       public void onDevicesDeleted(DevicesDeletedEvent event) {
+         List<DeviceDTO> devices = event.getDevices(); 
+         if (devices == null || devices.isEmpty()) {
+           tree.getStore().removeAll();
+         } else {
+           for (DeviceDTO device : devices) {
+             tree.getStore().remove(DTOHelper.getBeanModel(device));
+           }
+         }
+       }
      });
    }
 

@@ -19,9 +19,15 @@
 */
 package org.openremote.modeler.client.widget.uidesigner;
 
-import org.openremote.modeler.client.event.ResponseJSONEvent;
+import java.util.ArrayList;
+
+import org.openremote.modeler.client.event.ImportConfigurationDoneEvent;
 import org.openremote.modeler.client.widget.FormWindow;
 import org.openremote.modeler.selenium.DebugId;
+import org.openremote.modeler.shared.dto.DeviceDTO;
+import org.openremote.modeler.shared.dto.MacroDTO;
+import org.openremote.modeler.shared.dto.MacroItemDTO;
+import org.openremote.modeler.shared.dto.MacroItemType;
 
 import com.extjs.gxt.ui.client.event.ButtonEvent;
 import com.extjs.gxt.ui.client.event.Events;
@@ -35,7 +41,13 @@ import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.form.FileUploadField;
 import com.extjs.gxt.ui.client.widget.form.FormPanel.Encoding;
 import com.extjs.gxt.ui.client.widget.form.FormPanel.Method;
+import com.extjs.gxt.ui.client.widget.form.LabelField;
+import com.extjs.gxt.ui.client.widget.layout.FlowLayout;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.json.client.JSONArray;
+import com.google.gwt.json.client.JSONObject;
+import com.google.gwt.json.client.JSONParser;
+import com.google.gwt.json.client.JSONString;
 
 
 /**
@@ -45,6 +57,8 @@ import com.google.gwt.core.client.GWT;
  */
 public class ImportZipWindow extends FormWindow {
    
+  LabelField errorLabel;
+
    /**
     * Instantiates a new import window.
     */
@@ -61,8 +75,10 @@ public class ImportZipWindow extends FormWindow {
     * @param heading the heading
     */
    private void initial(String heading) {
-      setSize(360, 140);
+      setSize(360, 160);
+      setAutoHeight(true);
       setHeading(heading);
+      setLayout(new FlowLayout());
       createFields();
       createButtons();
       form.setAction(GWT.getModuleBaseURL() + "fileUploadController.htm?method=importFile");
@@ -75,6 +91,11 @@ public class ImportZipWindow extends FormWindow {
     * Creates the fields.
     */
    private void createFields() {
+     
+     errorLabel = new LabelField();
+     errorLabel.setStyleAttribute("color", "red");
+     form.add(errorLabel);
+     
       FileUploadField fileUploadField = new FileUploadField();
       fileUploadField.setName("file");
       fileUploadField.setAllowBlank(false);
@@ -87,9 +108,9 @@ public class ImportZipWindow extends FormWindow {
     * Creates the buttons.
     */
    private void createButtons() {
-      Button importBtn = new Button("import");
+      Button importBtn = new Button("Import");
       importBtn.ensureDebugId(DebugId.IMPORT_WINDOW_UPLOAD_BTN);
-      Button cancelBtn = new Button("cancel");
+      Button cancelBtn = new Button("Cancel");
       cancelBtn.ensureDebugId(DebugId.IMPORT_WINDOW_CANCEL_BTN);
 
       importBtn.addSelectionListener(new SelectionListener<ButtonEvent>() {
@@ -100,11 +121,12 @@ public class ImportZipWindow extends FormWindow {
                box.setButtons(MessageBox.YESNO);
                box.setIcon(MessageBox.QUESTION);
                box.setTitle("Import");
-               box.setMessage("The activities tree will be rebuilt. Are you sure you want to import?");
+               box.setMessage("Your current configuration will be deleted. Are you sure you want to import?");
                box.addCallback(new Listener<MessageBoxEvent>() {
                    public void handleEvent(MessageBoxEvent be) {
                        if (be.getButtonClicked().getItemId().equals(Dialog.YES)) {
                           form.submit();
+                          errorLabel.setText("");
                           mask("Importing, please wait.");
                        }
                    }
@@ -130,9 +152,57 @@ public class ImportZipWindow extends FormWindow {
    private void addListenersToForm() {
       form.addListener(Events.Submit, new Listener<FormEvent>() {
          public void handleEvent(FormEvent be) {
-            fireEvent(ResponseJSONEvent.RESPONSEJSON, new ResponseJSONEvent(be.getResultHtml()));
+           JSONObject jsonResponse = JSONParser.parseStrict(be.getResultHtml()).isObject();
+
+           if (jsonResponse != null) {
+             JSONString jsonErrorMessage = jsonResponse.get("errorMessage").isString();
+             if (jsonErrorMessage == null) {
+               JSONObject jsonResult = jsonResponse.get("result").isObject();
+               if (jsonResult != null) {
+                 ArrayList<DeviceDTO> deviceDTOs = new ArrayList<DeviceDTO>();
+                 JSONArray jsonDeviceDTOs = jsonResult.get("devices").isArray();                 
+                 if (jsonDeviceDTOs != null) {
+                   for (int i = 0; i < jsonDeviceDTOs.size(); i++) {
+                     JSONObject jsonDeviceDTO = jsonDeviceDTOs.get(i).isObject();
+                     DeviceDTO deviceDTO = new DeviceDTO((long)jsonDeviceDTO.get("oid").isNumber().doubleValue(), jsonDeviceDTO.get("displayName").isString().stringValue());
+                     deviceDTOs.add(deviceDTO);
+                   }
+                 }
+  
+                 ArrayList<MacroDTO> macroDTOs = new ArrayList<MacroDTO>();
+                 JSONArray jsonMacroDTOs = jsonResult.get("macros").isArray();
+                 if (jsonMacroDTOs != null) {
+                   for (int i = 0; i < jsonMacroDTOs.size(); i++) {
+                     JSONObject jsonMacroDTO = jsonMacroDTOs.get(i).isObject();
+                     MacroDTO macroDTO = new MacroDTO((long)jsonMacroDTO.get("oid").isNumber().doubleValue(), jsonMacroDTO.get("displayName").isString().stringValue());
+                     JSONArray jsonMacroItemDTOs = jsonMacroDTO.get("items").isArray();
+                     ArrayList<MacroItemDTO> macroItemDTOs = new ArrayList<MacroItemDTO>();
+                     for (int j = 0; j < jsonMacroItemDTOs.size(); j++) {
+                       JSONObject jsonMacroItemDTO = jsonMacroItemDTOs.get(j).isObject();
+                       MacroItemDTO itemDTO = new MacroItemDTO(jsonMacroItemDTO.get("displayName").isString().stringValue(), MacroItemType.valueOf(jsonMacroItemDTO.get("type").isString().stringValue()));
+                       macroItemDTOs.add(itemDTO);
+                     }
+                     macroDTO.setItems(macroItemDTOs);
+                     macroDTOs.add(macroDTO);
+                   }
+                 }
+                fireEvent(ImportConfigurationDoneEvent.IMPORT_CONFIGURATION_DONE, new ImportConfigurationDoneEvent(deviceDTOs, macroDTOs));
+               } else {
+                 displayError("Invalid response received from server");
+               }
+             } else {
+               displayError(jsonErrorMessage.stringValue());
+             }
+           } else {
+             displayError("Invalid response received from server");
+           }
          }
       });
       add(form);
+   }
+   
+   private void displayError(String errorMessage) {
+     errorLabel.setText(errorMessage);
+     unmask();
    }
 }

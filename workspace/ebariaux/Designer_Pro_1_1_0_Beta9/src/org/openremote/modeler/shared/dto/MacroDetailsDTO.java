@@ -1,6 +1,7 @@
 package org.openremote.modeler.shared.dto;
 
 import java.util.ArrayList;
+import java.util.Collection;
 
 public class MacroDetailsDTO implements DTO {
 
@@ -43,6 +44,22 @@ public class MacroDetailsDTO implements DTO {
 
   public void setItems(ArrayList<MacroItemDetailsDTO> items) {
     this.items = items;
+  }
+  
+  /**
+   * Checks if this macro has references another macro, whose id is not in the provided list.
+   * If list is empty, this basically checks that a macro does reference another macro.
+   * 
+   * @param otherMacroIds List of ids of macros that this macro can "safely depend on"
+   * @return boolean true if this macro references a macro that is not in the provided list
+   */
+  public boolean dependsOnMacroNotInList(Collection<Long> otherMacroIds) {
+    for (MacroItemDetailsDTO item : items) {
+      if (item.getType() == MacroItemType.Macro && !otherMacroIds.contains(item.getDto().getId())) {
+        return true;
+      }
+    }
+    return false;
   }
   
 }
