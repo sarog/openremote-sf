@@ -26,6 +26,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.openremote.controller.command.ExecutableCommand;
 import org.openremote.controller.command.StatusCommand;
 import org.openremote.controller.component.EnumSensorType;
+import org.openremote.controller.protocol.virtual.VirtualCommandBuilder.Type;
 import org.openremote.controller.utils.Logger;
 
 /**
@@ -68,7 +69,22 @@ public class VirtualCommand implements ExecutableCommand, StatusCommand
    * The command string for this particular 'command' instance.
    */
   private String command = null;
+  
+  /**
+   * The type for this particular 'command' instance.
+   */
+  private Type type = null;
 
+  /**
+   * The min value for this particular 'command' instance.
+   */
+  private Integer minValue = null;
+  
+  /**
+   * The min value for this particular 'command' instance.
+   */
+  private Integer maxValue = null;
+  
   /**
    * TODO
    */
@@ -79,7 +95,7 @@ public class VirtualCommand implements ExecutableCommand, StatusCommand
   // Constructors ---------------------------------------------------------------------------------
 
   /**
-   * Constructs a new "virtual" device command with a given address and command. <p>
+   * Constructs a new "virtual" device command with given address, command, type, minValue and maxValue . <p>
    *
    * When this command's {@link #send()} method is called, the command name is stored as a
    * virtual device state value for the given device address.
@@ -90,11 +106,23 @@ public class VirtualCommand implements ExecutableCommand, StatusCommand
    * @param command
    *            arbitrary command string that is stored in memory and can be later retrieved
    *            via invoking {@link #read}.
+   * @param type
+   *           type can be Integer or String. If it is Integer, command must be INCREMENT, INCREMENT intValue
+   *           DECREMENT, DECREMENT intValue or SET intValue. IntValue can be a negative value.
+   * 
+   * @param minValue
+   *          the minimum value allowed when using INCREMENT,DECREMENT or SET commands
+   *          
+   * @param maxValue
+   *          the maximum value allowed when using INCREMENT,DECREMENT or SET commands
    */
-  public VirtualCommand(String address, String command)
+  public VirtualCommand(String address, String command, Type type, Integer minValue, Integer maxValue)
   {
     this.address = address;
     this.command = command;
+    this.type = type;
+    this.minValue = minValue;
+    this.maxValue = maxValue;
   }
 
   /**
@@ -110,10 +138,19 @@ public class VirtualCommand implements ExecutableCommand, StatusCommand
    * @param commandParam  command parameter value -- stored as a virtual device state value in
    *                      memory and can be later retrieved using this command's {@link #read}
    *                      method.
+   * @param type
+   *           type can be Integer or String. If it is Integer, command must be INCREMENT, INCREMENT intValue
+   *           DECREMENT, DECREMENT intValue or SET intValue. IntValue can be a negative value.
+   * 
+   * @param minValue
+   *          the minimum value allowed when using INCREMENT,DECREMENT or SET commands
+   *          
+   * @param maxValue
+   *          the maximum value allowed when using INCREMENT,DECREMENT or SET commands
    */
-  public VirtualCommand(String address, String command, String commandParam)
+  public VirtualCommand(String address, String command, String commandParam, Type type, Integer minValue, Integer maxValue)
   {
-    this(address, command);
+    this(address, command, type, minValue, maxValue);
 
     this.commandParam = commandParam;
   }
@@ -135,7 +172,49 @@ public class VirtualCommand implements ExecutableCommand, StatusCommand
   {
     if (commandParam == null)
     {
-      virtualDevices.put(address, command);
+      if ((command.contains("INCREMENT") || command.contains("DECREMENT") || command.contains("SET")))
+      {
+         Integer currentStoredValue = 0;
+         if (virtualDevices.get(address)!=null)
+         {
+            currentStoredValue = Integer.parseInt(virtualDevices.get(address));            
+         }
+         if (currentStoredValue==null) {
+            currentStoredValue = 0;
+         }
+         
+         Integer value = null;
+         String cleanedCommand = command.replaceAll("[^0-9-]", "");
+         if (cleanedCommand!=null && cleanedCommand.length()>0) {
+            value = Integer.parseInt(command.replaceAll("[^0-9-]", ""));
+         }
+         if (command.contains("SET"))
+         {
+            if (value != null && (minValue == null || (minValue != null && value>=minValue)) && (maxValue == null || (maxValue != null && value<=maxValue))) {
+               virtualDevices.put(address, String.valueOf(value));
+            } else
+            {
+               log.warn(
+                     "Changes were not saved : Value ''{0}'' is null or is out of permitted range ({1} to {2}).", value, minValue, maxValue 
+                 );
+            }
+         } else {
+           value = (value==null)?1:value;
+           if (command.contains("INCREMENT"))
+           {
+              currentStoredValue += value;
+              validateNewValue(currentStoredValue);
+           }
+           else
+           {
+              currentStoredValue -= value;
+              validateNewValue(currentStoredValue);
+           }
+
+         }
+      } else {
+         virtualDevices.put(address, command);        
+      }
     }
 
     else
@@ -144,11 +223,25 @@ public class VirtualCommand implements ExecutableCommand, StatusCommand
     }
   }
 
+  
+  private void validateNewValue(Integer currentStoredValue) {
+     if (minValue == null && maxValue == null)
+     {
+        virtualDevices.put(address, String.valueOf(currentStoredValue));                 
+     } else if ((minValue != null && currentStoredValue>=minValue) && (maxValue != null && currentStoredValue<=maxValue)) {
+        virtualDevices.put(address, String.valueOf(currentStoredValue));
+     } else
+     {
+        log.warn(
+              "Changes were not saved :  new value ''{0}'' is null or is out of permitted range ({1} to {2}).", currentStoredValue, minValue, maxValue 
+              );
+     }
+  }
 
 
   // Implements StatusCommand ---------------------------------------------------------------------
 
-  /**
+/**
    * Allows this command implementation to be used as read commands for sensors. <p>
    *
    * Stored values are looked up using address string as key on read() requests. Device state
