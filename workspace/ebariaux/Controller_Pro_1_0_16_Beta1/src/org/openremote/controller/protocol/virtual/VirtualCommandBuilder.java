@@ -46,6 +46,12 @@ public class VirtualCommandBuilder implements CommandBuilder
 
   // Constants ------------------------------------------------------------------------------------
 
+   public enum Type
+   {
+      String,
+      Integer
+   }
+   
   /**
    * A common log category name intended to be used across all classes related to
    * OpenRemote virtual protocol implementation.
@@ -63,6 +69,15 @@ public class VirtualCommandBuilder implements CommandBuilder
    *   <property name = "address" value = "1"/>
    *   <property name = "command" value = "ON"/>
    * </command>
+   * 
+   * <command protocol="virtual">
+   *   <property name="address" value="address" />
+   *   <property name="minValue" value="0" />
+   *   <property name="command" value="DECREMENT 10" />
+   *   <property name="type" value="Integer" />
+   *   <property name="maxValue" value="100" />
+   * </command>
+   * 
    * }</pre>
    */
   public final static String XML_ADDRESS = "address";
@@ -76,11 +91,28 @@ public class VirtualCommandBuilder implements CommandBuilder
    * <command protocol = "virtual" >
    *   <property name = "address" value = "1"/>
    *   <property name = "command" value = "ON"/>
+   *   <property name = "type" value = "String"/>
    * </command>
+   * 
+   * <command protocol="virtual">
+   *   <property name="address" value="adress" />
+   *   <property name="minValue" value="0" />
+   *   <property name="command" value="DECREMENT 10" />
+   *   <property name="type" value="Integer" />
+   *   <property name="maxValue" value="100" />
+   * </command>
+   * 
    * }</pre>
+   * 
+   * 
    */
   public final static String XML_COMMAND = "command";
 
+  public final static String XML_TYPE = "type";
+  
+  public final static String XML_MIN_VALUE = "minValue";
+  
+  public final static String XML_MAX_VALUE = "maxValue";
 
 
   // Class Members --------------------------------------------------------------------------------
@@ -100,11 +132,20 @@ public class VirtualCommandBuilder implements CommandBuilder
    *
    * The expected XML structure is:
    *
-   * <pre>{@code
+      * <pre>{@code
    * <command protocol = "virtual" >
    *   <property name = "address" value = "1"/>
    *   <property name = "command" value = "ON"/>
    * </command>
+   * 
+   * <command protocol="virtual">
+   *   <property name="address" value="address" />
+   *   <property name="minValue" value="0" />
+   *   <property name="command" value="DECREMENT 10" />
+   *   <property name="type" value="Integer" />
+   *   <property name="maxValue" value="100" />
+   * </command>
+   * 
    * }</pre>
    *
    *
@@ -120,6 +161,9 @@ public class VirtualCommandBuilder implements CommandBuilder
   {
     String address = null;
     String command = null;
+    Type type = null;
+    Integer minValue = null;
+    Integer maxValue = null;
 
     // Properties come in as child elements...
 
@@ -140,6 +184,30 @@ public class VirtualCommandBuilder implements CommandBuilder
       else if (XML_COMMAND.equalsIgnoreCase(propertyName))
       {
         command = propertyValue;
+      }
+      else if (XML_TYPE.equalsIgnoreCase(propertyName))
+      {
+        type = Type.valueOf(propertyValue);
+      }
+      else if (XML_MIN_VALUE.equalsIgnoreCase(propertyName))
+      {
+        try {
+           if (!propertyValue.isEmpty()) {
+              minValue = Integer.parseInt(propertyValue);   
+           }
+        } catch (Exception e) {
+         throw new NoSuchCommandException("Unable to create Virtual command, min value could not be converted in Integer");
+      }
+      }
+      else if (XML_MAX_VALUE.equalsIgnoreCase(propertyName))
+      {
+         try {
+            if (!propertyValue.isEmpty()) {
+               maxValue = Integer.parseInt(propertyValue);            
+            }
+         } catch (Exception e) {
+            throw new NoSuchCommandException("Unable to create Virtual command, max value could not be converted in Integer");
+         }
       }
       else
       {
@@ -165,6 +233,21 @@ public class VirtualCommandBuilder implements CommandBuilder
       throw new NoSuchCommandException(
          "OpenRemote virtual protocol command is missing '" + XML_ADDRESS + "' property"
       );
+    }
+    
+    if (type == null || ("").equals(type))
+    {
+       type = Type.String;
+    }
+    
+    if (type == Type.Integer)
+    {
+       if (!(command.startsWith("INCREMENT") || command.startsWith("DECREMENT") || command.startsWith("SET")))
+       {
+          throw new NoSuchCommandException(
+                "OpenRemote virtual protocol of integer type supports only INCREMENT, DECREMENT and SET commands"
+                );          
+       }
     }
 
     // grab the command parameter coming through the REST interface (for sliders et al)
@@ -202,11 +285,11 @@ public class VirtualCommandBuilder implements CommandBuilder
 
     else if (commandParam == null || commandParam.equals(""))
     {
-      cmd = new VirtualCommand(address, command);
+      cmd = new VirtualCommand(address, command, type, minValue, maxValue);
     }
     else
     {
-      cmd = new VirtualCommand(address, command, commandParam);
+      cmd = new VirtualCommand(address, command, commandParam, type, minValue, maxValue);
     }
 
     // Done!
