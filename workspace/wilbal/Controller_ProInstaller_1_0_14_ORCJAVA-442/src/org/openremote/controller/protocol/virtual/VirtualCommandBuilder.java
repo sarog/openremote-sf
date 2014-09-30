@@ -237,9 +237,7 @@ public class VirtualCommandBuilder implements CommandBuilder
     
     if (type == null || ("").equals(type))
     {
-       throw new NoSuchCommandException(
-             "OpenRemote virtual protocol command is missing '" + XML_TYPE + "' property"
-          );
+       type = Type.String;
     }
     
     if (type == Type.Integer)
