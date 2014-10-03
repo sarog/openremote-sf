@@ -373,9 +373,7 @@ public class HttpXmlControllerService implements ControllerService
     }
     else if (statusCode != HttpURLConnection.HTTP_OK)
     {
-      // TODO throw a better exception
-      throw new Exception("getResource() request to controller failed with HTTP status code " +
-          statusCode);
+        return null;
     }
 
     return response.getEntity().getContent();
