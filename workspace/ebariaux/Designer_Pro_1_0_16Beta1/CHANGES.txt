@@ -3,6 +3,7 @@ Pro 1.0.16
 
 Fixes:
  - Push code from Controller to Service layer (MODELER-443)
+ - Fixed: Panel.xml not correcty generated for widgets with switch sensors (MODELER-552)
 
 Pro 1.0.15
 ==========
