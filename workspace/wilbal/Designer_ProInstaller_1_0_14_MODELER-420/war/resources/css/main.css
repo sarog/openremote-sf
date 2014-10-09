@@ -14,22 +14,16 @@
 .absolute{
 	position: absolute;
 }
+
 .background-color {
    background-color: yellow;
 }
 
-.bordered-widget {
-   margin-top: -1px;
-   margin-left: -1px;   
-}
-
 .button-border {
-   border: 1px solid orange;
-   opacity:0.9;
-   margin-top: -1px;
-   margin-left: -1px;
+   border-color: transparent;
+   box-shadow: 0 0 0 1px orange;
+   outline: none;
 }
-
 
 /* Screen Button */
 .screen-btn {
