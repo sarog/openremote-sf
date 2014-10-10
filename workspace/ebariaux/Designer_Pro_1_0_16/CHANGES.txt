@@ -4,6 +4,7 @@ Pro 1.0.16
 Fixes:
  - Push code from Controller to Service layer (MODELER-443)
  - Fixed: Text centering in a label is not triggered by changes in size or text (MODELER-400)
+ - Fixed: Cannot unset username and/or password of web view widget (MODELER-542)
 
 Pro 1.0.15
 ==========
