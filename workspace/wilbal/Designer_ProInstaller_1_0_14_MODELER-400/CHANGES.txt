@@ -1,3 +1,8 @@
+MODELER-400
+===========
+
+ - Fixed: Text centering in a label is not triggered by changes in size or text
+
 Pro 1.0.14
 ==========
 
