@@ -1,3 +1,8 @@
+MODELER-542
+===========
+
+ - Fixed: Cannot unset username and/or password of web view widget
+
 Pro 1.0.14
 ==========
 
