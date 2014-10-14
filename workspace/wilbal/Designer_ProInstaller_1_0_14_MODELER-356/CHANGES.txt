@@ -1,3 +1,8 @@
+MODELER-356
+===========
+
+ - Fixed : Orange selection indicator around grid not correctly sized
+
 Pro 1.0.14
 ==========
 
