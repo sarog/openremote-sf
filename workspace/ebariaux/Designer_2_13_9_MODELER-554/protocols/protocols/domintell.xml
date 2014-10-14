@@ -32,7 +32,7 @@
 <openremote xmlns="http://www.openremote.org" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.openremote.org protocol.xsd">
 	<protocol displayName="Domintell" tagName="domintell">
-		<attr name="module_type" label="Module Type" options="BIR,DMR,TRP,DIM,D10,TSB,TE1,TE2,LC3,PBL" tooltipMessage="Type of the module to control">
+		<attr name="module_type" label="Module Type" options="BIR,DMR,TRP,DIM,D10,TSB,TE1,TE2,LC3,PBL,IS4,IS8" tooltipMessage="Type of the module to control">
 			<validations>
 				<allowBlank>false</allowBlank>
 			</validations>
@@ -44,7 +44,7 @@
 				<!-- <regex message="Address should be ">(\d\.){3}\d</regex> -->
 			</validations>
 		</attr>
-		<attr name="command" label="Domintell Command" options="ON,OFF,TOGGLE,STATUS,FADE,READ_CURRENT_TEMP,READ_SET_POINT,SET_SET_POINT,READ_MODE,SET_MODE,READ_PRESET_SET_POINT">
+		<attr name="command" label="Domintell Command" options="ON,OFF,TOGGLE,STATUS,FADE,READ_CURRENT_TEMP,READ_SET_POINT,SET_SET_POINT,READ_MODE,SET_MODE,READ_PRESET_SET_POINT,BEGIN_SHORT_PUSH,END_SHORT_PUSH,BEGIN_LONG_PUSH,END_LONG_PUSH">
 			<validations>
 				<allowBlank>false</allowBlank>
 			</validations>
