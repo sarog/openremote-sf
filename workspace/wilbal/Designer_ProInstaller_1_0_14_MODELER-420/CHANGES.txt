@@ -1,3 +1,8 @@
+MODELER-420
+===========
+
+ - Fixed: Widgets shift by 1 pixel when being selected
+
 Pro 1.0.14
 ==========
 
