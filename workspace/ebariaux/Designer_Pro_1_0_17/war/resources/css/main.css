@@ -14,12 +14,15 @@
 .absolute{
 	position: absolute;
 }
+
 .background-color {
    background-color: yellow;
 }
+
 .button-border {
-   border: 1px solid orange;
-   opacity:0.9;
+   border-color: transparent;
+   box-shadow: 0 0 0 1px orange;
+   outline: none;
 }
 
 /* Screen Button */
