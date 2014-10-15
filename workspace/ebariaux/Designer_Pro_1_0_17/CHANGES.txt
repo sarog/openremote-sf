@@ -5,6 +5,9 @@ Fixes:
  - Fixed: Orange selection indicator around grid not correctly sized (MODELER-356)
  - Fixed: Widgets shift by 1 pixel when being selected (MODELER-420)
 
+New features:
+ - Update Domintell protocol to support ISM modules (MODELER-554)
+
 Pro 1.0.16
 ==========
 
