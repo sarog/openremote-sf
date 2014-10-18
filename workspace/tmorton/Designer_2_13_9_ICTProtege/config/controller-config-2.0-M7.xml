@@ -314,7 +314,45 @@ If it's true, controller will auto-detect its groupmembers with multicast.
         </hint>
     </config>
   </category>
-  
+  <category name="ict_protege">
+	<description>
+		<![CDATA[
+			Configuration for the ICT Protege controller.
+		]]>
+	</description>
+		<config name="ict_protege.address" value="192.168.1.2:9003"
+			validation="(((25[0-5]|2[0-4]\d|1?\d?\d)\.){3}(25[0-5]|2[0-4]\d|1?\d?\d):([0-9]{1,4}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5])($|[,; ]))+">
+			<hint>
+   				<![CDATA[
+					IP:Port address of the Protege controller.  For example, 192.168.1.2:9003.
+   				]]>
+   			</hint>
+		</config>
+		<config name="ict_protege.encryption_type" value="AES 256"
+			options="None,AES 128,AES 192,AES 256">
+			<hint>
+   				<![CDATA[
+   					Encryption type that the service is using.  Either None, AES 128, AES 192 or AES 256.
+   				]]>
+   			</hint>
+		</config>
+		<config name="ict_protege.encryption_key" value="">
+			<hint>
+   				<![CDATA[
+   					The encryption key used by the protege service.
+   				]]>
+   			</hint>
+		</config>
+		<config name="ict_protege.monitoring_pin" value=""
+			validation="\d{0,6}">
+			<hint>
+   				<![CDATA[
+   					The PIN number used to receive events and status updates when a user is not logged in.  The user should NOT have any permissions to control system records.  
+					This is optional and if not specified events will only be received when the user is logged into the app.
+   				]]>
+   			</hint>
+		</config>
+	</category>
   <!--
    |
    |  TODO : TEMPORARY

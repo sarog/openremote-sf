@@ -1,329 +1,437 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+/* 
+ * OpenRemote, the Home of the Digital Home.
+ * Copyright 2008-2011, OpenRemote Inc.
+ * 
+ * See the contributors.txt file in the distribution for a
+ * full listing of individual contributors.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.openremote.controller.protocol.ictprotege;
 
 import java.security.InvalidParameterException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import org.openremote.controller.exception.NoSuchCommandException;
+import java.util.concurrent.atomic.AtomicLong;
 import org.openremote.controller.utils.Logger;
 
 /**
- * NOTE THAT ALL MONITORING COMMANDS MUST BE SENT EACH TIME YOU LOGIN
- * 
- * @author Tomas
+ * Class that builds a network packet to be sent to the Protege
+ * Controller.
+ *
+ * @author Tomas Morton
  */
-public class ProtegePacket {
-     
-    private static Logger log = ProtegeSystemConstants.log;
+public class ProtegePacket implements Comparable<ProtegePacket>
+{
+
+    private static final Logger log = ProtegeUtils.log;
+    private static final AtomicLong sequence = new AtomicLong(0);
     
-    public static final byte HEADER_LOW = 0x49;
-    public static final byte HEADER_HIGH = 0x43;
-    
+    //Constructor variables
+    private final Map<String, String> paramMap;
+    private final ProtegeRecordType recordType;
+    private final ProtegeCommandType commandType;
+    private final EncryptionType encryptionType;
+    private final ChecksumType checksumType;
+
     private byte[] packet;
-    private Map<String, String> paramMap;
-    private ProtegeRecordType recordType;
-    private ProtegeCommandType commandType;
-    private int encryptionType;
-    private int checksumType;
-    
-    public ProtegePacket(Map<String, String> paramMap, int encryptionType, int checksumType)
+    private long sequenceNumber;
+
+    public ProtegePacket(Map<String, String> paramMap, EncryptionType encryptionType, ChecksumType checksumType)
     {
-        this.paramMap = paramMap;   
+        this.paramMap = paramMap;
         this.encryptionType = encryptionType;
         this.checksumType = checksumType;
-        this.recordType = ProtegeRecordType.valueOf(paramMap.get(ProtegeCommandBuilder.PROTEGE_XMLPROPERTY_RECORD_TYPE));
         this.commandType = ProtegeCommandType.valueOf(paramMap.get(ProtegeCommandBuilder.PROTEGE_XMLPROPERTY_RECORD_COMMAND));
-        setupCommandPacket();        
+        this.recordType = commandType.getRecordType();
+        
+        if (commandType.getPriority() != ProtegeCommandType.PRIORITY_CONTROLLER_CONFIG)
+        {
+            setupCommandPacket();
+        }
+        this.sequenceNumber = sequence.getAndIncrement();
     }
-    
+
     /**
      * Initialises as a Command Packet
-     * TODO clean up all the variables and add directly into the list.
-     * Example: 0x49, 0x43, 0x09, 0x00,  0x00   , 0x00       , 0x00   , 0x00          , 0x95
-     *          header    | length    | type    | encryption | group  | command       | checksum 
-     *          constant  | variable  | command | none       | system | Are you there | sum of other bytes.
+     *
+     * Example: 0x49, 0x43, 0x09, 0x00, 0x00 , 0x00 , 0x00 , 0x00 , 0x95 
+     * header | length | type | encryption | group | command | checksum constant |
+     * variable | command | none | system | Are you there | sum of other bytes.
      */
     private void setupCommandPacket()
     {
-        //Get packet length - 2 bytes (fixed)
-//        int packetLength = 8 + commandType.getDataLength();
-//        packetLength += checksumType; //TODO Will break if checksum values ever change
-        List<Byte> byteList = new ArrayList<>();
-        byteList.add(HEADER_LOW);
-        byteList.add(HEADER_HIGH);   
+        List<Byte> byteList = new ArrayList<Byte>();
         //Setup packet preamble
-        byteList.add( (byte) ProtegeSystemConstants.PACKET_COMMAND); //Command packet
-        byteList.add( (byte) encryptionType); //encryption must be lower two BITS of the byte, TODO check
+        byteList.add(ProtegeUtils.HEADER_LOW);
+        byteList.add(ProtegeUtils.HEADER_HIGH);
+        //Add length place holders (must be calculated after encryption
+        byteList.add((byte) -1);
+        byteList.add((byte) -1);
+        byteList.add((byte) ProtegeUtils.PACKET_COMMAND);
+        byteList.add(encryptionType.getCommandValue());
         //Packet Data
-        byteList.add( (byte) recordType.getValue()); //TODO check the getValues are not too large for a byte
-        byteList.add( (byte) commandType.getValue());
-        byteList.addAll(getPacketData());        
-        //checksum - 0-2 bytes (variable)
-        switch (checksumType)
-        {
-            case ProtegeSystemConstants.CHECKSUM_8 :
-                byteList.addAll(getChecksum8Bit());
-                break;
-                
-            case ProtegeSystemConstants.CHECKSUM_16 :
-                byteList.addAll(getChecksum16Bit());
-                break;
-                
-            case ProtegeSystemConstants.CHECKSUM_NONE :
-            default:
-                //nothing required
-        }       
-        byteList.addAll(2, ProtegeSystemConstants.intToByteList(
-                byteList.size() + 2, 2));
-        packet = ProtegeSystemConstants.byteListToArray(byteList);
+        byteList.add(recordType.getValue());
+        byteList.add(commandType.getValue());
+        byteList.addAll(getPacketData());
+        packet = ProtegeUtils.byteListToArray(byteList);
     }
-    
+
     /**
-     * Checks the CommandType and produces the corresponding
-     * list of bytes.
-     * TODO look at making request for status into a monitoring request.
-     * Note that the packet data is different for these, so may wish
-     * to update the commandType instead.
+     * Checks the CommandType and produces the corresponding list of bytes.
+     *
      */
-    private List<Byte> getPacketData() throws NoSuchCommandException
+    private List<Byte> getPacketData()
     {
-        List<Byte> data = null;
-        switch(commandType)
+        List<Byte> data;
+        switch (commandType)
         {
-            case SYSTEM_POLL :
-            case SYSTEM_LOGOUT :
-            case SYSTEM_DESCRIPTION :
-                //no data
+            case CLEAR_LOGIN:
+            case PIN_DIGIT:
+            case SYSTEM_POLL:
+            case SEND_LOGOUT:
+            case SYSTEM_DESCRIPTION:
+                //no data required
+                data = new ArrayList(0);
                 break;
-                
-            case SYSTEM_LOGIN :
-                
-                data = getLoginData(); //6 bytes
-                
+            case SEND_LOGIN:
+                data = getLoginData();
                 break;
-            
-            case SYSTEM_LOGIN_TIME :
-               
-                data = getLoginTimeoutData(); //2 bytes
-                
-                break;
-                
-            case SYSTEM_REQUEST_MONITOR :
-                
+//            case SYSTEM_LOGIN_TIME :
+//                data = getLoginTimeoutData();
+//                break;                
+            case SYSTEM_MONITOR_RECORD:
                 data = getMonitoringData();
                 break;
-                
-            case OUTPUT_TIMED :
-            case VARIABLE_SET :
-               
-                data = getRecordValueData(); //2 bytes
-                
+            case SYSTEM_REQUEST_EVENTS:
+                data = getEventRequestData();
                 break;
-            
-            //All generic change of state commands
-            default :
-               
+            case OUTPUT_ON_TIMED:
                 data = getRecordIndexData();
-        }    
+                data.addAll(getIntRecordValueData());
+                break;
+            case VARIABLE_SET:
+                data = getRecordIndexData();
+                data.addAll(getIntRecordValueData());
+                data = data.subList(0, data.size() - 4); //Due to command size being 6, but only need 2 here
+                break;
+            //All generic change of state commands
+            default:
+                data = getRecordIndexData();
+        }
         return data;
     }
+
+    //Single digit PIN entry.  Not currently used.
+    
+//    /**
+//     * Encapsulates a single digit of a PIN into a byte array. If the PIN is
+//     * longer than 1 digit, the entire PIN is sent as one by redirecting to
+//     * getLoginDataFullPin().
+//     *
+//     * @return
+//     */
+//    private List<Byte> getLoginDataSingleDigit()
+//    {
+//        String recordValue = getRecordValue();
+//        if (recordValue == null)
+//        {
+//            throw new InvalidParameterException(
+//                    "Protege command '" + ProtegeCommandBuilder.PROTEGE_XMLPROPERTY_RECORD_VALUE
+//                    + "' must be either " + ProtegeUtils.LOGIN_SEND + ", " + ProtegeUtils.LOGIN_CLEAR
+//                    + " or a single digit number when used for logging in.");
+//        }
+//        List<Byte> data = new ArrayList<Byte>();
+//        if (recordValue.equals(ProtegeUtils.LOGIN_SEND))
+//        {
+//            data.add(ProtegeUtils.LOGIN_SUFFIX);
+//        }
+//        else if (recordValue.equals(ProtegeUtils.LOGIN_INITIATE))
+//        {
+//            data.add(ProtegeUtils.LOGIN_PREFIX);
+//        }
+//        else if (recordValue.equals(ProtegeUtils.LOGIN_CLEAR))
+//        {
+//            //No data required
+//        }
+//        else //PIN digit
+//        {
+//            int digit;
+//            try
+//            {
+//                digit = Integer.parseInt(recordValue);
+//            }
+//            catch (NumberFormatException e)
+//            {
+//                throw new InvalidParameterException(
+//                        "Protege command '" + ProtegeCommandBuilder.PROTEGE_XMLPROPERTY_RECORD_VALUE
+//                        + "' must be either " + ProtegeUtils.LOGIN_SEND + ", " + ProtegeUtils.LOGIN_CLEAR
+//                        + " or a single digit number when used for logging in.");
+//            }
+//            if (digit > 9)
+//            {
+//                data = getLoginDataFullPin();
+//            }
+//            else
+//            {
+//                data.add((byte) digit);
+//            }
+//        }
+//        return data;
+//    }
+    
     
     /**
      * Creates a list of bytes containing the users PIN.
-     * //TODO move this to a one of call, depending on final 
-     * decision on PIN entry and storage.
-     * 
-     * @return 
+     *
+     * @return
      */
     private List<Byte> getLoginData()
     {
-        String PIN;
-        try
-        {
-            PIN = paramMap.get(ProtegeCommandBuilder.PROTEGE_XMLPROPERTY_LOGIN_PIN);
-        } catch (NumberFormatException e)
-        {
-            throw new InvalidParameterException(
-                    "Protege command '" + ProtegeCommandBuilder.PROTEGE_XMLPROPERTY_LOGIN_PIN + "' has an invalid value: '" + 
-                    paramMap.get(ProtegeCommandBuilder.PROTEGE_XMLPROPERTY_LOGIN_PIN)
-            );
-        }        
+        String PIN = paramMap.get(ProtegeCommandBuilder.PROTEGE_XMLPROPERTY_RECORD_VALUE);
         //Split PIN into individual bytes
-        List<Byte> PINList = new ArrayList<>();
+        List<Byte> PINList = new ArrayList<Byte>();
         for (int i = 0; i < PIN.length(); i++)
         {
-            PINList.add((byte) (PIN.charAt(i) - '0') );
+            PINList.add((byte) (PIN.charAt(i) - '0'));
         }
-        if (PINList.size() < 6)
+        if (PINList.size() < ProtegeCommandType.PIN_MAX_LENGTH)
         {
             PINList.add((byte) 0xFF);
         }
-        log.error("Pin as list: " + PINList.toString());
+
         return PINList;
     }
-    
-    private List<Byte> getLoginTimeoutData()
-    {
-        int loginTime;
-        try
-        {
-            loginTime = Integer.parseInt(paramMap.get(ProtegeCommandBuilder.PROTEGE_XMLPROPERTY_LOGIN_TIMEOUT));
 
-        } catch (NumberFormatException e)
-        {
-            throw new InvalidParameterException(
-                    "Protege command '" + ProtegeCommandBuilder.PROTEGE_XMLPROPERTY_LOGIN_TIMEOUT + "' has an invalid value: '" + 
-                    paramMap.get(ProtegeCommandBuilder.PROTEGE_XMLPROPERTY_LOGIN_TIMEOUT)
-            );
-        }                
-        List<Byte> loginTimeList = ProtegeSystemConstants.intToByteList(loginTime, commandType.getDataLength());
-        return loginTimeList;
-    }
-    
     /**
-     * TODO Cannot actually use the inputs in an area option at this stage.
-     * Dependant on UI implementation.
+     * Creates the data for a Monitor Record packet.
      * 
-     * @return 
+     * @return
      */
     private List<Byte> getMonitoringData()
     {
-        List<Byte> monitoringList = new ArrayList<>();
-        //Item Type - 2 bytes
-            //0,0 All items (for stop monitoring)
-            //0, 1 Door
-            //0, 2 Area
-            //1, 2 Inputs in an Area
-            //0, 3 Output
-            //0, 4 Input
-            //0, 5 Variable
-        monitoringList.add( (byte) recordType.getValue());
-        monitoringList.add( (byte) 0x00); //until area inputs implemented, use 0.
+        List<Byte> monitoringList = new ArrayList<Byte>();
+        ProtegeRecordType recordValue;
+        try
+        {
+            recordValue = ProtegeRecordType.valueOf(paramMap.get(ProtegeCommandBuilder.PROTEGE_XMLPROPERTY_RECORD_VALUE));
+        }
+        catch (NumberFormatException e)
+        {
+            throw new InvalidParameterException(
+                    "Protege command '" + ProtegeCommandBuilder.PROTEGE_XMLPROPERTY_RECORD_VALUE + "' has an invalid value: '"
+                    + paramMap.get(ProtegeCommandBuilder.PROTEGE_XMLPROPERTY_RECORD_VALUE)
+            );
+        }
+        //Item type - 2 bytes
+        monitoringList.add(recordValue.getValue());
+        monitoringList.add((byte) 0x00);
         //Item Index - 4 bytes
-            //Reuse the method in Default
         monitoringList.addAll(getRecordIndexData());
         //Flags - 2 Bytes
-            // 0 to stop
-            // 1 to start
-            // 2 to force an update
-        monitoringList.add( (byte) 0x01); //until area inputs implemented, use 0.
-        monitoringList.add( (byte) 0x00); //until area inputs implemented, use 0.
-        
+        monitoringList.add((byte) 0x01); //start monitoring (0 is stop, 2/3 is force update)
+        monitoringList.add((byte) 0x00); //end of packet
+
         return monitoringList;
     }
-    
+
+    /**
+     * Returns the packet data required for an event monitoring packet.
+     *
+     */
+    private List<Byte> getEventRequestData()
+    {
+        List<Byte> eventList = new ArrayList<Byte>();
+        //Flags - 1 Byte
+        eventList.add((byte) 0x01); //start monitoring (0 is stop)
+        
+        //Format - 1 Byte
+        //bit 0 = 0 for numeric
+        //bit 0 = 1 for human readable          
+        //bit 1 = 0 send events immediately
+        //bit 1 = 1 send after reportable event
+        eventList.add((byte) 0x01); //Human readable, immediate
+        
+        return eventList;
+
+    }
+
     /**
      * Returns a list of bytes containing the record index.
-     * 
-     * @return 
+     *
+     * @return
      */
     private List<Byte> getRecordIndexData()
     {
         int recordIndex;
         try
         {
-            recordIndex = Integer.parseInt(paramMap.get(ProtegeCommandBuilder.PROTEGE_XMLPROPERTY_RECORD_INDEX));
-        } catch (NumberFormatException e)
+            recordIndex = getRecordID();
+        }
+        catch (NumberFormatException e)
         {
             throw new InvalidParameterException(
-                    "Protege command '" + ProtegeCommandBuilder.PROTEGE_XMLPROPERTY_RECORD_COMMAND + "' has an invalid index: '" + 
-                    paramMap.get(ProtegeCommandBuilder.PROTEGE_XMLPROPERTY_RECORD_INDEX)
+                    "Protege command '" + ProtegeCommandBuilder.PROTEGE_XMLPROPERTY_RECORD_COMMAND + "' has an invalid index: '"
+                    + paramMap.get(ProtegeCommandBuilder.PROTEGE_XMLPROPERTY_RECORD_INDEX)
             );
         }
-        List<Byte> recordIndexList = ProtegeSystemConstants.intToByteList(recordIndex, 4); //Due to reuse with login, no guarantee that commandType will be the right type.
+        List<Byte> recordIndexList = ProtegeUtils.intToByteList(recordIndex, 4); //Due to reuse with login, no guarantee that commandType will be the right type.
         return recordIndexList; //4 bytes
     }
-    
+
     /**
-     * Returns a list of bytes containing the
-     * integer value of the record.
-     * Used for Variables and Timed Outputs.
-     * 
-     * @return 
+     * Returns a list of bytes containing the integer value of the record. Used
+     * for Variables and Timed Outputs.
+     *
+     * @return
      */
-    private List<Byte> getRecordValueData()
+    private List<Byte> getIntRecordValueData()
     {
         int recordValue;
         try
         {
             recordValue = Integer.parseInt(paramMap.get(ProtegeCommandBuilder.PROTEGE_XMLPROPERTY_RECORD_VALUE));
-        } catch (NumberFormatException e)
+        }
+        catch (NumberFormatException e)
         {
             throw new InvalidParameterException(
-                    "Protege command '" + ProtegeCommandBuilder.PROTEGE_XMLPROPERTY_RECORD_VALUE + "' has an invalid value: '" + 
-                    paramMap.get(ProtegeCommandBuilder.PROTEGE_XMLPROPERTY_RECORD_VALUE)
+                    "Protege command '" + ProtegeCommandBuilder.PROTEGE_XMLPROPERTY_RECORD_VALUE + "' has an invalid value: '"
+                    + paramMap.get(ProtegeCommandBuilder.PROTEGE_XMLPROPERTY_RECORD_VALUE)
             );
-        }                
-        List<Byte> activationTimeList = ProtegeSystemConstants.intToByteList(recordValue, commandType.getDataLength());
-        return activationTimeList;
-    }    
-    
-    /**
-     * The check sum is a single byte which is the sum 
-     * of all preceding bytes, modulo 256.
-     * TODO implement
-     */
-    private List<Byte> getChecksum8Bit()
-    {
-        List<Byte> checksum = new ArrayList<>();
-        return checksum;
+        }
+        List<Byte> recordValueList = ProtegeUtils.intToByteList(recordValue, commandType.getDataLength());
+        return recordValueList;
     }
-    
-    /**
-     * 16 bit CRC. The check sum is a 16 bit CRC 
-     * based on the CRC-16-CCITT polynomial.   
-     * TODO implement
-     */
-    private List<Byte> getChecksum16Bit()
-    {     
-        List<Byte> checksum = new ArrayList<>();
-        return checksum;
-    }
-    
-    
+
 //**************
 //   GETTERS   *
 //**************
-    
-    
-    public int getSize() {
-        return packet.length; 
+    public int getSize()
+    {
+        return packet.length;
     }
-    
-    public ProtegeRecordType getRecordType() {
+
+    public ProtegeRecordType getRecordType()
+    {
         return recordType;
     }
 
-    public ProtegeCommandType getCommandType() {
+    public ProtegeCommandType getCommandType()
+    {
         return commandType;
     }
-    public int getEncryptionType() {
+
+    public EncryptionType getEncryptionType()
+    {
         return encryptionType;
     }
 
-    public int getChecksumType() {
+    public ChecksumType getChecksumType()
+    {
         return checksumType;
     }
 
-    public byte[] getPacket() {
+    public byte[] getPacket()
+    {
         return packet;
     }
     
     @Override
     public String toString()
     {
-        String hexArray = ProtegeConnectionManager.byteArrayToHex(packet);
-        String result = "[";
-        for (int i = 0; i < hexArray.length(); i += 2)
+        String result = commandType + " (" + recordType;
+        if (getRecordID() != -1)
         {
-            result += "0x" + hexArray.charAt(i) + hexArray.charAt(i + 1) + ", ";
+            result += ":" + getRecordID();
         }
-        return result.substring(0, result.length() - 2) + "]";
+        if (getRecordValue() != null)
+        {
+            result += " [" + getRecordValue() + "]";
+        }
+        result += ")";
+        
+        return result;
+    }
+
+    /**
+     * Gets the record ID of this packet, or null if it does not exist.
+     *
+     * @return
+     */
+    public int getRecordID()
+    {
+        String str = paramMap.get(ProtegeCommandBuilder.PROTEGE_XMLPROPERTY_RECORD_INDEX);
+        int tmp = -1;
+        if (str != null)
+        {
+            tmp = Integer.parseInt(str);
+        }
+        return tmp;
+    }
+
+    public Map<String, String> getParamMap()
+    {
+        return paramMap;
+    }
+
+    /**
+     * Gets the value assigned to the ProtegeRecordType from the XML document.
+     * e.g. <property-name='record-value' value='Area'/>
+     * @return Value of property from record-value
+     */
+    public String getRecordValue()
+    {
+        return paramMap.get(ProtegeCommandBuilder.PROTEGE_XMLPROPERTY_RECORD_VALUE);
+    }
+    
+//    private List<Byte> getLoginTimeoutData()
+//    {
+//        int loginTime;
+//        try
+//        {
+//            loginTime = Integer.parseInt(paramMap.get(ProtegeCommandBuilder.PROTEGE_XMLPROPERTY_LOGIN_TIMEOUT));
+//
+//        } catch (NumberFormatException e)
+//        {
+//            throw new InvalidParameterException(
+//                    "Protege command '" + ProtegeCommandBuilder.PROTEGE_XMLPROPERTY_LOGIN_TIMEOUT + "' has an invalid value: '" + 
+//                    paramMap.get(ProtegeCommandBuilder.PROTEGE_XMLPROPERTY_LOGIN_TIMEOUT)
+//            );
+//        }                
+//        List<Byte> loginTimeList = ProtegeSystemConstants.intToByteList(loginTime, commandType.getDataLength());
+//        return loginTimeList;
+//    }
+    
+    @Override
+    public int compareTo(ProtegePacket o)
+    {
+        int result = this.getCommandType().getPriority() - o.getCommandType().getPriority();
+        if (result == 0) //Enforce FIFO ordering
+        {
+            result = (this.getSequenceNumber() < o.getSequenceNumber()) ? -1 : 1;
+        }
+        return result;
+    }
+    
+    public long getSequenceNumber()
+    {
+        return sequenceNumber;
+    }
+    
+    public void updateSequenceNumber()
+    {
+        this.sequenceNumber = sequence.getAndIncrement();
     }
 }

@@ -19,6 +19,8 @@ Daniel Berenguer
 Ivan Martinez
 Stefan Langerman
 Tomas Morton
+Adam McNabb
+Damon Williams
 OpenRemote, Inc. employees and contractors.
 
 Number of third party Open Source components are used in OpenRemote each
