@@ -33,9 +33,10 @@ import com.sun.org.apache.xerces.internal.parsers.DOMParser;
  * As the UPnP stack embedded parsers are for older versions, this one
  * integrates easily to OR. From the
  * org.cybergarage.xml.parser.XercesParser.class
- * 
+ * @deprecated 
  * @author Mathieu Gallissot
  */
+@SuppressWarnings("deprecation")
 public class UPnPParser extends org.cybergarage.xml.Parser {
 	public org.cybergarage.xml.Node parse(org.cybergarage.xml.Node parentNode,
 			org.w3c.dom.Node domNode, int rank) {
@@ -85,12 +86,25 @@ public class UPnPParser extends org.cybergarage.xml.Parser {
 
 		return node;
 	}
-
+        /**
+         * @deprecated 
+         * @param parentNode
+         * @param domNode
+         * @return 
+         */
+        @SuppressWarnings("deprecation")
 	public org.cybergarage.xml.Node parse(org.cybergarage.xml.Node parentNode,
 			org.w3c.dom.Node domNode) {
 		return parse(parentNode, domNode, 0);
 	}
-
+        /**
+         * @deprecated 
+         * @param inStream
+         * @return
+         * @throws ParserException 
+         */
+        @SuppressWarnings("deprecation")
+        @Override
 	public org.cybergarage.xml.Node parse(InputStream inStream)
 			throws ParserException {
 		org.cybergarage.xml.Node root = null;

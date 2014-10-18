@@ -45,6 +45,7 @@
             <value>classpath:lutron_homeworks.properties</value>
             <value>classpath:denonAVRSerial.properties</value>
             <value>classpath:enocean.properties</value>
+            <value>classpath:ict_protege.properties</value>
           </list>
       </property>
   </bean>
@@ -100,6 +101,13 @@
     <property name="port" value="${lutron_homeworks.port}" />
   </bean>
   
+  <bean id="ICTProtegeConfig" class="org.openremote.controller.ICTProtegeConfiguration">
+	<property name="address" value="${ict_protege.address}" />
+	<property name="monitoringPIN" value="${ict_protege.monitoring_pin}" />
+	<property name="encryptionType" value="${ict_protege.encryption_type}" />
+	<property name="encryptionKey" value="${ict_protege.encryption_key}" />
+  </bean>
+
   <bean id="lutronHomeWorksGateway" class="org.openremote.controller.protocol.lutron.LutronHomeWorksGateway"/>
 
   <bean id="enoceanConfig" class="org.openremote.controller.EnOceanConfiguration">
@@ -265,6 +273,7 @@ The needed classes have to be provided as a jar file and copied to lib folder.
         <entry key = "udpListener"      value-ref = "udpListenerCommandBuilder"/>
         <entry key = "enocean"          value-ref = "enoceanCommandBuilder"/>
         <entry key = "rrdGraphUrl"      value-ref = "rrdGraphUrlCommandBuilder"/>
+        <entry key = "ictprotege"       value-ref = "protegeCommandBuilder"/>
       </map>
     </constructor-arg>
 
@@ -407,7 +416,10 @@ The needed classes have to be provided as a jar file and copied to lib folder.
   <bean id = "lagartoCommandBuilder" class = "org.openremote.controller.protocol.lagarto.LagartoCommandBuilder">
     <property name="configuration" ref="configuration"/>
   </bean>
-
+  
+  <!-- ICT Protege Command Builder for Protege devices -->
+  <bean id = "protegeCommandBuilder" class = "org.openremote.controller.protocol.ictprotege.ProtegeCommandBuilder" />
+  
   <!-- TODO -->
   <bean id = "componentFactory" class = "org.openremote.controller.component.ComponentFactory">
     <property name = "componentBuilders">
@@ -516,4 +528,3 @@ The needed classes have to be provided as a jar file and copied to lib folder.
 	</bean>
 
 </beans>
-
