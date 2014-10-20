@@ -119,10 +119,10 @@ public class DataLogger extends EventProcessor {
             Date lastLogTime = sensor.getLastLogTime();
             Date now = new Date();
             int logRepeat = sensor.getLogRepeatSeconds();
-            if (lastLogTime == null || logRepeat <= 0)
+            if (lastLogTime == null || logRepeat < 0)
             {
                okToLog = true;
-            } else {
+            } else if (logRepeat > 0) {
                long ms = now.getTime() - lastLogTime.getTime();
                okToLog = ms > logRepeat * 1000;
             }
