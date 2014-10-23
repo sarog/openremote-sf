@@ -24,6 +24,7 @@
 			</xsd:sequence>
 			<xsd:attribute name="displayName" type="xsd:string" use="required" />
 			<xsd:attribute name="tagName" type="xsd:string" use="required" />
+         <xsd:attribute name="allowedAccountIds" type="xsd:string" use="optional" />
 		</xsd:complexType>
 	</xsd:element>
 

@@ -83,6 +83,7 @@ import org.openremote.modeler.domain.component.UISwitch;
 import org.openremote.modeler.domain.component.UITabbar;
 import org.openremote.modeler.domain.component.UITabbarItem;
 import org.openremote.modeler.domain.component.UIWebView;
+import org.openremote.modeler.server.protocol.ProtocolContainer;
 import org.springframework.orm.hibernate3.HibernateTransactionManager;
 import org.springframework.security.context.SecurityContextHolder;
 import org.springframework.security.providers.UsernamePasswordAuthenticationToken;
@@ -110,7 +111,7 @@ public class ResourceServiceTest {
    private DeviceService deviceService;
    private ControllerConfigService controllerConfigService;
    private VelocityEngine velocity;
-   
+   private ProtocolContainer protocolContainer;
    private Account account;
    private LocalFileCache cache;
      
@@ -134,6 +135,7 @@ public class ResourceServiceTest {
       deviceService = (DeviceService) SpringTestContext.getInstance().getBean("deviceService");
       controllerConfigService = (ControllerConfigService) SpringTestContext.getInstance().getBean("controllerConfigService");
       velocity = (VelocityEngine) SpringTestContext.getInstance().getBean("velocity");
+      protocolContainer = (ProtocolContainer) SpringTestContext.getInstance().getBean("protocolContainer");
       
       userService = (UserService) SpringTestContext.getInstance().getBean("userService");
       userService.createUserAccount("ResourceServiceTest", "ResourceServiceTest", "dummy@openremote.org");
@@ -163,6 +165,7 @@ public class ResourceServiceTest {
           cache.setDeviceCommandService(deviceCommandService);
           cache.setControllerConfigService(controllerConfigService);
           cache.setVelocity(velocity);
+          cache.setProtocolContainer(protocolContainer);
          
           // Make sure required folder structure exists
           cache.getPanelXmlFile().getParentFile().mkdirs();

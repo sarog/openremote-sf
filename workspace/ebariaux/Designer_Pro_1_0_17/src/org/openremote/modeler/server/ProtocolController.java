@@ -22,16 +22,22 @@ package org.openremote.modeler.server;
 import java.util.ArrayList;
 
 import org.openremote.modeler.client.rpc.ProtocolRPCService;
-import org.openremote.modeler.protocol.ProtocolContainer;
 import org.openremote.modeler.protocol.ProtocolDefinition;
-import org.openremote.modeler.service.ProtocolParser;
+import org.openremote.modeler.server.protocol.ProtocolContainer;
 
 /**
  * The server side implementation of the RPC service <code>ProtocolRPCService</code>.
  */
 public class ProtocolController extends BaseGWTSpringController implements ProtocolRPCService {
 
-   /** The Constant serialVersionUID. */
+  private ProtocolContainer protocolContainer;
+  
+  public void setProtocolContainer(ProtocolContainer protocolContainer)
+  {
+    this.protocolContainer = protocolContainer;
+  }
+
+  /** The Constant serialVersionUID. */
    private static final long serialVersionUID = 8057648010410493998L;
 
    /**
@@ -39,11 +45,7 @@ public class ProtocolController extends BaseGWTSpringController implements Proto
     * @see org.openremote.modeler.client.rpc.ProtocolRPCService#getProtocolContainer()
     */
    public ArrayList<ProtocolDefinition> getProtocols() {
-      if (ProtocolContainer.getInstance().getProtocols().size() == 0) {
-         ProtocolParser parser = new ProtocolParser();
-         ProtocolContainer.getInstance().setProtocols(parser.parseXmls());
-      }
-      return ProtocolContainer.getInstance().getProtocolsSortedByDisplayName();
+      return protocolContainer.getProtocolsSortedByDisplayName();
    }
 
 }
