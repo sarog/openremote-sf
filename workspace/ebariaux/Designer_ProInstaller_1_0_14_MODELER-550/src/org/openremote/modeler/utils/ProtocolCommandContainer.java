@@ -28,7 +28,6 @@ import java.util.Set;
 import org.openremote.modeler.client.model.Command;
 import org.openremote.modeler.domain.DeviceCommand;
 import org.openremote.modeler.server.protocol.ProtocolContainer;
-import org.openremote.modeler.service.ProtocolParser;
 
 /**
  * This class is used to contain <b>UIButtonEvent</b> of  different kinds of protocol types'.<br />
@@ -81,10 +80,6 @@ public class ProtocolCommandContainer {
     * and then iterating the property <b>protocolEvents</b> will also generate the event xml segment for the new protocol.
     */
    public ProtocolCommandContainer() {
-      if (ProtocolContainer.getInstance().getProtocols().size() == 0) {
-         ProtocolParser parser = new ProtocolParser();
-         ProtocolContainer.getInstance().setProtocols(parser.parseXmls());
-      }      
       Set<String> protocolDisplayNames = ProtocolContainer.getInstance().getProtocols().keySet();
       for (String protocolDisplayName : protocolDisplayNames) {
          protocolEvents.put(protocolDisplayName, new ArrayList<Command>());
