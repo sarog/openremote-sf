@@ -107,14 +107,6 @@ public class ProtocolContainer implements Serializable {
       return instance;
    }
 
-
-   /**
-    * Read protocol definitions.
-    */
-   public static void readProtocolDefinitions() {
-      
-   }
-
    /**
     * Find tag name.
     * 
