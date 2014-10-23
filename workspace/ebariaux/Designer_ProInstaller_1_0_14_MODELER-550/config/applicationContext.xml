@@ -92,5 +92,7 @@
         </list>
     </property>
   </bean>
+  
+  <bean id="protocolContainer" class="org.openremote.modeler.server.protocol.ProtocolContainer" scope="singleton"/>
 
 </beans>

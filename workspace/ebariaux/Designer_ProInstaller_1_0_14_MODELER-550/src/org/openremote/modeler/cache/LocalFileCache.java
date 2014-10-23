@@ -224,6 +224,8 @@ public class LocalFileCache implements ResourceCache<File>
   private ControllerConfigService controllerConfigService;
   private VelocityEngine velocity;
 
+  private ProtocolContainer protocolContainer;
+  
   // Constructors ---------------------------------------------------------------------------------
 
 
@@ -2061,10 +2063,9 @@ public class LocalFileCache implements ResourceCache<File>
     UIComponentBox uiComponentBox = new UIComponentBox();
     initUIComponentBox(screens, uiComponentBox);
     Map<String, Object> context = new HashMap<String, Object>();
-    ProtocolCommandContainer eventContainer = new ProtocolCommandContainer(ProtocolContainer.getInstance());
+    ProtocolCommandContainer eventContainer = new ProtocolCommandContainer(protocolContainer);
     eventContainer.setAllDBDeviceCommands(allDBDeviceCommands);
     addDataBaseCommands(eventContainer, maxId);
-    ProtocolContainer protocolContainer = ProtocolContainer.getInstance();
 
     Collection<Sensor> sensors = getAllSensorWithoutDuplicate(screens, maxId, dbSensors);
 
@@ -2479,6 +2480,10 @@ public class LocalFileCache implements ResourceCache<File>
 
   public void setVelocity(VelocityEngine velocity) {
     this.velocity = velocity;
+  }
+
+  public void setProtocolContainer(ProtocolContainer protocolContainer) {
+    this.protocolContainer = protocolContainer;
   }
 
  /**
