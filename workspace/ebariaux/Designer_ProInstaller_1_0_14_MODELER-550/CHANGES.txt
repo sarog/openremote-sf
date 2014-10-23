@@ -1,3 +1,8 @@
+MODELER-550
+===========
+
+ - Have mechanism to limit protocol access to specific accounts
+
 Pro 1.0.14
 ==========
 
