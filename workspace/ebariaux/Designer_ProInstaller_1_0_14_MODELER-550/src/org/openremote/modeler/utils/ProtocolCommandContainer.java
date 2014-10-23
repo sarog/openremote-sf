@@ -27,7 +27,7 @@ import java.util.Set;
 
 import org.openremote.modeler.client.model.Command;
 import org.openremote.modeler.domain.DeviceCommand;
-import org.openremote.modeler.protocol.ProtocolContainer;
+import org.openremote.modeler.server.protocol.ProtocolContainer;
 import org.openremote.modeler.service.ProtocolParser;
 
 /**
