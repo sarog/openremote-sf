@@ -52,21 +52,30 @@ public class ProtocolContainer implements Serializable {
    private ArrayList<ProtocolDefinition> protocolsList;
 
    public synchronized ArrayList<ProtocolDefinition> getProtocolsSortedByDisplayName() {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        String name = auth.getName();
-        protocolsList = new ArrayList<ProtocolDefinition>();
-        for (ProtocolDefinition protocolDefinition : protocols.values()) {
-         if (protocolDefinition.getAllowedAccountIds() == null || protocolDefinition.getAllowedAccountIds().contains(name)) {
-            protocolsList.add(protocolDefinition);
-         }
-      }
+     // Cache list of protocols, ordered by display name (if the cache does not exist yet)
+     if (protocolsList == null) {
+       protocolsList = new ArrayList<ProtocolDefinition>();
+       for (ProtocolDefinition protocolDefinition : protocols.values()) {
+         protocolsList.add(protocolDefinition);
+       }
        Collections.sort(protocolsList, new Comparator<ProtocolDefinition>() {
          @Override
          public int compare(ProtocolDefinition protocol1, ProtocolDefinition protocol2) {
            return protocol1.getDisplayName().compareToIgnoreCase(protocol2.getDisplayName());
          }
        });
-     return protocolsList;
+     }
+     
+     // Filter out the cached list based on what current user is allowed to us and return that
+     ArrayList<ProtocolDefinition> filteredProtocolsList =  new ArrayList<ProtocolDefinition>();
+     Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+     String name = auth.getName();
+     for (ProtocolDefinition protocolDefinition : protocolsList) {
+       if (protocolDefinition.getAllowedAccountIds() == null || protocolDefinition.getAllowedAccountIds().contains(name)) {
+         filteredProtocolsList.add(protocolDefinition);
+       }
+     }
+     return filteredProtocolsList;
    }
    
    /**
