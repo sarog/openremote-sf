@@ -29,6 +29,7 @@ import java.util.Map;
 import java.util.logging.Logger;
 
 import org.openremote.modeler.protocol.ProtocolDefinition;
+import org.openremote.modeler.service.ProtocolParser;
 import org.springframework.security.Authentication;
 import org.springframework.security.context.SecurityContextHolder;
 
@@ -95,7 +96,8 @@ public class ProtocolContainer implements Serializable {
     * Instantiates a new protocol container.
     */
    private ProtocolContainer() {
-     
+     ProtocolParser parser = new ProtocolParser();
+     setProtocols(parser.parseXmls());
    }
 
    /**
