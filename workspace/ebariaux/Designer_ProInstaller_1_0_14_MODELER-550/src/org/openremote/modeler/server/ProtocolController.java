@@ -24,7 +24,6 @@ import java.util.ArrayList;
 import org.openremote.modeler.client.rpc.ProtocolRPCService;
 import org.openremote.modeler.protocol.ProtocolDefinition;
 import org.openremote.modeler.server.protocol.ProtocolContainer;
-import org.openremote.modeler.service.ProtocolParser;
 
 /**
  * The server side implementation of the RPC service <code>ProtocolRPCService</code>.
@@ -39,10 +38,6 @@ public class ProtocolController extends BaseGWTSpringController implements Proto
     * @see org.openremote.modeler.client.rpc.ProtocolRPCService#getProtocolContainer()
     */
    public ArrayList<ProtocolDefinition> getProtocols() {
-      if (ProtocolContainer.getInstance().getProtocols().size() == 0) {
-         ProtocolParser parser = new ProtocolParser();
-         ProtocolContainer.getInstance().setProtocols(parser.parseXmls());
-      }
       return ProtocolContainer.getInstance().getProtocolsSortedByDisplayName();
    }
 
