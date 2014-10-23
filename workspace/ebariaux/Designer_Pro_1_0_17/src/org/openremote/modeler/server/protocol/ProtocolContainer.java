@@ -18,7 +18,7 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-package org.openremote.modeler.protocol;
+package org.openremote.modeler.server.protocol;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -26,6 +26,11 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
+
+import org.openremote.modeler.domain.User;
+import org.openremote.modeler.protocol.ProtocolDefinition;
+import org.openremote.modeler.service.ProtocolParser;
+import org.openremote.modeler.service.UserService;
 
 /**
  * The Class is used for containing <b>ProtocolDefinition</b> of different protocol types.</br>
@@ -39,23 +44,39 @@ public class ProtocolContainer implements Serializable {
    /** The Constant serialVersionUID. */
    private static final long serialVersionUID = -5478194408714473866L;
    
+   private UserService userService;
+   
    /** The protocols. */
-   private static Map<String, ProtocolDefinition> protocols = new HashMap<String, ProtocolDefinition>();
+   private Map<String, ProtocolDefinition> protocols = new HashMap<String, ProtocolDefinition>();
    
    /** The protocols as a list sorted by displayName. */
-   private static ArrayList<ProtocolDefinition> protocolsList;
+   private ArrayList<ProtocolDefinition> protocolsList;
 
    public synchronized ArrayList<ProtocolDefinition> getProtocolsSortedByDisplayName() {
-     if (ProtocolContainer.protocolsList == null) {       
-       ProtocolContainer.protocolsList =  new ArrayList<ProtocolDefinition>(ProtocolContainer.getInstance().getProtocols().values());
-       Collections.sort(ProtocolContainer.protocolsList, new Comparator<ProtocolDefinition>() {
+     // Cache list of protocols, ordered by display name (if the cache does not exist yet)
+     if (protocolsList == null) {
+       protocolsList = new ArrayList<ProtocolDefinition>();
+       for (ProtocolDefinition protocolDefinition : protocols.values()) {
+         protocolsList.add(protocolDefinition);
+       }
+       Collections.sort(protocolsList, new Comparator<ProtocolDefinition>() {
          @Override
          public int compare(ProtocolDefinition protocol1, ProtocolDefinition protocol2) {
            return protocol1.getDisplayName().compareToIgnoreCase(protocol2.getDisplayName());
          }
        });
      }
-     return ProtocolContainer.protocolsList;
+     
+     // Filter out the cached list based on what current user is allowed to us and return that
+     ArrayList<ProtocolDefinition> filteredProtocolsList =  new ArrayList<ProtocolDefinition>();
+     User currentUser = userService.getCurrentUser();
+     String accountId = Long.toString(currentUser.getAccount().getOid());
+     for (ProtocolDefinition protocolDefinition : protocolsList) {
+       if (protocolDefinition.getAllowedAccountIds() == null || protocolDefinition.getAllowedAccountIds().contains(accountId)) {
+         filteredProtocolsList.add(protocolDefinition);
+       }
+     }
+     return filteredProtocolsList;
    }
    
    /**
@@ -72,37 +93,17 @@ public class ProtocolContainer implements Serializable {
     * 
     * @param protocols the protocols
     */
-   public  void setProtocols(Map<String, ProtocolDefinition> protocols) {
-      ProtocolContainer.protocols = protocols;
-      ProtocolContainer.protocolsList = null;
+   private void setProtocols(Map<String, ProtocolDefinition> protocols) {
+      this.protocols = protocols;
+      protocolsList = null;
    }
-
-
-   /** The instance. */
-   private static ProtocolContainer instance = new ProtocolContainer();
    
    /**
     * Instantiates a new protocol container.
     */
-   private ProtocolContainer() {
-     
-   }
-
-   /**
-    * Gets the single instance of ProtocolContainer.
-    * 
-    * @return single instance of ProtocolContainer
-    */
-   public static synchronized ProtocolContainer getInstance() {
-      return instance;
-   }
-
-
-   /**
-    * Read protocol definitions.
-    */
-   public static void readProtocolDefinitions() {
-      
+   public ProtocolContainer() {
+     ProtocolParser parser = new ProtocolParser();
+     setProtocols(parser.parseXmls());
    }
 
    /**
@@ -112,8 +113,14 @@ public class ProtocolContainer implements Serializable {
     * 
     * @return the string
     */
-   public static String findTagName(String protocolDisplayName) {
+   public String findTagName(String protocolDisplayName) {
       ProtocolDefinition protocolDefinition = protocols.get(protocolDisplayName);
       return protocolDefinition == null ? "" : protocolDefinition.getTagName();
    }
+
+  public void setUserService(UserService userService)
+  {
+    this.userService = userService;
+  }
+   
 }

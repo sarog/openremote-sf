@@ -25,11 +25,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * The Class defines a protocol with its properties. A protocol has display name, tag name and some attributes.
+ * The Class defines a protocol with its properties. A protocol has display name, tag name, allowed account id
+ * and some attributes.
  * 
  * The protocol xml segment structure is similar following:</br>
  * 
- * &lt;protocol displayName="Infrared" tagName="ir"&gt;</br>
+ * &lt;protocol displayName="Infrared" tagName="ir" allowedAccountIds="1, 23"&gt;</br>
       &lt;attr name="name" label="Name"&gt;</br>
          &lt;validations&gt;</br>
             &lt;allowBlank&gt;false&lt;/allowBlank&gt;</br>
@@ -56,6 +57,9 @@ public class ProtocolDefinition implements Serializable {
    
    /** The tag name. */
    private String tagName;
+   
+   /** The allowed account Ids */
+   private List<String> allowedAccountIds;
    
    /** The attrs. */
    private List<ProtocolAttrDefinition> attrs = new ArrayList<ProtocolAttrDefinition>();
@@ -96,6 +100,14 @@ public class ProtocolDefinition implements Serializable {
       this.tagName = tagName;
    }
 
+   public List<String> getAllowedAccountIds() {
+      return allowedAccountIds;
+   }
+
+   public void setAllowedAccountIds(List<String> allowedAccountIds) {
+      this.allowedAccountIds = allowedAccountIds;
+   }
+
    /**
     * Gets the attrs.
     * 
@@ -114,41 +126,39 @@ public class ProtocolDefinition implements Serializable {
       this.attrs = attrs;
    }
 
+   
    /* (non-Javadoc)
     * @see java.lang.Object#equals(java.lang.Object)
     */
    @Override
-   public boolean equals(Object o) {
-      if (this == o) {
+   public boolean equals(Object obj) {
+      if (this == obj)
          return true;
-      }
-      if (o == null || getClass() != o.getClass()) {
+      if (obj == null)
          return false;
-      }
-
-      ProtocolDefinition that = (ProtocolDefinition) o;
-
-      if (displayName != null ? !displayName.equals(that.displayName) : that.displayName != null) {
+      if (getClass() != obj.getClass())
          return false;
-      }
-      if (tagName != null ? !tagName.equals(that.tagName) : that.tagName != null) {
+      ProtocolDefinition other = (ProtocolDefinition) obj;
+      if (allowedAccountIds == null) {
+         if (other.allowedAccountIds != null)
+            return false;
+      } else if (!allowedAccountIds.equals(other.allowedAccountIds))
          return false;
-      }
-      if (attrs == null && that.attrs == null) {
-         return true;
-      }
-      if (attrs == null || that.attrs == null) {
+      if (attrs == null) {
+         if (other.attrs != null)
+            return false;
+      } else if (!attrs.equals(other.attrs))
          return false;
-      }
-      if (attrs.size() == that.attrs.size()) {
-         for (int i = 0; i < attrs.size(); i++) {
-            if (!attrs.get(i).equals(that.attrs.get(i))) {
-               return false;
-            }
-         }
-      } else {
+      if (displayName == null) {
+         if (other.displayName != null)
+            return false;
+      } else if (!displayName.equals(other.displayName))
          return false;
-      }
+      if (tagName == null) {
+         if (other.tagName != null)
+            return false;
+      } else if (!tagName.equals(other.tagName))
+         return false;
       return true;
    }
 
@@ -157,8 +167,14 @@ public class ProtocolDefinition implements Serializable {
     */
    @Override
    public int hashCode() {
-      int result = (displayName != null) ? displayName.hashCode() : 0;
-      result += (tagName != null) ? tagName.hashCode() : 0;
-      return 31 * result + (attrs != null ? attrs.hashCode() : 0);
+      final int prime = 31;
+      int result = 1;
+      result = prime * result
+            + ((allowedAccountIds == null) ? 0 : allowedAccountIds.hashCode());
+      result = prime * result + ((attrs == null) ? 0 : attrs.hashCode());
+      result = prime * result
+            + ((displayName == null) ? 0 : displayName.hashCode());
+      result = prime * result + ((tagName == null) ? 0 : tagName.hashCode());
+      return result;
    }
 }

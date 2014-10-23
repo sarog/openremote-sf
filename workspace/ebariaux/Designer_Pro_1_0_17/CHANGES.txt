@@ -7,6 +7,7 @@ Fixes:
 
 New features:
  - Update Domintell protocol to support ISM modules (MODELER-554)
+ - Have mechanism to limit protocol access to specific accounts (MODELER-550)
 
 Pro 1.0.16
 ==========
