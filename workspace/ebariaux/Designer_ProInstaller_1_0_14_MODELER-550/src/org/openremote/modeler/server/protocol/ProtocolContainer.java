@@ -26,7 +26,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Logger;
 
 import org.openremote.modeler.protocol.ProtocolDefinition;
 import org.openremote.modeler.service.ProtocolParser;
