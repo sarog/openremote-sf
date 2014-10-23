@@ -25,12 +25,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * The Class defines a protocol with its properties. A protocol has display name, tag name, allowed account
+ * The Class defines a protocol with its properties. A protocol has display name, tag name, allowed account id
  * and some attributes.
  * 
  * The protocol xml segment structure is similar following:</br>
  * 
- * &lt;protocol displayName="Infrared" tagName="ir" allowedAccountIds="account1,account2"&gt;</br>
+ * &lt;protocol displayName="Infrared" tagName="ir" allowedAccountIds="1, 23"&gt;</br>
       &lt;attr name="name" label="Name"&gt;</br>
          &lt;validations&gt;</br>
             &lt;allowBlank&gt;false&lt;/allowBlank&gt;</br>
