@@ -147,7 +147,7 @@ public class ProtocolCommandContainer {
       Set<String> protocolDisplayNames = protocolEvents.keySet();
       uiButtonEventXml.append("  <commands>\n");
       for (String protocolDisplayName : protocolDisplayNames) {
-         String protocolTagName = ProtocolContainer.findTagName(protocolDisplayName);
+         String protocolTagName = protocolContainer.findTagName(protocolDisplayName);
          for (Command uiButtonEvent : protocolEvents.get(protocolDisplayName)) {
             uiButtonEventXml.append("    <command id=\"" + uiButtonEvent.getId() + "\" protocol=\"" + protocolTagName + "\"");
             Set<String> protocolAttrKeySet = uiButtonEvent.getProtocolAttrs().keySet();

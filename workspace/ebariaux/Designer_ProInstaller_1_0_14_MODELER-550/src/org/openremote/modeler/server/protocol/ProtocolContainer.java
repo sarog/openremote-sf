@@ -125,7 +125,7 @@ public class ProtocolContainer implements Serializable {
     * 
     * @return the string
     */
-   public static String findTagName(String protocolDisplayName) {
+   public String findTagName(String protocolDisplayName) {
       ProtocolDefinition protocolDefinition = protocols.get(protocolDisplayName);
       return protocolDefinition == null ? "" : protocolDefinition.getTagName();
    }
