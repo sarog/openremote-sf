@@ -30,7 +30,14 @@ import org.openremote.modeler.server.protocol.ProtocolContainer;
  */
 public class ProtocolController extends BaseGWTSpringController implements ProtocolRPCService {
 
-   /** The Constant serialVersionUID. */
+  private ProtocolContainer protocolContainer;
+  
+  public void setProtocolContainer(ProtocolContainer protocolContainer)
+  {
+    this.protocolContainer = protocolContainer;
+  }
+
+  /** The Constant serialVersionUID. */
    private static final long serialVersionUID = 8057648010410493998L;
 
    /**
@@ -38,7 +45,7 @@ public class ProtocolController extends BaseGWTSpringController implements Proto
     * @see org.openremote.modeler.client.rpc.ProtocolRPCService#getProtocolContainer()
     */
    public ArrayList<ProtocolDefinition> getProtocols() {
-      return ProtocolContainer.getInstance().getProtocolsSortedByDisplayName();
+      return protocolContainer.getProtocolsSortedByDisplayName();
    }
 
 }

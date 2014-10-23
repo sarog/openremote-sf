@@ -66,6 +66,7 @@ import org.openremote.modeler.exception.NetworkException;
 import org.openremote.modeler.exception.UIRestoreException;
 import org.openremote.modeler.exception.XmlExportException;
 import org.openremote.modeler.logging.LogFacade;
+import org.openremote.modeler.server.protocol.ProtocolContainer;
 import org.openremote.modeler.service.ControllerConfigService;
 import org.openremote.modeler.service.DeviceCommandService;
 import org.openremote.modeler.service.DeviceMacroService;
@@ -107,6 +108,8 @@ public class ResourceServiceImpl implements ResourceService
 
   private ControllerConfigService controllerConfigService = null;
   private VelocityEngine velocity;
+
+  private ProtocolContainer protocolContainer;
 
   //
   // TODO : this implementation should go away with MODELER-288
@@ -416,8 +419,13 @@ public class ResourceServiceImpl implements ResourceService
    public void setUserService(UserService userService) {
       this.userService = userService;
    }
+   
+  public void setProtocolContainer(ProtocolContainer protocolContainer)
+  {
+    this.protocolContainer = protocolContainer;
+  }
 
-   /**
+  /**
     * Iterates over all buttons in the design and when the name is null, replaces with empty string.
     * Having null name causes issue when template is created from screen.
     *
@@ -740,6 +748,7 @@ public class ResourceServiceImpl implements ResourceService
 	  cache.setDeviceCommandService(deviceCommandService);
 	  cache.setControllerConfigService(controllerConfigService);
 	  cache.setVelocity(velocity);
+	  cache.setProtocolContainer(protocolContainer);
 
 	  return cache;
   }

@@ -95,26 +95,13 @@ public class ProtocolContainer implements Serializable {
       this.protocols = protocols;
       protocolsList = null;
    }
-
-
-   /** The instance. */
-   private static ProtocolContainer instance = new ProtocolContainer();
    
    /**
     * Instantiates a new protocol container.
     */
-   private ProtocolContainer() {
+   public ProtocolContainer() {
      ProtocolParser parser = new ProtocolParser();
      setProtocols(parser.parseXmls());
-   }
-
-   /**
-    * Gets the single instance of ProtocolContainer.
-    * 
-    * @return single instance of ProtocolContainer
-    */
-   public static synchronized ProtocolContainer getInstance() {
-      return instance;
    }
 
    /**
