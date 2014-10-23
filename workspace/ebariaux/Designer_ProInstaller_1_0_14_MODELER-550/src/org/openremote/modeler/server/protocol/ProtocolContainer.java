@@ -49,24 +49,24 @@ public class ProtocolContainer implements Serializable {
    private static Map<String, ProtocolDefinition> protocols = new HashMap<String, ProtocolDefinition>();
    
    /** The protocols as a list sorted by displayName. */
-   private static ArrayList<ProtocolDefinition> protocolsList;
+   private ArrayList<ProtocolDefinition> protocolsList;
 
    public synchronized ArrayList<ProtocolDefinition> getProtocolsSortedByDisplayName() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String name = auth.getName();
-        ProtocolContainer.protocolsList = new ArrayList<ProtocolDefinition>();
+        protocolsList = new ArrayList<ProtocolDefinition>();
         for (ProtocolDefinition protocolDefinition : protocols.values()) {
          if (protocolDefinition.getAllowedAccountIds() == null || protocolDefinition.getAllowedAccountIds().contains(name)) {
-            ProtocolContainer.protocolsList.add(protocolDefinition);
+            protocolsList.add(protocolDefinition);
          }
       }
-       Collections.sort(ProtocolContainer.protocolsList, new Comparator<ProtocolDefinition>() {
+       Collections.sort(protocolsList, new Comparator<ProtocolDefinition>() {
          @Override
          public int compare(ProtocolDefinition protocol1, ProtocolDefinition protocol2) {
            return protocol1.getDisplayName().compareToIgnoreCase(protocol2.getDisplayName());
          }
        });
-     return ProtocolContainer.protocolsList;
+     return protocolsList;
    }
    
    /**
@@ -85,7 +85,7 @@ public class ProtocolContainer implements Serializable {
     */
    private void setProtocols(Map<String, ProtocolDefinition> protocols) {
       ProtocolContainer.protocols = protocols;
-      ProtocolContainer.protocolsList = null;
+      protocolsList = null;
    }
 
 
