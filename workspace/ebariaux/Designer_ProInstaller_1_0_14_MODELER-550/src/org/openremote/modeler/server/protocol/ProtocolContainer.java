@@ -45,7 +45,7 @@ public class ProtocolContainer implements Serializable {
    private static final long serialVersionUID = -5478194408714473866L;
    
    /** The protocols. */
-   private static Map<String, ProtocolDefinition> protocols = new HashMap<String, ProtocolDefinition>();
+   private Map<String, ProtocolDefinition> protocols = new HashMap<String, ProtocolDefinition>();
    
    /** The protocols as a list sorted by displayName. */
    private ArrayList<ProtocolDefinition> protocolsList;
@@ -92,7 +92,7 @@ public class ProtocolContainer implements Serializable {
     * @param protocols the protocols
     */
    private void setProtocols(Map<String, ProtocolDefinition> protocols) {
-      ProtocolContainer.protocols = protocols;
+      this.protocols = protocols;
       protocolsList = null;
    }
 
