@@ -55,7 +55,7 @@ public class ProtocolContainer implements Serializable {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String name = auth.getName();
         ProtocolContainer.protocolsList = new ArrayList<ProtocolDefinition>();
-        for (ProtocolDefinition protocolDefinition : ProtocolContainer.getInstance().getProtocols().values()) {
+        for (ProtocolDefinition protocolDefinition : protocols.values()) {
          if (protocolDefinition.getAllowedAccountIds() == null || protocolDefinition.getAllowedAccountIds().contains(name)) {
             ProtocolContainer.protocolsList.add(protocolDefinition);
          }
