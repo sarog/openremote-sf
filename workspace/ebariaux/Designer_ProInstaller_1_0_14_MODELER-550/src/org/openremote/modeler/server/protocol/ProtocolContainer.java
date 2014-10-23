@@ -83,7 +83,7 @@ public class ProtocolContainer implements Serializable {
     * 
     * @param protocols the protocols
     */
-   public  void setProtocols(Map<String, ProtocolDefinition> protocols) {
+   private void setProtocols(Map<String, ProtocolDefinition> protocols) {
       ProtocolContainer.protocols = protocols;
       ProtocolContainer.protocolsList = null;
    }
