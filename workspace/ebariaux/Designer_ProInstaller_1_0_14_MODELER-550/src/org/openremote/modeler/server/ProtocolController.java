@@ -22,8 +22,8 @@ package org.openremote.modeler.server;
 import java.util.ArrayList;
 
 import org.openremote.modeler.client.rpc.ProtocolRPCService;
-import org.openremote.modeler.protocol.ProtocolContainer;
 import org.openremote.modeler.protocol.ProtocolDefinition;
+import org.openremote.modeler.server.protocol.ProtocolContainer;
 import org.openremote.modeler.service.ProtocolParser;
 
 /**

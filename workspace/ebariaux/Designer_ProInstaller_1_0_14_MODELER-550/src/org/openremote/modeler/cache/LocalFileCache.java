@@ -100,7 +100,7 @@ import org.openremote.modeler.exception.NetworkException;
 import org.openremote.modeler.exception.XmlExportException;
 import org.openremote.modeler.logging.AdministratorAlert;
 import org.openremote.modeler.logging.LogFacade;
-import org.openremote.modeler.protocol.ProtocolContainer;
+import org.openremote.modeler.server.protocol.ProtocolContainer;
 import org.openremote.modeler.service.ControllerConfigService;
 import org.openremote.modeler.service.DeviceCommandService;
 import org.openremote.modeler.service.DeviceMacroService;

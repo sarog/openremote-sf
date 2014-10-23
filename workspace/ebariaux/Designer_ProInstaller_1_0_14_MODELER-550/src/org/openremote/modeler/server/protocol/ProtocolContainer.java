@@ -18,7 +18,7 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-package org.openremote.modeler.protocol;
+package org.openremote.modeler.server.protocol;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -28,6 +28,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import org.openremote.modeler.protocol.ProtocolDefinition;
 import org.springframework.security.Authentication;
 import org.springframework.security.context.SecurityContextHolder;
 
