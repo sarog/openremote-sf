@@ -70,7 +70,11 @@ public class ProtocolCommandContainer {
     * Store all deviceCommands from database.
     */
    private List<DeviceCommand> allDBDeviceCommands = new ArrayList<DeviceCommand>();
-      
+
+   /**
+    * ProtocolContainer holding definitions of known protocols.
+    */
+   private ProtocolContainer protocolContainer;
    
    /**
     * Constructor<br />
@@ -80,6 +84,7 @@ public class ProtocolCommandContainer {
     * and then iterating the property <b>protocolEvents</b> will also generate the event xml segment for the new protocol.
     */
    public ProtocolCommandContainer(ProtocolContainer protocolContainer) {
+     this.protocolContainer = protocolContainer;
       Set<String> protocolDisplayNames = protocolContainer.getProtocols().keySet();
       for (String protocolDisplayName : protocolDisplayNames) {
          protocolEvents.put(protocolDisplayName, new ArrayList<Command>());
