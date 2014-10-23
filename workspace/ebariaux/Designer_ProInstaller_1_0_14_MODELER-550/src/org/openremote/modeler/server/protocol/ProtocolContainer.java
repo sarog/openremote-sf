@@ -27,10 +27,10 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.openremote.modeler.domain.User;
 import org.openremote.modeler.protocol.ProtocolDefinition;
 import org.openremote.modeler.service.ProtocolParser;
-import org.springframework.security.Authentication;
-import org.springframework.security.context.SecurityContextHolder;
+import org.openremote.modeler.service.UserService;
 
 /**
  * The Class is used for containing <b>ProtocolDefinition</b> of different protocol types.</br>
@@ -43,6 +43,8 @@ public class ProtocolContainer implements Serializable {
    
    /** The Constant serialVersionUID. */
    private static final long serialVersionUID = -5478194408714473866L;
+   
+   private UserService userService;
    
    /** The protocols. */
    private Map<String, ProtocolDefinition> protocols = new HashMap<String, ProtocolDefinition>();
@@ -67,10 +69,10 @@ public class ProtocolContainer implements Serializable {
      
      // Filter out the cached list based on what current user is allowed to us and return that
      ArrayList<ProtocolDefinition> filteredProtocolsList =  new ArrayList<ProtocolDefinition>();
-     Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-     String name = auth.getName();
+     User currentUser = userService.getCurrentUser();
+     String accountId = Long.toString(currentUser.getAccount().getOid());
      for (ProtocolDefinition protocolDefinition : protocolsList) {
-       if (protocolDefinition.getAllowedAccountIds() == null || protocolDefinition.getAllowedAccountIds().contains(name)) {
+       if (protocolDefinition.getAllowedAccountIds() == null || protocolDefinition.getAllowedAccountIds().contains(accountId)) {
          filteredProtocolsList.add(protocolDefinition);
        }
      }
@@ -115,4 +117,10 @@ public class ProtocolContainer implements Serializable {
       ProtocolDefinition protocolDefinition = protocols.get(protocolDisplayName);
       return protocolDefinition == null ? "" : protocolDefinition.getTagName();
    }
+
+  public void setUserService(UserService userService)
+  {
+    this.userService = userService;
+  }
+   
 }
