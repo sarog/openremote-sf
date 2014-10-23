@@ -2061,7 +2061,7 @@ public class LocalFileCache implements ResourceCache<File>
     UIComponentBox uiComponentBox = new UIComponentBox();
     initUIComponentBox(screens, uiComponentBox);
     Map<String, Object> context = new HashMap<String, Object>();
-    ProtocolCommandContainer eventContainer = new ProtocolCommandContainer();
+    ProtocolCommandContainer eventContainer = new ProtocolCommandContainer(ProtocolContainer.getInstance());
     eventContainer.setAllDBDeviceCommands(allDBDeviceCommands);
     addDataBaseCommands(eventContainer, maxId);
     ProtocolContainer protocolContainer = ProtocolContainer.getInstance();

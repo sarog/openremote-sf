@@ -79,8 +79,8 @@ public class ProtocolCommandContainer {
     * that's means when extending a new protocol, the <b>protocolContainer</b> will find the new protocol,<br />
     * and then iterating the property <b>protocolEvents</b> will also generate the event xml segment for the new protocol.
     */
-   public ProtocolCommandContainer() {
-      Set<String> protocolDisplayNames = ProtocolContainer.getInstance().getProtocols().keySet();
+   public ProtocolCommandContainer(ProtocolContainer protocolContainer) {
+      Set<String> protocolDisplayNames = protocolContainer.getProtocols().keySet();
       for (String protocolDisplayName : protocolDisplayNames) {
          protocolEvents.put(protocolDisplayName, new ArrayList<Command>());
       }
