@@ -175,8 +175,10 @@ public class UIImage extends UIComponent implements SensorOwner, SensorLinkOwner
       } else {
          imageSources.add(new ImageSource(DEFAULT_IMAGE_URL));
       }
-      if (sensor != null && sensorLink != null
-            && (sensor.getType() == SensorType.SWITCH || sensor.getType() == SensorType.CUSTOM)) {
+      
+      if (sensorDTO != null && sensorLink != null
+            && (sensorDTO.getType() == SensorType.SWITCH || sensorDTO.getType() == SensorType.CUSTOM)) {
+        
          Collection<LinkerChild> linkChildren = sensorLink.getLinkerChildren();
          if (linkChildren != null && !linkChildren.isEmpty()) {
             for (LinkerChild child : linkChildren) {

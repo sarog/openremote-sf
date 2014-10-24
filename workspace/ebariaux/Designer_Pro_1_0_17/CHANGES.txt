@@ -4,6 +4,8 @@ Pro 1.0.17
 Fixes:
  - Fixed: Orange selection indicator around grid not correctly sized (MODELER-356)
  - Fixed: Widgets shift by 1 pixel when being selected (MODELER-420)
+ - Fixed: Images linked to only to sensor state values are not included
+   as part of the exported openremote.zip file (MODELER-555)
 
 New features:
  - Update Domintell protocol to support ISM modules (MODELER-554)
