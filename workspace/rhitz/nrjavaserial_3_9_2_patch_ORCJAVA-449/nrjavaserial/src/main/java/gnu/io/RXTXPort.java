@@ -884,7 +884,8 @@ public class RXTXPort extends SerialPort
 		MonitorThreadLock = false;
 		MonitorThreadAlive=false;
 		monThreadisInterrupted=true;
-		z.reportln( "RXTXPort:removeEventListener() returning");
+        if (debug)
+		  z.reportln( "RXTXPort:removeEventListener() returning");
 	}
 	/**
 	 *	Give the native code a chance to start listening to the hardware

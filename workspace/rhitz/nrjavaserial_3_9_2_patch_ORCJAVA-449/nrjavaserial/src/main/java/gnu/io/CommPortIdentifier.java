@@ -85,7 +85,7 @@ public class CommPortIdentifier extends Object /* extends Vector? */
 	CommPortIdentifier next;
 	private int PortType;
 	private final static boolean debug = false;
-	static Object Sync;
+	static final Object Sync;
 	@SuppressWarnings("unchecked")
 	Vector ownershipListener;
 
