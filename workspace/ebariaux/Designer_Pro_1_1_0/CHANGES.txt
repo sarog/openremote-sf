@@ -3,6 +3,7 @@ Pro 1.1.0
 
 New features:
  - Use XML as persistence format for UI configuration instead of Java serialization (MODELER-450)
+ - Have an export/import functionality for a user configuration (MODELER-390)
 
 Pro 1.0.17
 ==========
