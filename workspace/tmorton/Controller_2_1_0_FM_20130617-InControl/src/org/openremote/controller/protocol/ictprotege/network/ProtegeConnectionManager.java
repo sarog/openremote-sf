@@ -30,7 +30,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
-import org.junit.runner.manipulation.Filter;
 import org.openremote.controller.model.sensor.Sensor;
 import org.openremote.controller.protocol.ictprotege.ChecksumType;
 import org.openremote.controller.protocol.ictprotege.EncryptionType;
