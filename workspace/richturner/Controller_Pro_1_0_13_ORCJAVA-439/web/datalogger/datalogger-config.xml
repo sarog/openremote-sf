@@ -13,17 +13,17 @@
 	<sensor name="Camera 3 Count Out" logRepeatSeconds="3600" />
 	<sensor name="Camera 4 Count Out" logRepeatSeconds="3600" />
 	<sensor name="Camera 5 Count Out" logRepeatSeconds="3600" />
-	<sensor name="Camera 1 Yesterday Total In" logRepeatSeconds="3600" />
-	<sensor name="Camera 2 Yesterday Total In" logRepeatSeconds="3600" />
-	<sensor name="Camera 3 Yesterday Total In" logRepeatSeconds="3600" />
-	<sensor name="Camera 4 Yesterday Total In" logRepeatSeconds="3600" />
-	<sensor name="Camera 5 Yesterday Total In" logRepeatSeconds="3600" />
-	<sensor name="Camera 1 Yesterday Total Out" logRepeatSeconds="3600" />
-	<sensor name="Camera 2 Yesterday Total Out" logRepeatSeconds="3600" />
-	<sensor name="Camera 3 Yesterday Total Out" logRepeatSeconds="3600" />
-	<sensor name="Camera 4 Yesterday Total Out" logRepeatSeconds="3600" />
-	<sensor name="Camera 5 Yesterday Total Out" logRepeatSeconds="3600" />
-	<sensor name="Camera 1 PPM In" logRepeatSeconds="3600" />
+	<sensor name="Camera 1 Yesterday Total In" logRepeatSeconds="43200" />
+	<sensor name="Camera 2 Yesterday Total In" logRepeatSeconds="43200" />
+	<sensor name="Camera 3 Yesterday Total In" logRepeatSeconds="43200" />
+	<sensor name="Camera 4 Yesterday Total In" logRepeatSeconds="43200" />
+	<sensor name="Camera 5 Yesterday Total In" logRepeatSeconds="43200" />
+	<sensor name="Camera 1 Yesterday Total Out" logRepeatSeconds="43200" />
+	<sensor name="Camera 2 Yesterday Total Out" logRepeatSeconds="43200" />
+	<sensor name="Camera 3 Yesterday Total Out" logRepeatSeconds="43200" />
+	<sensor name="Camera 4 Yesterday Total Out" logRepeatSeconds="43200" />
+	<sensor name="Camera 5 Yesterday Total Out" logRepeatSeconds="43200" />
+<!-- 	<sensor name="Camera 1 PPM In" logRepeatSeconds="3600" />
 	<sensor name="Camera 2 PPM In" logRepeatSeconds="3600" />
 	<sensor name="Camera 3 PPM In" logRepeatSeconds="3600" />
 	<sensor name="Camera 4 PPM In" logRepeatSeconds="3600" />
@@ -37,13 +37,13 @@
 	<sensor name="Camera 2 Density" logRepeatSeconds="3600" />
 	<sensor name="Camera 3 Density" logRepeatSeconds="3600" />
 	<sensor name="Camera 4 Density" logRepeatSeconds="3600" />
-	<sensor name="Camera 5 Density" logRepeatSeconds="3600" />
+	<sensor name="Camera 5 Density" logRepeatSeconds="3600" /> -->
 	<sensor name="Microphone 1 Level" logRepeatSeconds="3600" />
 	<sensor name="Microphone 2 Level" logRepeatSeconds="3600" />
 	<sensor name="Microphone 3 Level" logRepeatSeconds="3600" />
 	<sensor name="Microphone 4 Level" logRepeatSeconds="3600" />
 	<sensor name="Microphone 5 Level" logRepeatSeconds="3600" />
-	<sensor name="Light Level" logRepeatSeconds="3600" />
+	<!-- <sensor name="Light Level" logRepeatSeconds="3600" /> -->
 	<sensor name="Sound Level On Street Average" logRepeatSeconds="3600" />
 	<sensor name="Sound Level Behind Street Average" logRepeatSeconds="3600" />
 	<sensor name="Sound Level Average" logRepeatSeconds="3600" />
@@ -59,5 +59,8 @@
 	<sensor name="Crime Level 1" logRepeatSeconds="3600" />
 	<sensor name="Crime Level 2" logRepeatSeconds="3600" />
 	<sensor name="Crime Level 3" logRepeatSeconds="3600" />
-	<sensor name="Car Park Total Available" logRepeatSeconds="3600" />
+	<sensor name="MAC Total" logRepeatSeconds="3600" />
+	<sensor name="MAC Static" logRepeatSeconds="3600" />
+	<sensor name="MAC Recent" logRepeatSeconds="3600" />
+	<!-- <sensor name="Car Park Total Available" logRepeatSeconds="3600" /> -->
 </datalogger>
