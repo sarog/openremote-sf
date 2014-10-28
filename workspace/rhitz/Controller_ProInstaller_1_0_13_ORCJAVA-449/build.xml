@@ -103,7 +103,7 @@
   <path id = "compile.path.id">
     <fileset dir = "${lib.dir}/compile" includes = "**/*.jar"/>
     <fileset dir = "${lib.dir}/core" includes = "**/*.jar"/>
-    <fileset dir = "${lib.dir}/rxtx" includes = "**/*.jar"/>
+    <fileset dir = "${lib.dir}/nrjavaserial" includes = "**/*.jar"/>
     <fileset dir = "${lib.dir}/apache/commons-net" includes = "**/*.jar"/>
     <fileset dir = "${lib.dir}/apache/commons-lang" includes = "**/*.jar"/>
     <fileset dir = "${lib.dir}/clink" includes = "**/*.jar"/>
@@ -215,7 +215,7 @@
       <fileset dir = "${lib.dir}/apache">
         <include name = "**/*.jar"/>
       </fileset>
-      <fileset dir = "${lib.dir}/rxtx">
+      <fileset dir = "${lib.dir}/nrjavaserial">
         <include name = "**/*.jar"/>
       </fileset>
       <fileset dir = "${lib.dir}/json">
@@ -247,14 +247,6 @@
       </fileset>
     </copy>
 
-
-    <copy todir = "${build.dir}/lib/native" flatten = "true">
-      <fileset dir = "${lib.dir}/rxtx">
-        <include name = "**/*.dll"/>
-        <include name = "**/*.so"/>
-        <include name = "**/*.jnilib"/>
-      </fileset>
-    </copy>
 
     <copy todir = "${build.dir}/lib/native" flatten = "true">
       <fileset dir = "${lib.dir}/jzmq">
