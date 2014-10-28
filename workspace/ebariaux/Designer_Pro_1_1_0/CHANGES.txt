@@ -1,3 +1,9 @@
+Pro 1.1.0
+=========
+
+New features:
+ - Use XML as persistence format for UI configuration instead of Java serialization (MODELER-450)
+
 Pro 1.0.17
 ==========
 
