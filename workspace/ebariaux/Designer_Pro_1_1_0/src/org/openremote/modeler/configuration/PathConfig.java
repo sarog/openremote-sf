@@ -237,15 +237,6 @@ public class PathConfig {
       return  WEBROOTPATH;
    }
    
-  /**
-   * @param account - User account owning file
-   * @return Path to file storing building configuration elements in XML format
-   */
-  @Deprecated public String buildingModelerXmlFilePath(Account account) {
-    return userFolder(account) + "building_modeler.xml";
-  }
-
-
 //   public String getControllerConfigPath(){
 //      return configuration.getControllerConfigPath();
 //   }

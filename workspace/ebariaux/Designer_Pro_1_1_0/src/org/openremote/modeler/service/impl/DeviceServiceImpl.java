@@ -53,6 +53,7 @@ import org.openremote.modeler.shared.dto.DeviceCommandDTO;
 import org.openremote.modeler.shared.dto.DeviceCommandDetailsDTO;
 import org.openremote.modeler.shared.dto.DeviceDTO;
 import org.openremote.modeler.shared.dto.DeviceDetailsDTO;
+import org.openremote.modeler.shared.dto.DeviceDetailsWithChildrenDTO;
 import org.openremote.modeler.shared.dto.DeviceWithChildrenDTO;
 import org.openremote.modeler.shared.dto.SensorDTO;
 import org.openremote.modeler.shared.dto.SensorDetailsDTO;
@@ -60,6 +61,7 @@ import org.openremote.modeler.shared.dto.SliderDTO;
 import org.openremote.modeler.shared.dto.SliderDetailsDTO;
 import org.openremote.modeler.shared.dto.SwitchDTO;
 import org.openremote.modeler.shared.dto.SwitchDetailsDTO;
+import org.openremote.modeler.utils.dtoconverter.DeviceDTOConverter;
 import org.openremote.modeler.logging.LogFacade;
 import org.openremote.modeler.logging.AdministratorAlert;
 import org.openremote.modeler.exception.PersistenceException;
@@ -235,11 +237,11 @@ public class DeviceServiceImpl extends BaseAbstractService<Device> implements De
     * {@inheritDoc}
     */
    @Override   
-   public ArrayList<DeviceWithChildrenDTO> loadAllDeviceWithChildrenDTOs(Account account) {
+   public ArrayList<DeviceDetailsWithChildrenDTO> loadAllDeviceDetailsWithChildrenDTOs(Account account) {
      List<Device> devices = loadAll(account);
-     ArrayList<DeviceWithChildrenDTO> dtos = new ArrayList<DeviceWithChildrenDTO>();
+     ArrayList<DeviceDetailsWithChildrenDTO> dtos = new ArrayList<DeviceDetailsWithChildrenDTO>();
      for (Device d : devices) {
-       dtos.add(createDeviceWithChildrenDTO(d));
+       dtos.add(DeviceDTOConverter.createDeviceDetailsWithChildrenDTO(d));
      }
      return dtos;
    }
@@ -250,7 +252,7 @@ public class DeviceServiceImpl extends BaseAbstractService<Device> implements De
    @Override   
    public DeviceDetailsDTO loadDeviceDetailsDTOById(long id) {
      Device device = loadById(id);
-     return device.getDeviceDetailsDTO();
+     return (device != null)?device.getDeviceDetailsDTO():null;
    }
 
    /**
@@ -259,7 +261,7 @@ public class DeviceServiceImpl extends BaseAbstractService<Device> implements De
    @Override
    public DeviceWithChildrenDTO loadDeviceWithChildrenDTOById(long oid) {
      Device device = loadById(oid);
-     return createDeviceWithChildrenDTO(device);
+     return (device != null)?createDeviceWithChildrenDTO(device):null;
    }
 
    /**
@@ -319,6 +321,7 @@ public class DeviceServiceImpl extends BaseAbstractService<Device> implements De
 
 		Device device = new Device(deviceDTO.getName(), deviceDTO.getVendor(), deviceDTO.getModel());
 		device.setAccount(account);
+		account.getDevices().add(device);
 		device.storeTransient(ORIGINAL_OID_KEY, deviceDTO.getOid());
 
 		Map<DeviceCommandDetailsDTO, DeviceCommand> commandBeans = new HashMap<DeviceCommandDetailsDTO, DeviceCommand>();
@@ -360,6 +363,7 @@ public class DeviceServiceImpl extends BaseAbstractService<Device> implements De
 				sensor.setDevice(device);
 				sensor.setName(sensorDTO.getName());
 				sensor.setAccount(account);
+				account.getSensors().add(sensor);
 				sensor.storeTransient(ORIGINAL_OID_KEY, sensorDTO.getOid());
 	
 				DeviceCommand deviceCommand = commandBeans.get(sensorDTO.getCommand().getDto());
@@ -382,6 +386,7 @@ public class DeviceServiceImpl extends BaseAbstractService<Device> implements De
 				Switch sw = new Switch(onCommand, offCommand, sensor);
 				sw.setName(switchDTO.getName());
 				sw.setAccount(account);
+				account.getSwitches().add(sw);
 				sw.storeTransient(ORIGINAL_OID_KEY, switchDTO.getOid());
 				switchBeans.add(sw);
 			}
@@ -399,6 +404,7 @@ public class DeviceServiceImpl extends BaseAbstractService<Device> implements De
 	
 				Slider slider = new Slider(sliderDTO.getName(), command, sensor);
 				slider.setAccount(account);
+				account.getSliders().add(slider);
 				slider.storeTransient(ORIGINAL_OID_KEY, sliderDTO.getOid());
 				sliderBeans.add(slider);
 			}

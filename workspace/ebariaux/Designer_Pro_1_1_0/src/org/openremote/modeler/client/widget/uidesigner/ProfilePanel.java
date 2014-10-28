@@ -470,5 +470,11 @@ public class ProfilePanel extends ContentPanel {
   public boolean isInitialized() {
       return initialized;
    }
-   
+
+  /**
+   * Completely clears the tree displaying panels, groups and screens so it's empty.
+   */
+  public void clearPanelTree() {
+    panelTree.getStore().removeAll();
+  }
 }

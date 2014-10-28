@@ -27,10 +27,12 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.InvalidClassException;
 import java.io.ObjectInputStream;
 import java.io.OptionalDataException;
 import java.io.StreamCorruptedException;
+import java.io.UnsupportedEncodingException;
 import java.text.DecimalFormat;
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -293,7 +295,6 @@ class DesignerState
     }
   }
 
-
   protected static String uglyImageSourcePathHack(User user, String str)
   {
     // TODO :
@@ -383,11 +384,14 @@ class DesignerState
 
 
   /**
-   * Restores designer UI state to match the data found from Beehive. <p>
+   * Restores designer UI state to match the data found from the local cache or Beehive (if update is requested). <p>
    *
    * Note the various problems with this current implementation described in this class'
    * documentation.  <p>
    *
+   * @param updateLocalCache indicates local cache should be updated from Beehive before restore
+   * @param refreshDTOReferences indicates if DTOs linked to from UI elements should be refreshed from database.
+   *          This only applies if restoring the configuration from the new XML format.
    *
    * @throws NetworkException
    *            If any errors occur with the network connection when updating the cache
@@ -397,7 +401,7 @@ class DesignerState
    *            provides a {@link NetworkException.Severity severity level} which can be used
    *            to indicate the likelyhood that the network error can be recovered from.
    */
-  protected void restore() throws NetworkException
+  protected void restore(boolean updateLocalCache, boolean refreshDTOReferences) throws NetworkException
   {
 
     // collect some performance stats...
@@ -419,7 +423,9 @@ class DesignerState
 
 
       // synchronize user data from Beehive server...
-      cache.update();
+      if (updateLocalCache) {
+    	  cache.update();
+      }
 
       boolean hasLegacyDesignerUIState = cache.hasLegacyDesignerUIState();
       boolean hasCachedState = cache.hasState();
@@ -456,20 +462,22 @@ class DesignerState
         // TODO, should we delete legacy file if it exists ?
         // Otherwise we'll just have outdated legacy files laying around
 
-        try {
-          // The UI state does store full definition (e.g. including names) of the modeler elements it references         
-          // The current UI does not properly update those linked DTOs, it only updates properly the database.
-          // See MODELER-322
-          // Calling this here ensures the DTOs are recreated from the DB objects when loading a configuration.
-          refreshLinkedDTOReferences(panels);
-        } catch (Throwable t) {
-          // This exception type and message will propagate to the user...
-
-          throw new UIRestoreException(
-              "Restoring your account data has failed. Please contact an administrator for " +
-              "assistance. Avoid making further changes to your account and design to prevent " +
-              "any potential data corruption issues: " + t.getMessage(), t
-          );
+        if (refreshDTOReferences) {
+          try {
+            // The UI state does store full definition (e.g. including names) of the modeler elements it references         
+            // The current UI does not properly update those linked DTOs, it only updates properly the database.
+            // See MODELER-322
+            // Calling this here ensures the DTOs are recreated from the DB objects when loading a configuration.
+            refreshLinkedDTOReferences(panels);
+          } catch (Throwable t) {
+            // This exception type and message will propagate to the user...
+  
+            throw new UIRestoreException(
+                "Restoring your account data has failed. Please contact an administrator for " +
+                "assistance. Avoid making further changes to your account and design to prevent " +
+                "any potential data corruption issues: " + t.getMessage(), t
+            );
+          }
         }
 
         return;
@@ -1067,9 +1075,28 @@ class DesignerState
     xstream.alias("group", GroupRef.class);
     xstream.alias("screenPair", ScreenPairRef.class);
     xstream.alias("absolute", Absolute.class);
-    PanelsAndMaxOid panelsAndMaxOid = (PanelsAndMaxOid)xstream.fromXML(xmlUIFile);
-    panels = panelsAndMaxOid.getPanels();
-    maxOID = panelsAndMaxOid.getMaxOid();
+    InputStreamReader isr = null;
+    try {
+      // Going through a StreamReader to enforce UTF-8 encoding
+      isr = new InputStreamReader(new FileInputStream(xmlUIFile), "UTF-8");
+      PanelsAndMaxOid panelsAndMaxOid = (PanelsAndMaxOid)xstream.fromXML(isr);
+      panels = panelsAndMaxOid.getPanels();
+      maxOID = panelsAndMaxOid.getMaxOid();
+    } catch (UnsupportedEncodingException e) {
+      throw new RestoreFailureException("Issue reading file " + xmlUIFile.getAbsoluteFile() + " in UTF-8 : " + e.getMessage(), e);
+    } catch (FileNotFoundException e) {
+      throw new RestoreFailureException("Previously checked " + xmlUIFile.getAbsoluteFile() +
+          " can no longer be found, or was not a proper file : " + e.getMessage(), e
+      );
+    } finally {
+      if (isr != null) {
+        try {
+          isr.close();
+        } catch (IOException e) {
+          restoreLog.warn("Failed to close reader to " + xmlUIFile.getAbsolutePath() + " : " + e.getMessage(), e);
+        }
+      }
+    }
   }
 
 

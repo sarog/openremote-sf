@@ -28,7 +28,7 @@
 	<classpathentry kind="lib" path="lib/core/slf4j/slf4j-log4j12-1.5.0.jar"/>
 	<classpathentry kind="lib" path="lib/core/slf4j/slf4j-api-1.5.0.jar"/>
 	<classpathentry kind="lib" path="lib/core/log4j/log4j-1.2.12.jar"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/servlet-api"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/Tomcat Servlet"/>
 	<classpathentry kind="con" path="com.google.gwt.eclipse.core.GWT_CONTAINER"/>
 	<classpathentry kind="lib" path="lib/core/gwt/gwt-servlet.jar"/>
 	<classpathentry kind="lib" path="lib/core/antlr-2.7.6/antlr-2.7.6.jar"/>
@@ -69,5 +69,7 @@
 	<classpathentry kind="lib" path="lib/core/mysql-connector/mysql-connector-java-5.1.17-bin.jar"/>
 	<classpathentry kind="lib" path="lib/core/sun/activation-1.1.1.jar"/>
 	<classpathentry kind="lib" path="lib/core/sun/transaction-api-1.1-rev-1.jar"/>
+	<classpathentry kind="lib" path="lib/core/xstream/xstream-1.4.3.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/GWT"/>
 	<classpathentry kind="output" path="war/WEB-INF/classes"/>
 </classpath>

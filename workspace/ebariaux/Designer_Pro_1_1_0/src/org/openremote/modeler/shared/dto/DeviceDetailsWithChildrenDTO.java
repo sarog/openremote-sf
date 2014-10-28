@@ -62,8 +62,10 @@ public class DeviceDetailsWithChildrenDTO extends DeviceDetailsDTO {
    * are replaced with a reference to the DTO instance.
    * 
    * This is useful when this object comes from DB, where ids are used for relationship.
+   * 
+   * @return Map<Long, DeviceCommandDetailsDTO> a map from id to DTO for commands that are part of this device
    */
-  public void replaceIdWithDTOInReferences() {
+  public Map<Long, DeviceCommandDetailsDTO> replaceIdWithDTOInReferences() {
     Map<Long, DeviceCommandDetailsDTO> commandsPerId = new HashMap<Long, DeviceCommandDetailsDTO>();
     if (getDeviceCommands() != null) {
       for (DeviceCommandDetailsDTO dc : getDeviceCommands()) {
@@ -111,6 +113,8 @@ public class DeviceDetailsWithChildrenDTO extends DeviceDetailsDTO {
         }
       }
     }
+    
+    return commandsPerId;
   }
 
 }
