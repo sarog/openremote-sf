@@ -1,3 +1,12 @@
+
+#NOTE
+
+This release includes patches to the original nrjavaserial release by OpenRemote, Inc.
+
+See more detailed patch information at the end of the document.
+
+
+
 #About
 
 This is a fork of the RXTX library with a focus on ease of use and the ability to embed in other libraries. 
@@ -57,5 +66,14 @@ $make ppc #This will attempt to build the PPC binaries.
 $make osx #This will attempt to build the OSX binaries. 
 
 
+#OpenRemote Patches
+
+
+##ORCJAVA-449##
+
+Prevent NPE when the serial port is closed 
+
+Note that this fix is just a workaround and not a real bug fix. It's still a mystery 
+why static variables are set to null after initialization. 
 
 
