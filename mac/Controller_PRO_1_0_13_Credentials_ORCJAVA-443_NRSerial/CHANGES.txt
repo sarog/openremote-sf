@@ -1,3 +1,11 @@
+
+ORCJAVA-449
+===========
+
+  - Replace RXTX library with nrjavaserial library
+    (Rainer Hitz)
+
+
 ORCJAVA-422
 ===========
 
