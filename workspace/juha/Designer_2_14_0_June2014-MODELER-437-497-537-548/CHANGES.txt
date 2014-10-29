@@ -1,3 +1,9 @@
+MODELER-507
+===========
+
+  - Logout not working under Firefox
+
+
 MODELER-548
 ===========
 
@@ -97,7 +103,6 @@ Designer 2.14.0 (2013-XX-XX Markab)
    - MODELER-398: Setting a sensor on a Web element does not work
    - MODELER-392: Fractional Widget Coordinates when Browser
      has non-default zoom
-
 
 
 Designer 2.13.9 (2013-03-30 Rosemary)
