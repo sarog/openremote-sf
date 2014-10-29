@@ -1,48 +1,45 @@
-/* 
+/*
  * OpenRemote, the Home of the Digital Home.
- * Copyright 2008-2011, OpenRemote Inc.
- * 
+ * Copyright 2008-2012, OpenRemote Inc.
+ *
  * See the contributors.txt file in the distribution for a
  * full listing of individual contributors.
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
  * published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package org.openremote.controller.protocol.ictprotege;
 
 /**
- * Enumerator of the record types to control in Protege. * 
+ * Checksum type for ICT protege packets.
  * 
  * @author Tomas Morton
  */
-public enum ProtegeRecordType {
-    SYSTEM( (byte) 0x00), 
-    DOOR( (byte) 0x01),
-    AREA( (byte) 0x02),
-    OUTPUT( (byte) 0x03),
-    INPUT( (byte) 0x04),
-    VARIABLE( (byte) 0x05),
-    CONFIG( (byte) (0xF0));
+public enum ChecksumType
+{
+    CHECKSUM_NONE((byte) 0x00),
+    CHECKSUM_8((byte) 0x01),
+    CHECKSUM_16_CRC((byte) 0x02);
+
+    private final byte commandValue;
     
-    private final byte value;
-            
-    private ProtegeRecordType(byte value)
+    private ChecksumType(byte commandValue)
     {
-        this.value = value;        
+        this.commandValue = commandValue;
     }
-        
-    public byte getValue()
+
+    public byte getCommandValue()
     {
-        return value;
-    }    
+        return commandValue;
+    }
 }
