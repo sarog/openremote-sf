@@ -25,6 +25,7 @@ import org.openremote.controller.Constants;
 import org.openremote.controller.ControllerConfiguration;
 import org.openremote.controller.DenonAVRSerialConfiguration;
 import org.openremote.controller.EnOceanConfiguration;
+import org.openremote.controller.ZWaveConfiguration;
 import org.openremote.controller.RoundRobinConfiguration;
 import org.openremote.controller.LutronHomeWorksConfig;
 import org.openremote.controller.MarantzAVRConfig;
@@ -95,6 +96,7 @@ public abstract class ServiceContext
     CONTROLLER_CONFIGURATION("configuration"),                // TODO : To be removed, see ORCJAVA-183
     ROUND_ROBIN_CONFIGURATION("roundRobinConfig"),            // TODO : To be removed, see ORCJAVA-183
     LUTRON_HOMEWORKS_CONFIGURATION("lutronHomeWorksConfig"),  // TODO : To be removed, see ORCJAVA-183
+    ZWAVE_CONFIGURATION("zwaveConfig"),                       // TODO : To be removed, see ORCJAVA-183
     MARANTZ_AVR_CONFIGURATION("marantzAVRConfig"),            // TODO : To be removed, see ORCJAVA-183
     AMX_NI_CONFIGURATION("AMXNIConfig"),                      // TODO : To be removed, see ORCJAVA-183
     DEVICE_STATE_CACHE("statusCache"),                        // TODO : Deprecated, see ORCJAVA-197
@@ -186,6 +188,21 @@ public abstract class ServiceContext
     {
       throw new Error(
           "Lutron HomeWorks Configuration service has had an incompatible change.", e
+      );
+    }
+  }
+
+  public static ZWaveConfiguration getZWaveConfiguration()
+  {
+    try
+    {
+      return (ZWaveConfiguration)getInstance().getService(ServiceName.ZWAVE_CONFIGURATION);
+    }
+
+    catch (ClassCastException e)
+    {
+      throw new Error(
+          "ZWave Configuration service has had an incompatible change.", e
       );
     }
   }
