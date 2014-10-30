@@ -23,13 +23,17 @@ package org.openremote.modeler.domain;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Set;
 
 import javax.persistence.Transient;
 
 import org.openremote.modeler.client.Constants;
+import org.openremote.modeler.domain.component.Gesture;
 import org.openremote.modeler.domain.component.ImageSource;
+import org.openremote.modeler.domain.component.UIComponent;
+import org.openremote.modeler.domain.component.UIGrid;
 import org.openremote.modeler.domain.component.UITabbar;
 import org.openremote.modeler.domain.component.UITabbarItem;
 import org.openremote.modeler.touchpanel.TouchPanelCanvasDefinition;
@@ -314,7 +318,72 @@ public class Panel extends BusinessEntity implements BeanModelTag
     return imageNames;
   }
 
-
+  /**
+   * Walks the given panel collection and apply provided operation to all encompassed UIComponents.
+   * 
+   * This should eventually be an instance method on some objects representing the whole UI configuration.
+   * In addition specific instance method on Panel and Group should be added to hide data structure implementation at each level.
+   * 
+   * @param panels Collection of panel containing UIComponents to apply operation to
+   * @param operation Operation to apply to all UIComponents
+   */
+  public static void walkAllUIComponents(Collection<Panel> panels, UIComponentOperation operation)
+  {
+    if (operation == null) {
+      return;
+    }
+    IdentityHashMap<UIComponent, Void> visitedComponents = new IdentityHashMap<UIComponent, Void>();
+    for (Panel panel : panels) {
+      for (GroupRef groupRef : panel.getGroupRefs()) {
+        Group group = groupRef.getGroup();
+        for (ScreenPairRef screenRef : group.getScreenRefs()) {
+          ScreenPair screenPair = screenRef.getScreen();
+          Screen screen = screenPair.getPortraitScreen();
+          if (screen != null) {
+            walkAllUIComponents(screen, operation, visitedComponents);
+          }
+          screen = screenPair.getLandscapeScreen();
+          if (screen != null) {
+            walkAllUIComponents(screen, operation, visitedComponents);
+          }
+        }
+      }
+    }
+  }
+  
+  /**
+   * Walk all the UIComponents in the given screen and apply the operation to it.
+   *
+   * This should eventually be an instance method on Screen, hiding the data structure implementation.
+   * 
+   * @param screen Screen containing UIComponents to apply operation to
+   * @param operation Operation to apply to all UIComponents
+   */
+  private static void walkAllUIComponents(Screen screen, UIComponentOperation operation, IdentityHashMap<UIComponent, Void> visitedComponents)
+  {
+    for (Absolute absolute : screen.getAbsolutes()) {
+      UIComponent component = absolute.getUiComponent();
+      if (!visitedComponents.containsKey(component)) {
+        operation.execute(component);
+        visitedComponents.put(component, null);
+      }
+    }
+    for (UIGrid grid : screen.getGrids()) {
+      for (Cell cell : grid.getCells()) {
+        UIComponent component = cell.getUiComponent();
+        if (!visitedComponents.containsKey(component)) {
+          operation.execute(component);
+          visitedComponents.put(component, null);
+        }
+      }
+    }
+    for (Gesture gesture : screen.getGestures()) {
+      if (!visitedComponents.containsKey(gesture)) {
+        operation.execute(gesture);
+        visitedComponents.put(gesture, null);
+      }
+    }
+  }
 
   // Instance Fields ------------------------------------------------------------------------------
 
@@ -443,4 +512,17 @@ public class Panel extends BusinessEntity implements BeanModelTag
     return groups;
   }
 
+  /**
+   * Operation to be applied on a UIComponent when walking the UI configuration.
+   * For each encountered UIComponent, the execute method will be called.
+   */
+	public interface UIComponentOperation
+  {
+		/**
+		 * Method that will be called on the UIComponent, implements whatever logic needs to be applied.
+		 * 
+		 * @param component UIComponent on which to execute operation
+		 */
+		void execute(UIComponent component);
+	}
 }

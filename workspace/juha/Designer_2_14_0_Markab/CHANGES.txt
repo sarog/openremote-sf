@@ -1,8 +1,7 @@
-Designer 2.14.0 (2013-XX-XX Markab)
+Designer 2.14.0 (2014-10-30 Markab)
 ===================================
 
  New Features:
-
    - Micasaverde Vera protocol and configuration (Marcus Redeker,
      MODELER-456)
    - EnOcean configuration (Rainer Hitz, MODELER-470)
@@ -26,7 +25,7 @@ Designer 2.14.0 (2013-XX-XX Markab)
      Redeker)
    - Add 'line ending' configuration to UDP protocol
      (MODELER-513, Simon Vincent)
-
+   - ICT Protege Configuration (MOEELER-548, Tomas Morton)
 
  Fixes:
 
@@ -48,6 +47,22 @@ Designer 2.14.0 (2013-XX-XX Markab)
    - MODELER-505: LIRC 'name' property renamed to 
      'remotename' and updated import tool accordingly 
      (Marcus Redeker)
+   - MODELER-528: Generated XML files (controller/panel) 
+     contain duplicate ids. Fixed by increasing offset from 
+     100k to 100m (Eric Bariaux)
+   - MODELER-530: Remove regexp validation of UDP IP address
+   - MODELER-437: Refactor walking the UIComponent objects 
+     within a panels collection (Eric Bariaux)
+   - MODELER-497: Fixed walking functionality from MODELER-437 
+     which iterates multiple times over the same component
+     (Eric Bariaux)
+   - MODELER-537: When restoring the panel configuration,
+     compute the maxOid value by walking the restored tree
+     and use to validate (and fix) the restored maxOid value
+     (Eric Bariaux)
+   - MODELER-507: Logout not working under Firefox (Eric
+     Bariaux)
+
 
  Internal:
 

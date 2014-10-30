@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openremote xmlns="http://www.openremote.org" 
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xsi:schemaLocation="http://www.openremote.org protocol.xsd">
+
+  <protocol displayName="ICT Protege" tagName="ictprotege">
+
+    <attr name="record-command" label="Command" 
+			options="Door Lock,Door Unlock,Door Latch,Area Disarm,Area Disarm 24hr,Area Disarm All,Area Arm,Area Force Arm,Area Stay Arm,Area Instant Arm,Output Off,Output On,Output On Timed,Input Remove Bypass,Input Temporary Bypass,Input Permanent Bypass,Variable Set,System Monitor Record,System Request Events,Send Login,Clear Login,PIN Digit,Monitor Login Status,Monitor Connection Status,Monitor Queued Commands,Monitor PIN Display">
+      <validations>
+        <allowBlank>false</allowBlank>
+        <regex message="">.*</regex>
+      </validations>
+    </attr>
+
+    <attr name="record-index" label="Record Index">
+      <validations>
+        <allowBlank>true</allowBlank>
+        <regex message="Only numbers allowed">[0-9]*</regex>
+      </validations>
+    </attr>
+
+    <attr name="record-value" label="Record Value">
+      <validations>
+        <allowBlank>true</allowBlank>
+        <regex message="Valid entries are Door, Area, Output, Input, Variable or a number">Door|Area|Output|Input|Variable|[0-9]*</regex>
+      </validations>
+    </attr>
+	
+  </protocol>
+</openremote> 
