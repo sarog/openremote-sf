@@ -264,6 +264,8 @@ public class BeehiveCommandCheckServiceTest
       Thread.sleep(2000);
 
 
+      // Check what the server receives...
+
       Assert.assertTrue(receiver.getMethod() == HttpReceiver.Method.GET);
       Assert.assertTrue(receiver.getPath().equalsIgnoreCase("/commands/" + CONTROLLER_ID));
       Assert.assertTrue(receiver.getHost(), receiver.getHost().equalsIgnoreCase(HOSTNAME));
@@ -272,6 +274,8 @@ public class BeehiveCommandCheckServiceTest
 
       Assert.assertTrue(receiver.getHeader("User-Agent").toLowerCase().contains("openremote"));
       Assert.assertTrue(receiver.getHeader("Accept").toLowerCase().contains("application/json"));
+
+      Assert.assertTrue(receiver.getRequestMessageBody() == null);
     }
 
     finally
@@ -289,7 +293,6 @@ public class BeehiveCommandCheckServiceTest
   }
 
 
-  
 
 
   // Helper Methods -------------------------------------------------------------------------------
