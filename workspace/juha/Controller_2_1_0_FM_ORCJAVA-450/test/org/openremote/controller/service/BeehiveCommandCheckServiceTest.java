@@ -23,6 +23,7 @@ package org.openremote.controller.service;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
+import java.net.URI;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.KeyStore;
@@ -71,7 +72,7 @@ public class BeehiveCommandCheckServiceTest
   private static PrivateKey privateKey;
   private static Certificate certificate;
   private static HostnameVerifier oldVerifier;
-
+  private static URI controllerBaseDir;
 
   // Test Lifecycle -------------------------------------------------------------------------------
 
@@ -89,9 +90,11 @@ public class BeehiveCommandCheckServiceTest
     // store the certificate in a trust store and establish a hostname verifier that accepts
     // localhost connections regardless of the (self-signed) certificate used...
 
+    controllerBaseDir = setControllerBaseDir();
+
     Security.addProvider(new BouncyCastleProvider());
 
-    KeyPair keyPair = createKeyPair();
+    KeyPair keyPair = KeyPairGenerator.getInstance("RSA").generateKeyPair();
 
     certificate = createCertificate(keyPair);
     privateKey = keyPair.getPrivate();
@@ -107,6 +110,8 @@ public class BeehiveCommandCheckServiceTest
         return hostname.equalsIgnoreCase("localhost");
       }
     });
+
+
   }
 
   /**
@@ -123,6 +128,74 @@ public class BeehiveCommandCheckServiceTest
     HttpsURLConnection.setDefaultHostnameVerifier(oldVerifier);
   }
 
+  /**
+   * Establish a base directory for test controller resources...
+   */
+  private static URI setControllerBaseDir()
+  {
+    URI baseDir = new File(System.getProperty("java.io.tmpdir"), "or-controller-test").toURI();
+
+    File controllerBase = new File(baseDir);
+
+    if (!controllerBase.exists())
+    {
+      boolean success = controllerBase.mkdirs();
+
+      if (!success)
+      {
+        throw new RuntimeException("Could not create controller base " + controllerBaseDir);
+      }
+    }
+
+    return baseDir;
+  }
+
+  /**
+   * Create a self-signed certificate for a key pair.
+   */
+  private static Certificate createCertificate(KeyPair keyPair)
+      throws X509CertificateBuilder.CertificateBuilderException
+  {
+    X509CertificateBuilder builder = new BouncyCastleX509CertificateBuilder();
+
+    return builder.createSelfSignedCertificate(
+        keyPair,
+        new X509CertificateBuilder.Configuration(
+            X509CertificateBuilder.SignatureAlgorithm.SHA512_WITH_RSA,
+            "testissuer"
+        )
+    );
+  }
+
+  /**
+   * Clear the trust store properties.
+   */
+  private static void clearSystemTrustStore()
+  {
+    System.clearProperty("javax.net.ssl.trustStore");
+    System.clearProperty("javax.net.ssl.trustStorePassword");
+  }
+
+  private static File setSystemTrustStore(Certificate cert) throws Exception
+  {
+    File dir = new File(controllerBaseDir);
+    File truststore = new File(dir, ".truststore");
+
+    truststore.deleteOnExit();
+
+    KeyStore trust = KeyStore.getInstance("JKS");
+
+    trust.load(null, null);
+    trust.setCertificateEntry("cert", cert);
+    trust.store(new FileOutputStream(truststore), "foo".toCharArray());
+
+    Assert.assertTrue(truststore.exists());
+
+    System.setProperty("javax.net.ssl.trustStore", truststore.getAbsoluteFile().toString());
+    System.setProperty("javax.net.ssl.trustStorePassword", "foo");
+
+    return truststore;
+  }
 
 
   // Unit Tests -----------------------------------------------------------------------------------
@@ -173,7 +246,9 @@ public class BeehiveCommandCheckServiceTest
       config.setRemoteCommandRequestInterval("60s");
       config.setBeehiveAccountServiceRESTRootUrl("::loopback," + CONTROLLER_ID + "::");
       config.setRemoteCommandServiceURI("https://" + HOSTNAME + ":" + PORT);
-      config.setResourcePath(System.getProperty("user.dir")); // TODO
+      config.setResourcePath(
+          new File(new File(controllerBaseDir), "remote-command-request-test").getAbsolutePath()
+      );
 
       // We need a resource dir for the controller's keystore...
 
@@ -214,12 +289,25 @@ public class BeehiveCommandCheckServiceTest
   }
 
 
+  
+
+
   // Helper Methods -------------------------------------------------------------------------------
 
 
   private void createUserResourceDir(ControllerConfiguration config, String username) throws Exception
   {
     File dir = new File(config.getResourcePath());
+
+    if (!dir.exists())
+    {
+      boolean success = dir.mkdirs();
+
+      if (!success)
+      {
+        throw new RuntimeException("Cannot create controller resource dir " + dir);
+      }
+    }
 
     // Where controller expects to find the currently verified user name...
 
@@ -263,55 +351,6 @@ public class BeehiveCommandCheckServiceTest
     }
 
     return null;
-  }
-
-  private static KeyPair createKeyPair() throws NoSuchAlgorithmException
-  {
-    KeyPairGenerator generator = KeyPairGenerator.getInstance("RSA");
-
-    return generator.generateKeyPair();
-  }
-
-  private static Certificate createCertificate(KeyPair keyPair)
-      throws X509CertificateBuilder.CertificateBuilderException
-  {
-    X509CertificateBuilder builder = new BouncyCastleX509CertificateBuilder();
-
-    return builder.createSelfSignedCertificate(
-        keyPair,
-        new X509CertificateBuilder.Configuration(
-            X509CertificateBuilder.SignatureAlgorithm.SHA512_WITH_RSA,
-            "testissuer"
-        )
-    );
-  }
-
-  private static void clearSystemTrustStore()
-  {
-    System.clearProperty("javax.net.ssl.trustStore");
-    System.clearProperty("javax.net.ssl.trustStorePassword");
-  }
-
-
-  private static File setSystemTrustStore(Certificate cert) throws Exception
-  {
-    File ddir = new File(System.getProperty("user.dir"));
-    File truststore = new File(ddir, ".truststore");
-
-    truststore.deleteOnExit();
-
-    KeyStore trust = KeyStore.getInstance("JKS");
-
-    trust.load(null, null);
-    trust.setCertificateEntry("cert", cert);
-    trust.store(new FileOutputStream(truststore), "foo".toCharArray());
-
-    Assert.assertTrue(truststore.exists());
-
-    System.setProperty("javax.net.ssl.trustStore", truststore.getAbsoluteFile().toString());
-    System.setProperty("javax.net.ssl.trustStorePassword", "foo");
-
-    return truststore;
   }
 
 
