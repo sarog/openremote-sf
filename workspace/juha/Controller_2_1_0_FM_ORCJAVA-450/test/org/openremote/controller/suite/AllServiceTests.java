@@ -1,6 +1,6 @@
 /*
  * OpenRemote, the Home of the Digital Home.
- * Copyright 2008-2011, OpenRemote Inc.
+ * Copyright 2008-2014, OpenRemote Inc.
  *
  * See the contributors.txt file in the distribution for a
  * full listing of individual contributors.
@@ -23,6 +23,7 @@ package org.openremote.controller.suite;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
+import org.openremote.controller.service.BeehiveCommandCheckServiceTest;
 import org.openremote.controller.service.PollingServiceTest;
 import org.openremote.controller.service.ProfileServiceTest;
 import org.openremote.controller.service.DeployerTest;
@@ -33,7 +34,8 @@ import org.openremote.controller.service.DeployerTest;
    ProfileServiceTest.class,
    PollingServiceTest.class,
 
-   DeployerTest.class
+   DeployerTest.class,
+   BeehiveCommandCheckServiceTest.class
 }
 )
 
