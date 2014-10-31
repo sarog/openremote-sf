@@ -56,7 +56,7 @@ public class HttpReceiver implements TCPTestServer.Receiver
   private Headers headers = new Headers();
   private Map<String, String> responses = new HashMap<String, String>(3);
   private Map<Pattern, String> regex = new HashMap<Pattern, String>();
-
+  private StringBuilder requestMessageBody = null;
 
 
   // Public Instance Methods ----------------------------------------------------------------------
@@ -127,9 +127,16 @@ public class HttpReceiver implements TCPTestServer.Receiver
     return headers.getHeader(name);
   }
 
+  public String getRequestMessageBody()
+  {
+    return (requestMessageBody == null) ? null : requestMessageBody.toString();
+  }
+
 
   // TCPTestServer.Receiver Implementation --------------------------------------------------------
 
+
+  private boolean readingRequestDocument = false;
 
   /**
    * Attempts to interpret the incoming TCP connection content as HTTP 1.1 request.
@@ -138,7 +145,7 @@ public class HttpReceiver implements TCPTestServer.Receiver
   {
     // if connection has no more content (likely socket closed)...
 
-    if (tcpString == null)
+    if (tcpString == null && !readingRequestDocument)
     {
       return;
     }
@@ -153,14 +160,31 @@ public class HttpReceiver implements TCPTestServer.Receiver
 
     else
     {
+      if (tcpString == null && readingRequestDocument)
+      {
+        respond(response);
+
+        return;
+      }
+
       // if we receive the empty line after method and/or headers, assume the rest is the
       // request payload
 
       if (tcpString.trim().equals(""))
       {
-        // TODO : currently ignoring request document if any...
+        readingRequestDocument = true;
 
-        respond(response);
+        return;
+      }
+
+      if (readingRequestDocument)
+      {
+        if (addRequestDocumentLine(tcpString))
+        {
+          respond(response);
+
+          return;
+        }
       }
 
       // otherwise attempt to resolve lines as HTTP headers until we reach the empty line
@@ -213,6 +237,23 @@ public class HttpReceiver implements TCPTestServer.Receiver
 
 
   // Private Instance Methods ---------------------------------------------------------------------
+
+  private boolean addRequestDocumentLine(String line)
+  {
+    if (line == null)
+    {
+      return true;
+    }
+
+    if (requestMessageBody == null)
+    {
+      requestMessageBody = new StringBuilder();
+    }
+
+    requestMessageBody.append(line);
+
+    return requestMessageBody.length() >= headers.contentLength;
+  }
 
   private boolean resolveHeader(String tcpString)
   {
