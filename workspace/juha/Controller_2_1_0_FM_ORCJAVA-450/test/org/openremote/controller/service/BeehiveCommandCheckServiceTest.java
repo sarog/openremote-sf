@@ -234,7 +234,7 @@ public class BeehiveCommandCheckServiceTest
 
       // respond to HTTP GET to Host: https://[HOSTNAME]:[PORT]/commands/[CONTROLLER_ID]...
 
-      receiver.addResponse(HttpReceiver.Method.GET, "/commands/1", response);
+      receiver.addResponse(HttpReceiver.Method.GET, "/commands/" + CONTROLLER_ID, response);
       s = new SecureTCPTestServer(PORT, privateKey, certificate, receiver);
 
       s.start();
@@ -255,8 +255,9 @@ public class BeehiveCommandCheckServiceTest
       createUserResourceDir(config, USERNAME);
 
 
-      // Start the deployer and give it 2 seconds to start up (this is brittle but requires
-      // a component lifecycle interface to be added in order to make robust)...
+      // Start the deployer and give it 2 seconds to start up and crete first remote command check
+      // request (this is brittle but requires a component lifecycle interface to be added in
+      // order to make robust)...
 
       cs = new BeehiveCommandCheckService(config);
       cs.start(DeployerTest.createDeployer(config));
@@ -276,6 +277,95 @@ public class BeehiveCommandCheckServiceTest
       Assert.assertTrue(receiver.getHeader("Accept").toLowerCase().contains("application/json"));
 
       Assert.assertTrue(receiver.getRequestMessageBody() == null);
+    }
+
+    finally
+    {
+      if (cs != null)
+      {
+        cs.stop();
+      }
+
+      if (s != null)
+      {
+        s.stop();
+      }
+    }
+  }
+
+
+  /**
+   * Basic test to check that the controller continuously checks for remote commands,
+   * despite receiving unexpected/erroneous response documents. Also tests remote command
+   * loop frequence configuration.<p>
+   *
+   * This test uses locally configured controller ID.
+   *
+   * @throws Exception    if test fails
+   */
+  @Test public void testRemoteCommandRequestLoop() throws Exception
+  {
+    SecureTCPTestServer s = null;
+
+    final Long CONTROLLER_ID = 1L;
+    final String HOSTNAME = "localhost";
+    final int PORT = 19999;
+    final String USERNAME = "randomname";
+
+    BeehiveCommandCheckService cs = null;
+
+    try
+    {
+      // create a HTTP response...
+
+      ArrayList<ControllerCommandDTO> list = new ArrayList<ControllerCommandDTO>();
+      GenericResourceResultWithErrorMessage garbage = new GenericResourceResultWithErrorMessage(null, list);
+      String response = new JSONSerializer().include("result").serialize(garbage);
+
+      // Create a modified TCP server HTTP receiver component that counts the number of requests
+      // we are making from client to server...
+
+      CountingHttpReceiver receiver = new CountingHttpReceiver();
+
+
+      // respond to HTTP GET to Host: https://[HOSTNAME]:[PORT]/commands/[CONTROLLER_ID]...
+
+      receiver.addResponse(HttpReceiver.Method.GET, "/commands/" + CONTROLLER_ID, response);
+      s = new SecureTCPTestServer(PORT, privateKey, certificate, receiver);
+
+      s.start();
+
+
+      // Create a deployer configuration for the CCS service, tuned up to one remote command
+      // request every 250 milliseconds...
+
+      ControllerConfiguration config = new ControllerConfiguration();
+      config.setRemoteCommandRequestInterval("250ms");
+      config.setRemoteCommandServiceURI("https://" + HOSTNAME + ":" + PORT);
+      config.setBeehiveAccountServiceRESTRootUrl("::loopback," + CONTROLLER_ID + "::");
+      config.setResourcePath(
+          new File(new File(controllerBaseDir), "remote-command-request-loop-test").getAbsolutePath()
+      );
+
+
+      // We need a resource dir for the controller's keystore...
+
+      createUserResourceDir(config, USERNAME);
+
+
+      // Start the deployer and give it 2 seconds to start up and accumulate 4 remote command
+      // check requests  (this is brittle but requires a component lifecycle interface to be
+      // added in order to make robust)...
+
+      cs = new BeehiveCommandCheckService(config);
+      cs.start(DeployerTest.createDeployer(config));
+
+      Thread.sleep(2000);
+
+
+      // Should have time to accumulate at least 4 requests in two seconds (one per 250 ms)...
+
+      Assert.assertTrue("Got " + receiver.count, receiver.count >= 4);
     }
 
     finally
