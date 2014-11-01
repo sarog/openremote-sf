@@ -383,6 +383,154 @@ public class BeehiveCommandCheckServiceTest
   }
 
 
+  /**
+   * This test ensures the remote command check thread stays alive despite attempting to
+   * connect to a non-existing server...
+   *
+   * @throws Exception if test fails
+   */
+  @Test public void testRemoteCommandRequestNoServer() throws Exception
+  {
+    final Long CONTROLLER_ID = 1L;
+    final String HOSTNAME = "localhost";
+    final int PORT = 19888;
+    final String USERNAME = "randomname";
+
+
+    // Create a deployer configuration for the CCS service. There's nothing running at
+    // port [PORT]
+
+    ControllerConfiguration config = new ControllerConfiguration();
+    config.setRemoteCommandRequestInterval("250ms");
+    config.setRemoteCommandServiceURI("https://" + HOSTNAME + ":" + PORT);
+    config.setBeehiveAccountServiceRESTRootUrl("::loopback," + CONTROLLER_ID + "::");
+    config.setResourcePath(
+        new File(new File(controllerBaseDir), "remote-command-request-noserver-test").getAbsolutePath()
+    );
+
+
+    // We need a resource dir for the controller's keystore...
+
+    createUserResourceDir(config, USERNAME);
+
+
+    BeehiveCommandCheckService cs = new BeehiveCommandCheckService(config);
+
+    try
+    {
+      cs.start(DeployerTest.createDeployer(config));
+
+      Thread.sleep(1000);
+
+      // Check that the thread is still alive and spinning....
+
+      Thread t = getRemoteCommandThread();
+
+      if (t == null)
+      {
+        Assert.fail("Test failed, thread has been erased.");
+      }
+
+      Assert.assertTrue(t.isAlive());
+      Assert.assertTrue(t.getState() != Thread.State.TERMINATED);
+      Assert.assertTrue(!t.isInterrupted());
+    }
+
+    finally
+    {
+      cs.stop();
+    }
+  }
+
+
+
+  /**
+   * Tests thread for remote commands when server is responding slowly (or not at all) and
+   * the response timeout kicks in.<p>
+   *
+   * This test uses locally configured controller ID.
+   *
+   * @throws Exception    if test fails
+   */
+  @Test public void testRemoteCommandRequestNoResponse() throws Exception
+  {
+    SecureTCPTestServer s = null;
+
+    final Long CONTROLLER_ID = 1L;
+    final String HOSTNAME = "localhost";
+    final int PORT = 19199;
+    final String USERNAME = "randomname";
+
+    BeehiveCommandCheckService cs = null;
+
+    try
+    {
+      // create a HTTP response...
+
+      ArrayList<ControllerCommandDTO> list = new ArrayList<ControllerCommandDTO>();
+      GenericResourceResultWithErrorMessage garbage = new GenericResourceResultWithErrorMessage(null, list);
+      String response = new JSONSerializer().include("result").serialize(garbage);
+
+      // Create a modified TCP server receiver component that will never send the response
+      // but counts the number of times it receives a valid requests and *should* have responded...
+
+      MuteHttpReceiver receiver = new MuteHttpReceiver();
+
+
+      receiver.addResponse(HttpReceiver.Method.GET, "/commands/" + CONTROLLER_ID, response);
+      s = new SecureTCPTestServer(PORT, privateKey, certificate, receiver);
+
+      s.start();
+
+
+      // Create a deployer configuration for the CCS service. This is tuned to send a request
+      // every 250 milliseconds but only to a shorter response timeout, waiting only 200 ms
+      // for the server to respond before discarding the request...
+
+      ControllerConfiguration config = new ControllerConfiguration();
+      config.setRemoteCommandRequestInterval("250ms");
+      config.setRemoteCommandResponseTimeout("200ms");
+      config.setBeehiveAccountServiceRESTRootUrl("::loopback," + CONTROLLER_ID + "::");
+      config.setRemoteCommandServiceURI("https://" + HOSTNAME + ":" + PORT);
+      config.setResourcePath(
+          new File(new File(controllerBaseDir), "remote-command-request-noresponse-test").getAbsolutePath()
+      );
+
+
+      // We need a resource dir for the controller's keystore...
+
+      createUserResourceDir(config, USERNAME);
+
+
+      // Start the deployer and give it 2 seconds to start up and accumulate 4 remote command
+      // check requests  (this is brittle but requires a component lifecycle interface to be
+      // added in order to make robust)...
+
+      cs = new BeehiveCommandCheckService(config);
+      cs.start(DeployerTest.createDeployer(config));
+
+      Thread.sleep(2000);
+
+      // Should have accumulated at least four requests in this time, despite there being
+      // no responses from the server since the response timeout is low (200 milliseconds)...
+
+      Assert.assertTrue("" + receiver.count, receiver.count >= 4);
+    }
+
+    finally
+    {
+      if (cs != null)
+      {
+        cs.stop();
+      }
+
+      if (s != null)
+      {
+        s.stop();
+      }
+    }
+  }
+
 
 
   // Helper Methods -------------------------------------------------------------------------------
@@ -450,6 +598,10 @@ public class BeehiveCommandCheckServiceTest
 
   // Nested Classes -------------------------------------------------------------------------------
 
+  /**
+   * Test TCP server receiver that counts the number of incoming requests (assuming they're
+   * a valid requests mapping to a response).
+   */
   private static class CountingHttpReceiver extends HttpReceiver
   {
     private int count = 0;
@@ -462,6 +614,10 @@ public class BeehiveCommandCheckServiceTest
     }
   }
 
+  /**
+   * Test TCP server receiver which won't send responses back to the client -- just counts
+   * the number of responses it should've sent.
+   */
   private static class MuteHttpReceiver extends HttpReceiver
   {
     private int count = 0;
