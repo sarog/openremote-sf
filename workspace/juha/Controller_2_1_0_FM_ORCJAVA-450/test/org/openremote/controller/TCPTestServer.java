@@ -520,7 +520,14 @@ public class TCPTestServer
 
             String incoming = bin.readLine();
 
-            if (receiver != null)
+            if (incoming == null)
+            {
+              log.info("End of stream reached. Closing...");
+
+              socketReading = false;
+            }
+
+            if (receiver != null && socketReading)
             {
               receiver.received(incoming, new Response()
               {
