@@ -34,6 +34,7 @@ import java.security.cert.Certificate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.Semaphore;
 import java.util.regex.Pattern;
 
 import javax.net.ssl.HostnameVerifier;
@@ -572,14 +573,17 @@ public class BeehiveCommandCheckServiceTest
 
       // Set up a receiver for the remote command service URL path /commands/[CONTROLLER_ID]...
 
-      HttpReceiver receiver2 = new HttpReceiver();
+      Semaphore completed = new Semaphore(1);
+      completed.acquire();
+
+      HttpReceiver receiver2 = new NotifyingReceiver(completed);
       receiver2.addResponse(HttpReceiver.Method.GET, "/commands/" + CONTROLLER_ID, response);
       s2 = new SecureTCPTestServer(PORT_S2, privateKey, certificate, receiver2);
 
       s2.start();
 
 
-      // Create a deployer with aconfiguration for both account service and
+      // Create a deployer with a configuration for both account service and
       // remote command service...
 
       ControllerConfiguration config = new ControllerConfiguration();
@@ -598,15 +602,15 @@ public class BeehiveCommandCheckServiceTest
       cs = new BeehiveCommandCheckService(config);
       cs.start(DeployerTest.createDeployer(config));
 
-      Thread.sleep(1000);
+      completed.acquire();
 
-
+      
       // Assert remote controller ID HTTP POST request...
 
       Assert.assertTrue(receiver.getMethod().equals(HttpReceiver.Method.POST));
       Assert.assertTrue(
           "Got '" + receiver.getPath() +  "'",
-          receiver.getPath().startsWith("/controller/announce/")
+          receiver.getPath().equals("/controller/announce/" + BeehiveCommandCheckService.getMACAddresses())
       );
 
       // Assert remote command url...
@@ -635,6 +639,117 @@ public class BeehiveCommandCheckServiceTest
       }
     }
   }
+
+
+  /**
+   * Tests remote command service that returns INITIATE_PROXY command and tests a socket
+   * connection is made from controller to the given URL with a given token.
+   *
+   * @throws Exception  if test fails
+   */
+  @Test public void testInitiateProxy() throws Exception
+  {
+    SecureTCPTestServer s = null;
+    SecureTCPTestServer s2 = null;
+
+    final Long CONTROLLER_ID = 1L;
+    final String HOSTNAME = "localhost";
+    final int PORT = 19988;
+    final int PORT_2 = 19998;
+
+    final String USERNAME = "randomname";
+    final String PROXY_TOKEN = "random-token";
+
+    BeehiveCommandCheckService cs = null;
+
+    try
+    {
+      // Create a remote command service response to initiate proxy to server...
+
+      ArrayList<ControllerCommandDTO> list = new ArrayList<ControllerCommandDTO>();
+      ControllerCommandDTO cmd = new ControllerCommandDTO();
+
+      cmd.setCommandTypeEnum(ControllerCommandDTO.Type.INITIATE_PROXY);
+      Map<String, String> params = new HashMap<String, String>();
+      params.put("url", "https://" + HOSTNAME + ":" + PORT_2);
+      params.put("token", PROXY_TOKEN);
+      cmd.setCommandParameter(params);
+      list.add(cmd);
+
+      GenericResourceResultWithErrorMessage garbage = new GenericResourceResultWithErrorMessage(null, list);
+      String response = new JSONSerializer().include("result").serialize(garbage);
+
+
+      // Attach a HTTP receiver that responds to https://localhost:[PORT]/commands/[CONTROLLER_ID]...
+
+      HttpReceiver receiver = new HttpReceiver();
+      receiver.addResponse(HttpReceiver.Method.GET, "/commands/" + CONTROLLER_ID, response);
+      s = new SecureTCPTestServer(PORT, privateKey, certificate, receiver);
+
+      s.start();
+
+
+      // Attach a TCP receiver that listens on the configured INITIATE_PROXY 'url' parameter...
+
+      final Semaphore complete = new Semaphore(1);
+      complete.acquire();
+
+      s2 = new SecureTCPTestServer(PORT_2, privateKey, certificate, new TCPTestServer.Receiver()
+      {
+        @Override public void received(String tcpString, TCPTestServer.Response response)
+        {
+          // client initiating a proxy should send back a token we gave them...
+
+          Assert.assertTrue(tcpString.equals(PROXY_TOKEN));
+
+          complete.release();
+        }
+      });
+
+      s2.start();
+
+
+      // Deployer config for remote command service...
+
+      ControllerConfiguration config = new ControllerConfiguration();
+      config.setRemoteCommandRequestInterval("60s");
+      config.setBeehiveAccountServiceRESTRootUrl("::loopback," + CONTROLLER_ID + "::");
+      config.setRemoteCommandServiceURI("https://" + HOSTNAME + ":" + PORT);
+      config.setResourcePath(
+          new File(new File(controllerBaseDir), "remote-command-initiate-proxy-test").getAbsolutePath()
+      );
+
+
+      // We need a resource dir for the controller's keystore...
+
+      createUserResourceDir(config, USERNAME);
+
+
+      cs = new BeehiveCommandCheckService(config);
+      cs.start(DeployerTest.createDeployer(config));
+
+      complete.acquire();
+    }
+
+    finally
+    {
+      if (cs != null)
+      {
+        cs.stop();
+      }
+
+      if (s != null)
+      {
+        s.stop();
+      }
+
+      if (s2 != null)
+      {
+        s2.stop();
+      }
+    }
+  }
+
 
 
   // Helper Methods -------------------------------------------------------------------------------
@@ -715,6 +830,23 @@ public class BeehiveCommandCheckServiceTest
       super.respond(response);
 
       count++;
+    }
+  }
+
+  private static class NotifyingReceiver extends HttpReceiver
+  {
+    Semaphore semaphore;
+
+    NotifyingReceiver(Semaphore sharedSemaphore)
+    {
+      this.semaphore = sharedSemaphore;
+    }
+
+    @Override protected void respond(TCPTestServer.Response response)
+    {
+      super.respond(response);
+
+      semaphore.release();
     }
   }
 
