@@ -298,7 +298,7 @@ public class BeehiveCommandCheckServiceTest
   /**
    * Basic test to check that the controller continuously checks for remote commands,
    * despite receiving unexpected/erroneous response documents. Also tests remote command
-   * loop frequence configuration.<p>
+   * loop frequency configuration.<p>
    *
    * This test uses locally configured controller ID.
    *
@@ -326,7 +326,7 @@ public class BeehiveCommandCheckServiceTest
       // Create a modified TCP server HTTP receiver component that counts the number of requests
       // we are making from client to server...
 
-      CountingHttpReceiver receiver = new CountingHttpReceiver();
+      CountingHttpReceiver receiver = new CountingHttpReceiver(4);
 
 
       // respond to HTTP GET to Host: https://[HOSTNAME]:[PORT]/commands/[CONTROLLER_ID]...
@@ -354,19 +354,21 @@ public class BeehiveCommandCheckServiceTest
       createUserResourceDir(config, USERNAME);
 
 
-      // Start the deployer and give it 2 seconds to start up and accumulate 4 remote command
-      // check requests  (this is brittle but requires a component lifecycle interface to be
-      // added in order to make robust)...
+      // Start the deployer and give it time to accumulate 4 remote command
+      // check requests...
 
       cs = new BeehiveCommandCheckService(config);
       cs.start(DeployerTest.createDeployer(config));
 
-      Thread.sleep(2000);
+      receiver.sharedSemaphore.acquire();
 
+      // Should have accumulated 4 requests within time period of 1 to 1.25 seconds...
 
-      // Should have time to accumulate at least 4 requests in two seconds (one per 250 ms)...
-
-      Assert.assertTrue("Got " + receiver.count, receiver.count >= 4);
+      Assert.assertTrue("Got " + receiver.currentCount, receiver.currentCount >= 4);
+      Assert.assertTrue(
+          "Took " + receiver.executionTime.toString() + " ms, is config broken or ur puter slow?",
+          receiver.executionTime + 250 >= 1000 && receiver.executionTime + 250 <= 1250
+      );
     }
 
     finally
@@ -475,7 +477,7 @@ public class BeehiveCommandCheckServiceTest
       // Create a modified TCP server receiver component that will never send the response
       // but counts the number of times it receives a valid requests and *should* have responded...
 
-      MuteHttpReceiver receiver = new MuteHttpReceiver();
+      MuteHttpReceiver receiver = new MuteHttpReceiver(4);
 
 
       receiver.addResponse(HttpReceiver.Method.GET, "/commands/" + CONTROLLER_ID, response);
@@ -503,19 +505,22 @@ public class BeehiveCommandCheckServiceTest
       createUserResourceDir(config, USERNAME);
 
 
-      // Start the deployer and give it 2 seconds to start up and accumulate 4 remote command
-      // check requests  (this is brittle but requires a component lifecycle interface to be
-      // added in order to make robust)...
+      // Start the deployer and give it time to accumulate 4 remote command
+      // check requests...
 
       cs = new BeehiveCommandCheckService(config);
       cs.start(DeployerTest.createDeployer(config));
 
-      Thread.sleep(2000);
+      receiver.sharedSemaphore.acquire();
 
-      // Should have accumulated at least four requests in this time, despite there being
+      // Should have accumulated at least four requests within a second, despite there being
       // no responses from the server since the response timeout is low (200 milliseconds)...
 
-      Assert.assertTrue("" + receiver.count, receiver.count >= 4);
+      Assert.assertTrue("" + receiver.currentCount, receiver.currentCount >= 4);
+      Assert.assertTrue(
+          "Took " + receiver.executionTime.toString() + "ms, is config broken or your puter slow?",
+          receiver.executionTime >= 800 && receiver.executionTime <= 1200
+      );
     }
 
     finally
@@ -549,6 +554,7 @@ public class BeehiveCommandCheckServiceTest
     final int PORT_S1 = 19299;
     final int PORT_S2 = 19399;
     final String USERNAME = "randomname";
+    final String macAddressList = BeehiveCommandCheckService.getMACAddresses();
 
     BeehiveCommandCheckService cs = null;
 
@@ -562,10 +568,10 @@ public class BeehiveCommandCheckServiceTest
       String response = new JSONSerializer().include("result").serialize(result);
 
 
-      // Set up a receiver for the account service URL path /controller/announce/*
+      // Set up a receiver for the account service URL path /controller/announce/[MAC ADDRESS LIST]
 
       HttpReceiver receiver = new HttpReceiver();
-      receiver.addResponse(Pattern.compile("/controller/announce/.*"), response);
+      receiver.addResponse(HttpReceiver.Method.POST, "/controller/announce/" + macAddressList, response);
       s1 = new SecureTCPTestServer(PORT_S1, privateKey, certificate, receiver);
 
       s1.start();
@@ -604,13 +610,13 @@ public class BeehiveCommandCheckServiceTest
 
       completed.acquire();
 
-      
+
       // Assert remote controller ID HTTP POST request...
 
       Assert.assertTrue(receiver.getMethod().equals(HttpReceiver.Method.POST));
       Assert.assertTrue(
           "Got '" + receiver.getPath() +  "'",
-          receiver.getPath().equals("/controller/announce/" + BeehiveCommandCheckService.getMACAddresses())
+          receiver.getPath().equals("/controller/announce/" + macAddressList)
       );
 
       // Assert remote command url...
@@ -821,32 +827,89 @@ public class BeehiveCommandCheckServiceTest
    * Test TCP server receiver that counts the number of incoming requests (assuming they're
    * a valid requests mapping to a response).
    */
-  private static class CountingHttpReceiver extends HttpReceiver
+  private static class CountingHttpReceiver extends NotifyingReceiver
   {
-    private int count = 0;
+    protected int currentCount = 0;
+    protected int countToComplete = 0;
+    protected Long executionTime = 0L;
+
+    private Long firstExecutionTime = 0L;
+
+    private CountingHttpReceiver(int countToComplete) throws InterruptedException
+    {
+      super(initSemaphore(new Semaphore(1)));
+
+      this.countToComplete = countToComplete;
+    }
 
     @Override protected void respond(TCPTestServer.Response response)
     {
+      startTimer();
+
       super.respond(response);
 
-      count++;
+      count();
+    }
+
+    @Override protected void semaphoreRelease()
+    {
+      // override to no-op -- release semaphore only after count() condition
+    }
+
+    protected void startTimer()
+    {
+      if (currentCount == 0)
+      {
+        firstExecutionTime = System.currentTimeMillis();
+      }
+    }
+
+    protected void count()
+    {
+      currentCount++;
+
+      if (currentCount >= countToComplete)
+      {
+        executionTime = System.currentTimeMillis() - firstExecutionTime;
+
+        sharedSemaphore.release();
+      }
     }
   }
 
+
+  /**
+   * A notifying receiver that can be used via a semaphore to notify the test whenever an
+   * expected condition has been fulfilled and test can continue.  <p>
+   *
+   * By default counts down by one the semaphore permits after the response has been sent.
+   */
   private static class NotifyingReceiver extends HttpReceiver
   {
-    Semaphore semaphore;
+    protected Semaphore sharedSemaphore;
 
-    NotifyingReceiver(Semaphore sharedSemaphore)
+    protected static Semaphore initSemaphore(Semaphore semaphore) throws InterruptedException
     {
-      this.semaphore = sharedSemaphore;
+      semaphore.acquire();
+
+      return semaphore;
+    }
+
+    private NotifyingReceiver(Semaphore sharedSemaphore)
+    {
+      this.sharedSemaphore = sharedSemaphore;
     }
 
     @Override protected void respond(TCPTestServer.Response response)
     {
       super.respond(response);
 
-      semaphore.release();
+      semaphoreRelease();
+    }
+
+    protected void semaphoreRelease()
+    {
+      sharedSemaphore.release();
     }
   }
 
@@ -854,15 +917,21 @@ public class BeehiveCommandCheckServiceTest
    * Test TCP server receiver which won't send responses back to the client -- just counts
    * the number of responses it should've sent.
    */
-  private static class MuteHttpReceiver extends HttpReceiver
+  private static class MuteHttpReceiver extends CountingHttpReceiver
   {
-    private int count = 0;
+
+    private MuteHttpReceiver(int countToComplete) throws InterruptedException
+    {
+      super(countToComplete);
+    }
 
     @Override protected void respond(TCPTestServer.Response response)
     {
       // don't respond...
 
-      count++;
+      startTimer();
+
+      super.count();
     }
   }
 }
