@@ -533,6 +533,110 @@ public class BeehiveCommandCheckServiceTest
 
 
 
+  /**
+   * Basic test for checking remote commands with remotely retrieved controller ID.
+   *
+   * @throws Exception    if test fails
+   */
+  @Test public void testRemoteControllerID() throws Exception
+  {
+    SecureTCPTestServer s1 = null;
+    SecureTCPTestServer s2 = null;
+
+    final Long CONTROLLER_ID = 123L;
+    final String HOSTNAME = "localhost";
+    final int PORT_S1 = 19299;
+    final int PORT_S2 = 19399;
+    final String USERNAME = "randomname";
+
+    BeehiveCommandCheckService cs = null;
+
+    try
+    {
+      // create a HTTP response for controller announcement in account service...
+
+      ControllerDTO controller = new ControllerDTO();
+      controller.setOid(CONTROLLER_ID);
+      GenericResourceResultWithErrorMessage result = new GenericResourceResultWithErrorMessage(null, controller);
+      String response = new JSONSerializer().include("result").serialize(result);
+
+
+      // Set up a receiver for the account service URL path /controller/announce/*
+
+      HttpReceiver receiver = new HttpReceiver();
+      receiver.addResponse(Pattern.compile("/controller/announce/.*"), response);
+      s1 = new SecureTCPTestServer(PORT_S1, privateKey, certificate, receiver);
+
+      s1.start();
+
+
+      // Set up a receiver for the remote command service URL path /commands/[CONTROLLER_ID]...
+
+      HttpReceiver receiver2 = new HttpReceiver();
+      receiver2.addResponse(HttpReceiver.Method.GET, "/commands/" + CONTROLLER_ID, response);
+      s2 = new SecureTCPTestServer(PORT_S2, privateKey, certificate, receiver2);
+
+      s2.start();
+
+
+      // Create a deployer with aconfiguration for both account service and
+      // remote command service...
+
+      ControllerConfiguration config = new ControllerConfiguration();
+      config.setBeehiveAccountServiceRESTRootUrl("https://" + HOSTNAME + ":" + PORT_S1 + "/");
+      config.setRemoteCommandServiceURI("https://" + HOSTNAME + ":" + PORT_S2);
+      config.setResourcePath(
+          new File(new File(controllerBaseDir), "remote-command-remote-id-test").getAbsolutePath()
+      );
+
+
+      // We need a resource dir for the controller's keystore...
+
+      createUserResourceDir(config, USERNAME);
+
+
+      cs = new BeehiveCommandCheckService(config);
+      cs.start(DeployerTest.createDeployer(config));
+
+      Thread.sleep(1000);
+
+
+      // Assert remote controller ID HTTP POST request...
+
+      Assert.assertTrue(receiver.getMethod().equals(HttpReceiver.Method.POST));
+      Assert.assertTrue(
+          "Got '" + receiver.getPath() +  "'",
+          receiver.getPath().startsWith("/controller/announce/")
+      );
+
+      // Assert remote command url...
+
+      Assert.assertTrue(
+          receiver2.getPath(),
+          receiver2.getPath().equalsIgnoreCase("/commands/" + CONTROLLER_ID)
+      );
+    }
+
+    finally
+    {
+      if (cs != null)
+      {
+        cs.stop();
+      }
+
+      if (s1 != null)
+      {
+        s1.stop();
+      }
+
+      if (s2 != null)
+      {
+        s2.stop();
+      }
+    }
+  }
+
+
   // Helper Methods -------------------------------------------------------------------------------
 
 
