@@ -71,7 +71,7 @@ public class HttpReceiver implements TCPTestServer.Receiver
 
   /**
    * Adds a response object to a given regexp pattern. The regular expression must match the
-   * HTTP method and path elements, so for example 'GET /something/.*'.
+   * HTTP path element, so for example '/something/.*'.
    */
   public void addResponse(Pattern pattern, String response)
   {
@@ -162,6 +162,8 @@ public class HttpReceiver implements TCPTestServer.Receiver
     {
       if (tcpString == null && readingRequestDocument)
       {
+        readingRequestDocument = false;
+
         respond(response);
 
         return;
@@ -170,17 +172,24 @@ public class HttpReceiver implements TCPTestServer.Receiver
       // if we receive the empty line after method and/or headers, assume the rest is the
       // request payload
 
-      if (tcpString.trim().equals(""))
+      else if (tcpString.trim().equals(""))
       {
         readingRequestDocument = true;
 
-        return;
+        if (headers.contentLength == 0)
+        {
+          respond(response);
+        }
       }
 
-      if (readingRequestDocument)
+      else if (readingRequestDocument)
       {
         if (addRequestDocumentLine(tcpString))
         {
+          readingRequestDocument = false;
+
+          TCPTestServer.log.info("MESSAGE BODY: \n" + requestMessageBody);
+
           respond(response);
 
           return;
@@ -392,7 +401,7 @@ public class HttpReceiver implements TCPTestServer.Receiver
     private String host = "";
     private Integer port = 80;
     private String userAgent = "";
-    private Integer contentLength;
+    private Integer contentLength = 0;
 
 
     private String getHeader(String name)
