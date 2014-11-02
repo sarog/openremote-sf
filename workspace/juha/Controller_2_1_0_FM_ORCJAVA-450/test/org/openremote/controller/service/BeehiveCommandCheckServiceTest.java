@@ -231,7 +231,9 @@ public class BeehiveCommandCheckServiceTest
 
       // create a secure TCP server with a HTTP receiver component...
 
-      HttpReceiver receiver = new HttpReceiver();
+      Semaphore completed = new Semaphore(1);
+      completed.acquire();
+      HttpReceiver receiver = new NotifyingReceiver(completed);
 
       // respond to HTTP GET to Host: https://[HOSTNAME]:[PORT]/commands/[CONTROLLER_ID]...
 
@@ -256,14 +258,12 @@ public class BeehiveCommandCheckServiceTest
       createUserResourceDir(config, USERNAME);
 
 
-      // Start the deployer and give it 2 seconds to start up and crete first remote command check
-      // request (this is brittle but requires a component lifecycle interface to be added in
-      // order to make robust)...
+      // Start the deployer and wait for first remote command check request...
 
       cs = new BeehiveCommandCheckService(config);
       cs.start(DeployerTest.createDeployer(config));
 
-      Thread.sleep(2000);
+      completed.acquire();
 
 
       // Check what the server receives...
