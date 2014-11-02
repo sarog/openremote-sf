@@ -1,8 +1,17 @@
+ORCJAVA-450
+===========
+
+  - Fix an issue with ORCJAVA-411 that used HTTP GET instead
+    of HTTP POST for controller MAC address announcement -- 
+    used when retrieving controller ID from a remote service
+    (Juha Lindfors)
+
+
 ORCJAVA-411
 ===========
 
   - Convert Beehive remote proxy service to blocking I/O 
-    (Marcus Redeker)
+    (Juha Lindfors, Marcus Redeker)
 
 
 ORCJAVA-425
@@ -11,6 +20,7 @@ ORCJAVA-425
   - Fix broken changes introduced to test suite in 
     mredeker/Controller_2_0_1_Beehive_Proxy branch, as 
     part of ORCJAVA-424  (Juha Lindfors)
+
 
 
 Controller 2.1.0 (2014-XX-XX Twin Galaxies)
