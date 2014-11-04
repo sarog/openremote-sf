@@ -71,6 +71,14 @@ public class BeehiveCommandCheckService
 
   // TODO : Remove this enclosing class, it has no purpose, all the functionality is in the nested class
 
+  // TODO :
+  //        look into making http.keepAlive and http.maxConnections  properties externally
+  //        configurable, possibly also provider specific configurations such as :
+  //          - sun.net.http.errorstream.enableBuffering
+  //          - sun.net.http.errorstream.timeout
+  //          - sun.net.http.errorstream.bufferSize
+
+
 
   // Constants ------------------------------------------------------------------------------------
 
@@ -1073,15 +1081,22 @@ public class BeehiveCommandCheckService
 
 
     /**
-     * TODO
-     *
      * Resolves the URL to request remote commands based on controller's configuration
      * and controller's identity.
-     *
-     * @param username    currently required because controller's identity is stored remotely
      */
     private URL getRemoteCommandService(String username) throws ConfigurationException
     {
+      //
+      // IMPLEMENTATION NOTES :
+      //
+      //    - username parameter is required when controller's ID is resolved from
+      //      a remote server, not otherwise
+      //    - if remote ID resolution has been configured (no ::loopback::) this method
+      //      blocks indefinitely until such a remote controller ID is returned
+      //
+      // See other notes why the remote controller ID resolution should be removed.
+
+
       String uriPath = "";
       URI base = null;
       URI uri = null;
