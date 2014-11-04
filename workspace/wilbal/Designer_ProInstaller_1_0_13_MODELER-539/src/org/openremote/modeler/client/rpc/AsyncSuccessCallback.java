@@ -80,7 +80,7 @@ public abstract class AsyncSuccessCallback<T> implements AsyncCallback<T> {
                @Override
                public void handleEvent(MessageBoxEvent be) {
                   if (be.getButtonClicked().getItemId().equals(Dialog.YES)) {
-                     Window.open("login.jsp", "_self", "");
+                     Window.Location.reload();
                   }
                }
             });
