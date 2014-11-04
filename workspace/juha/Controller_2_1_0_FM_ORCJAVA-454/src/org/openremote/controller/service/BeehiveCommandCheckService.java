@@ -98,12 +98,12 @@ public class BeehiveCommandCheckService
 
   public static String getMACAddresses() throws Exception
   {
-    StringBuffer macs = new StringBuffer();
+    StringBuilder macs = new StringBuilder();
     Enumeration<NetworkInterface> enum1 = NetworkInterface.getNetworkInterfaces();
 
     while (enum1.hasMoreElements())
     {
-      NetworkInterface networkInterface = (NetworkInterface) enum1.nextElement();
+      NetworkInterface networkInterface = enum1.nextElement();
 
       if (!networkInterface.isLoopback())
       {
