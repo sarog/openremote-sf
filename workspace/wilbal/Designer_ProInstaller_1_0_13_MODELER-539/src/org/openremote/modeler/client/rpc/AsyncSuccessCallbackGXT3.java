@@ -21,6 +21,7 @@ package org.openremote.modeler.client.rpc;
 
 import org.openremote.modeler.exception.BeehiveNotAvailableException;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.StatusCodeException;
@@ -78,7 +79,7 @@ public abstract class AsyncSuccessCallbackGXT3<T> implements AsyncCallback<T> {
          mb.addHideHandler(new HideHandler() {
            public void onHide(HideEvent event) {
              if (mb.getHideButton() == mb.getButtonById(PredefinedButton.YES.name())) {
-               Window.open("login.jsp", "_self", "");
+                Window.Location.reload();
              }
           }
         });           
