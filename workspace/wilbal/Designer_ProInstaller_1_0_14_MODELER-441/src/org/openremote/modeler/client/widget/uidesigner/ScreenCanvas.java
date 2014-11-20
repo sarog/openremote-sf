@@ -570,8 +570,15 @@ public class ScreenCanvas extends ComponentContainer {
             box.addCallback(new Listener<MessageBoxEvent>() {
                public void handleEvent(MessageBoxEvent be) {
                   if (be.getButtonClicked().getItemId().equals(Dialog.YES)) {
-                     screen.removeAbsolute(controlContainer.getAbsolute());
-                     controlContainer.removeFromParent();
+                      for (ComponentContainer component : widgetSelectionUtil.getSelectedWidgets()) {
+                          if (component instanceof AbsoluteLayoutContainer) {
+                              screen.removeAbsolute(((AbsoluteLayoutContainer)component).getAbsolute());                              
+                              component.removeFromParent();                              
+                          } else if (component instanceof GridLayoutContainerHandle) {
+                              screen.removeGrid(((GridLayoutContainerHandle)component).getGridlayoutContainer().getGrid());                              
+                              component.removeFromParent();
+                          }
+                    }
                      widgetSelectionUtil.resetSelection();
                   }
                }
@@ -673,11 +680,16 @@ public class ScreenCanvas extends ComponentContainer {
             box.setMessage("Are you sure you want to delete?");
             box.addCallback(new Listener<MessageBoxEvent>() {
                public void handleEvent(MessageBoxEvent be) {
-                  if (be.getButtonClicked().getItemId().equals(Dialog.YES)) {
-                     ScreenCanvas.this.getScreen().removeGrid(grid);
-                     gridContainer.removeFromParent();
-                     widgetSelectionUtil.resetSelection();
-                  }
+                   for (ComponentContainer component : widgetSelectionUtil.getSelectedWidgets()) {
+                       if (component instanceof AbsoluteLayoutContainer) {
+                           screen.removeAbsolute(((AbsoluteLayoutContainer)component).getAbsolute());                              
+                           component.removeFromParent();                              
+                       } else if (component instanceof GridLayoutContainerHandle) {
+                           screen.removeGrid(((GridLayoutContainerHandle)component).getGridlayoutContainer().getGrid());  
+                           component.removeFromParent();
+                       }
+                 }
+              widgetSelectionUtil.resetSelection();
                }
             });
             box.show();
