@@ -51,13 +51,7 @@ public class ComponentContainer extends LayoutContainer {
    public void setScreenCanvas(ScreenCanvas screenCanvas) {
       this.screenCanvas = screenCanvas;
    }
-   /**
-    * hide the background for moving component. 
-    */
-   public void hideBackground() {
-      screenCanvas.hideBackground();
-   }
-   
+      
    public PropertyForm getPropertiesForm() {
       return new PropertyForm(this, widgetSelectionUtil);
    }
