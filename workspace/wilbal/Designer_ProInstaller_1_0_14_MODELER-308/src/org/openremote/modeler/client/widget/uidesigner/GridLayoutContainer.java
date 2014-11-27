@@ -149,7 +149,6 @@ public class GridLayoutContainer extends ComponentContainer {
          public void dragEnter(DNDEvent e) {
             Object data = e.getData();
             if(data instanceof ComponentContainer){
-              ((ComponentContainer) data).hideBackground();
             } else if (data instanceof List) {
               if (!canDrop((List<ModelData>) data)) {
                 e.setCancelled(true);
@@ -168,7 +167,6 @@ public class GridLayoutContainer extends ComponentContainer {
                AbsoluteLayoutContainer container = (AbsoluteLayoutContainer) data;
                cellContainer = addAbsoluteWidgetToGrid(grid, cellWidth + 1, cellHeight + 1, targetCell, targetPosition,
                      container);
-               container.hideBackground();
             } else if (data instanceof GridCellContainer) {
               // Drag an existing widget from another location in the grid
                cellContainer = moveCellInGrid(grid, targetCell, targetPosition, data);
@@ -182,7 +180,6 @@ public class GridLayoutContainer extends ComponentContainer {
                cellContainer = addNewWidget(grid, cellWidth, cellHeight, e, targetCell, targetPosition,
                      cellContainer);
             } else if (data instanceof GridLayoutContainerHandle) {
-               ((ComponentContainer) data).hideBackground();
                ((ComponentContainer) data).show();
                e.setCancelled(true);
                return;
@@ -469,10 +466,7 @@ public class GridLayoutContainer extends ComponentContainer {
              * record the location information for a GridCellContainer before being removing. 
              */
             cellContainer.setData(GridLayoutContainer.BOUNDS_RECORD_NAME, boundsRecorder);
-            /*
-             * set the background size for the cell.
-             */
-            getScreenCanvas().getMoveBackGround().setSize(boundsRecorder.getWidth(), boundsRecorder.getHeight());
+
             event.setData(cellContainer);
             cellContainer.removeFromParent();
             event.getStatus().setStatus(true);
@@ -578,7 +572,6 @@ public class GridLayoutContainer extends ComponentContainer {
       getScreenCanvas().getScreen().removeAbsolute(container.getAbsolute());                                   //remove it from screen. 
       GridCellContainer cellContainer;
       container.removeFromParent();
-      container.hideBackground();
       cellContainer = AbsoluteToCell(container.getAbsolute().getUiComponent(), grid, cellWidth, cellHeight);
       cellContainer.getClass();
       cellContainer.setCellSpan(1, 1);
