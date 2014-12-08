@@ -200,7 +200,22 @@ public class ProtegeCommandBuilder implements CommandBuilder
                 : (encryptionStr.toUpperCase().equals("AES 256")) ? EncryptionType.ENCRYPTION_AES_256
                 : EncryptionType.ENCRYPTION_NONE;
         encryptionKey = controllerConfig.getEncryptionKey();
-
+        //Validate key length
+        int keyLength = (encryptionType == EncryptionType.ENCRYPTION_AES_128) ? 16 
+                :            (encryptionType == EncryptionType.ENCRYPTION_AES_192) ? 24
+                :            32;
+        if (encryptionKey.length() > keyLength)
+        {
+            log.error("Encryption key is too long (Expected " + keyLength + " characters).  Please confirm that the key matches the one set in Protege.");
+            encryptionKey = encryptionKey.substring(0, keyLength);
+        } else
+        {
+            log.error("Encryption key is too short (Expected " + keyLength + " characters).  Please confirm that the key matches the one set in Protege.");            
+            while (encryptionKey.length() < keyLength)
+            {
+                encryptionKey += ' '; //pad with spaces to match the GX/WX function.
+            }
+        }
         //Debug information
         log.info("IP address: " + ipAddress);
         log.info("Port: " + port);
@@ -216,6 +231,7 @@ public class ProtegeCommandBuilder implements CommandBuilder
      */
     private void connectToController()
     {
+        log.error("Connecting to Protege controller at " + ipAddress + ":" + port + "...");
         try
         {
             connectionManager = new ProtegeConnectionManager(ipAddress, port,
@@ -228,8 +244,7 @@ public class ProtegeCommandBuilder implements CommandBuilder
                     + ":" + port + ". " + e);
             connectionInitialized = false;
         }
-        log.error("Connected to Protege controller at " + ipAddress + ":" + port);
-        
+        log.error("Connection established.");
         //intialize cache
         packetMap = new HashMap<String, ProtegePacket>();
         
