@@ -20,8 +20,10 @@
  */
 package org.openremote.controller.service;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.InterruptedIOException;
 import java.net.ConnectException;
@@ -69,6 +71,14 @@ public class BeehiveCommandCheckService
 
   // TODO : Remove this enclosing class, it has no purpose, all the functionality is in the nested class
 
+  // TODO :
+  //        look into making http.keepAlive and http.maxConnections  properties externally
+  //        configurable, possibly also provider specific configurations such as :
+  //          - sun.net.http.errorstream.enableBuffering
+  //          - sun.net.http.errorstream.timeout
+  //          - sun.net.http.errorstream.bufferSize
+
+
 
   // Constants ------------------------------------------------------------------------------------
 
@@ -86,40 +96,64 @@ public class BeehiveCommandCheckService
   private final static Logger log = Logger.getLogger(Constants.BEEHIVE_COMMAND_CHECKER_LOG_CATEGORY);
 
 
-  public static String getMACAddresses() throws Exception {
-     StringBuffer macs = new StringBuffer();
-     Enumeration<NetworkInterface> enum1 = NetworkInterface.getNetworkInterfaces();
-     while (enum1.hasMoreElements()) {
-        NetworkInterface networkInterface = (NetworkInterface) enum1.nextElement();
-        if (!networkInterface.isLoopback()) {
-           boolean onlyLinkLocal = true;
-           for (InterfaceAddress interfaceAddress : networkInterface.getInterfaceAddresses()) {
-              if (!interfaceAddress.getAddress().isLinkLocalAddress()) {
-                 onlyLinkLocal = false;
-              }
-           }
-           if (onlyLinkLocal) continue;
-           byte[] mac = networkInterface.getHardwareAddress();
-           if (mac != null) {
-              macs.append(getMACString(networkInterface.getHardwareAddress()));
-              macs.append(",");
-           }
+  public static String getMACAddresses() throws Exception
+  {
+    StringBuilder macs = new StringBuilder();
+    Enumeration<NetworkInterface> enum1 = NetworkInterface.getNetworkInterfaces();
+
+    while (enum1.hasMoreElements())
+    {
+      NetworkInterface networkInterface = enum1.nextElement();
+
+      if (!networkInterface.isLoopback())
+      {
+        boolean onlyLinkLocal = true;
+
+        for (InterfaceAddress interfaceAddress : networkInterface.getInterfaceAddresses())
+        {
+          if (!interfaceAddress.getAddress().isLinkLocalAddress())
+          {
+            onlyLinkLocal = false;
+          }
         }
-     }
-     if (macs.length()==0) {
-        return "no-mac-address-found";
-     }
-     macs.deleteCharAt(macs.length()-1);
-     return macs.toString();
+
+        if (onlyLinkLocal)
+        {
+          continue;
+        }
+
+        byte[] mac = networkInterface.getHardwareAddress();
+
+        if (mac != null)
+        {
+          macs.append(getMACString(networkInterface.getHardwareAddress()));
+          macs.append(",");
+        }
+      }
+    }
+
+    if (macs.length() == 0)
+    {
+      return "no-mac-address-found";
+    }
+
+    macs.deleteCharAt(macs.length()-1);
+
+    return macs.toString();
   }
 
-  private static String getMACString(byte[] mac) {
-     StringBuilder sb = new StringBuilder();
-     for (int i = 0; i < mac.length; i++) {
-        sb.append(String.format("%02X%s", mac[i], (i < mac.length - 1) ? "-" : ""));
-     }
-     return sb.toString();
+  private static String getMACString(byte[] mac)
+  {
+    StringBuilder sb = new StringBuilder();
+
+    for (int i = 0; i < mac.length; i++)
+    {
+      sb.append(String.format("%02X%s", mac[i], (i < mac.length - 1) ? "-" : ""));
+    }
+
+    return sb.toString();
   }
+
 
   // Instance Fields ------------------------------------------------------------------------------
 
@@ -302,10 +336,7 @@ public class BeehiveCommandCheckService
     {
       running = false;
 
-      if (https != null)
-      {
-        https.disconnect();
-      }
+      release(https);
 
       remoteCommandThread.interrupt();
     }
@@ -409,21 +440,19 @@ public class BeehiveCommandCheckService
     private String httpRequest(URL url, HttpMethod method, String username)
         throws ConfigurationException, ConnectionException, ServiceClosedException
     {
-      this.https = connect(url, method, username);
+      HttpsURLConnection connection = connect(url, method, username);
 
-      int responseCode = getResponseCode();
+      int responseCode = getResponseCode(connection);
 
       switch (responseCode)
       {
         case HttpURLConnection.HTTP_OK:
 
-          return readResponse();
-
-// TODO :
-//   read responses from error documents as well
-//   otherwise connections aren't returned to the connection pool (!)
+          return readResponse(connection);
 
         case HttpURLConnection.HTTP_UNAUTHORIZED:
+
+          release(connection);
 
           throw new ConnectionException(
               "Unrecognized username ''{0}'' or incorrect password connecting to ''{1}''",
@@ -431,6 +460,8 @@ public class BeehiveCommandCheckService
           );
 
         case HttpURLConnection.HTTP_NOT_FOUND:
+
+          release(connection);
 
           throw new ConnectionException(
               "Remote command service at ''{0}'' was not available or not found.", url
@@ -442,7 +473,7 @@ public class BeehiveCommandCheckService
           {
             throw new ConnectionException(
                 "Connection to ''{0}'' failed, HTTP error code {1} - {2}",
-                url, responseCode, https.getResponseMessage()
+                url, responseCode, connection.getResponseMessage()
             );
           }
 
@@ -451,6 +482,11 @@ public class BeehiveCommandCheckService
             throw new ConnectionException(
                 "Connection to ''{0}'' failed, HTTP error code {1}", url, responseCode
             );
+          }
+
+          finally
+          {
+            release(connection);
           }
       }
     }
@@ -471,11 +507,12 @@ public class BeehiveCommandCheckService
      *            If we were interrupted while the running flag were set to false. Should
      *            proceed with an orderly shut-down.
      */
-    private String readResponse() throws ConnectionException, ServiceClosedException
+    private String readResponse(HttpsURLConnection connection) throws ConnectionException,
+                                                                      ServiceClosedException
     {
       try
       {
-        BufferedReader reader = new BufferedReader(new InputStreamReader(https.getInputStream()));
+        BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
         StringBuilder builder = new StringBuilder(1024);
 
         String line = "";
@@ -492,6 +529,8 @@ public class BeehiveCommandCheckService
 
       catch (SocketTimeoutException e)
       {
+        release(connection);
+
         // in case of time-out, translate to connection exception that allows connection
         // retries...
 
@@ -503,6 +542,8 @@ public class BeehiveCommandCheckService
 
       catch (InterruptedIOException e)
       {
+        release(connection);
+
         // We were interrupted -- trying to resolve by what reason. If running flag has
         // been set to false, it's an interrupt for an orderly shutdown, so convert
         // to specific close service exception. Otherwise treat it as a regular I/O
@@ -526,6 +567,8 @@ public class BeehiveCommandCheckService
 
       catch (IOException e)
       {
+        release(connection);
+
         // Generic I/O exception. Allow retries by re-throwing it as a connection exception...
 
         throw new ConnectionException(
@@ -568,22 +611,22 @@ public class BeehiveCommandCheckService
     private HttpsURLConnection connect(URL url, HttpMethod method, String username)
         throws ConnectionException, ConfigurationException, ServiceClosedException
     {
-      this.https = createConnection(url);
+      HttpsURLConnection connection = createConnection(url);
 
       try
       {
-        https.setDoInput(true);
-        https.setRequestMethod(method.name());
-        https.setReadTimeout(config.getRemoteCommandResponseTimeoutMillis());
-        https.setConnectTimeout(config.getRemoteCommandConnectionTimeoutMillis());
-        https.setRequestProperty("User-Agent", "OpenRemote Controller");  // TODO : add version
-        https.setRequestProperty("Accept", "application/json");
+        connection.setDoInput(true);
+        connection.setRequestMethod(method.name());
+        connection.setReadTimeout(config.getRemoteCommandResponseTimeoutMillis());
+        connection.setConnectTimeout(config.getRemoteCommandConnectionTimeoutMillis());
+        connection.setRequestProperty("User-Agent", "OpenRemote Controller");  // TODO : add version
+        connection.setRequestProperty("Accept", "application/json");
 
         String encodedPwd = deployer.getPassword(username);
 
         String base64Pwd = new String(Base64.encodeBase64((username + ":" + encodedPwd).getBytes()));
 
-        https.addRequestProperty(
+        connection.addRequestProperty(
             Constants.HTTP_AUTHORIZATION_HEADER,
             Constants.HTTP_BASIC_AUTHORIZATION + base64Pwd
         );
@@ -594,13 +637,15 @@ public class BeehiveCommandCheckService
             config.getRemoteCommandResponseTimeoutMillis()
         );
 
-        https.connect();
+        connection.connect();
 
-        return https;
+        return connection;
       }
 
       catch (SocketTimeoutException e)
       {
+        release(connection);
+
         // Socket timeout, convert to connection exception to allow retries...
 
         throw new ConnectionException(
@@ -611,6 +656,8 @@ public class BeehiveCommandCheckService
 
       catch (InterruptedIOException e)
       {
+        release(connection);
+
         // Other generic I/O interrupts. If running flag has been set to false, most likely
         // asked to perform an orderly shutdown. Otherwise convert to a connection exception
         // type that will allow retries...
@@ -628,6 +675,8 @@ public class BeehiveCommandCheckService
 
       catch (ConnectException e)
       {
+        release(connection);
+
         // Regular connection exception will return to the connection loop and retry later...
 
         throw new ConnectionException("Could not connect to ''{0}'' : {1}", e, url, e.getMessage());
@@ -635,6 +684,8 @@ public class BeehiveCommandCheckService
 
       catch (Deployer.PasswordException e)
       {
+        release(connection);
+
         // If we can't find the credentials, keep re-trying... the user might not yet have
         // entered his credentials.
 
@@ -646,6 +697,8 @@ public class BeehiveCommandCheckService
 
       catch (ProtocolException e)
       {
+        release(connection);
+
         // Things are pretty bad if we can't even construct a HTTP GET request. Shut down the
         // service with a configuration exception...
 
@@ -656,6 +709,8 @@ public class BeehiveCommandCheckService
 
       catch (IOException e)
       {
+        release(connection);
+
         // I/O error during the connect. Connection exception will allow us to retry...
 
         throw new ConnectionException(
@@ -667,7 +722,145 @@ public class BeehiveCommandCheckService
 
 
     /**
+     * Attempts to release a connection by cleaning up (by consuming all input) so that it would
+     * be returned immediately to the cache for re-use (HTTP keep-alive). <p>
+     *
+     * See http://docs.oracle.com/javase/6/docs/technotes/guides/net/http-keepalive.html
+     *
+     * @param connection
+     *          connection to release
+     */
+    private void release(HttpsURLConnection connection)
+    {
+      if (connection == null)
+      {
+        return;
+      }
+
+      // try reading return code if it's still in the stream...
+
+      try
+      {
+        getResponseCode(connection);
+      }
+
+      catch (Throwable throwable)
+      {
+        log.debug(
+            "Error in attempting to retrieve the return code while cleaning up connection : {0}",
+            throwable, throwable.getMessage()
+        );
+      }
+
+
+      // Attempt to consume all of the input stream...
+
+      try
+      {
+        InputStream is = null;
+
+        try
+        {
+          is = connection.getInputStream();
+
+          if (is != null)
+          {
+            BufferedInputStream bin = new BufferedInputStream(is);
+
+            int bytes = 0;
+
+            while ((bytes = bin.read(new byte[1024])) > 0);
+          }
+        }
+
+        catch (IOException exception)
+        {
+          log.debug(
+              "Error while attempting to release HTTPS connection input stream : {0}",
+              exception, exception.getMessage()
+          );
+        }
+
+        finally
+        {
+          if (is != null)
+          {
+            try
+            {
+              is.close();
+            }
+
+            catch (IOException ioe)
+            {
+              log.debug(
+                  "Failed to close an input stream on connection release: {0}",
+                  ioe, ioe.getMessage()
+              );
+            }
+          }
+        }
+
+
+        // Check and consume the error stream if any (may be the same as input stream depending
+        // on implementation)...
+
+        InputStream errorStream = connection.getErrorStream();
+
+        if (errorStream != null)
+        {
+          BufferedInputStream bin = new BufferedInputStream(errorStream);
+
+          try
+          {
+            int bytes = 0;
+
+            while ((bytes = bin.read(new byte[1024])) > 0);
+          }
+
+          catch (IOException exception)
+          {
+            log.debug(
+                "Error while attempting to release HTTPS connection error stream : {0}",
+                exception, exception.getMessage()
+            );
+          }
+
+          finally
+          {
+            try
+            {
+              errorStream.close();
+            }
+
+            catch (IOException ioe)
+            {
+              log.debug(
+                  "Failed to close an error stream on connection release: {0}",
+                  ioe, ioe.getMessage()
+              );
+            }
+          }
+        }
+
+        connection.disconnect();
+      }
+
+      // catch all error handler -- we don't want any of the release functionality errors to
+      // propagate further... worst case scenario is a connection needs to be rebuilt instead
+      // of re-used from the cache.
+
+      catch (Throwable throwable)
+      {
+        log.debug("Error in releasing connection: {0}", throwable, throwable.getMessage());
+      }
+    }
+
+
+    /**
      * Reads an HTTPS response code from the connection input stream.
+     *
+     * @param   connection
+     *            https connection to use
      *
      * @return  HTTP response code
      *
@@ -681,11 +874,17 @@ public class BeehiveCommandCheckService
      *            If we were interrupted while the running flag were set to false. Should
      *            proceed with an orderly shut-down.
      */
-    private int getResponseCode() throws ConnectionException, ServiceClosedException
+    private int getResponseCode(HttpsURLConnection connection) throws ConnectionException,
+                                                                      ServiceClosedException
     {
       try
       {
-        return https.getResponseCode();
+        return connection.getResponseCode();
+      }
+
+      catch (NullPointerException e)
+      {
+        throw new ConnectionException("Null connection.");
       }
 
       catch (SocketTimeoutException e)
@@ -731,9 +930,14 @@ public class BeehiveCommandCheckService
     {
       try
       {
-        URLConnection conn = url.openConnection();
+        URLConnection connection = url.openConnection();
 
-        return (HttpsURLConnection)conn;
+        // store connection reference to a shared thread variable -- used by an external thread
+        // to release the connection if this service is stopped...
+
+        this.https = (HttpsURLConnection)connection;
+
+        return https;
       }
 
       catch (ClassCastException e)
@@ -901,15 +1105,22 @@ public class BeehiveCommandCheckService
 
 
     /**
-     * TODO
-     *
      * Resolves the URL to request remote commands based on controller's configuration
      * and controller's identity.
-     *
-     * @param username    currently required because controller's identity is stored remotely
      */
     private URL getRemoteCommandService(String username) throws ConfigurationException
     {
+      //
+      // IMPLEMENTATION NOTES :
+      //
+      //    - username parameter is required when controller's ID is resolved from
+      //      a remote server, not otherwise
+      //    - if remote ID resolution has been configured (no ::loopback::) this method
+      //      blocks indefinitely until such a remote controller ID is returned
+      //
+      // See other notes why the remote controller ID resolution should be removed.
+
+
       String uriPath = "";
       URI base = null;
       URI uri = null;
