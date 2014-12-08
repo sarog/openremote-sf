@@ -1,3 +1,8 @@
+MODELER-539
+===========
+
+ - Fixed: On session timeout, URL redirection is incorrect
+
 Pro 1.0.13
 ==========
 
