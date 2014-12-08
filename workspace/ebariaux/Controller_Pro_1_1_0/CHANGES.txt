@@ -5,6 +5,9 @@ New Features:
 
   - Manage User Credentials in Controller. (Juha Lindfors, ORCJAVA-422)
   - Convert Beehive remote proxy service to blocking I/O (Marcus Redeker, ORCJAVA-411)
+  - Clean up and consume input streams from HTTP connections
+    in error cases to return connections to HTTP keep-alive
+    pool (Juha Lindfors, ORCJAVA-454)
 
 Bug Fixes:
 
