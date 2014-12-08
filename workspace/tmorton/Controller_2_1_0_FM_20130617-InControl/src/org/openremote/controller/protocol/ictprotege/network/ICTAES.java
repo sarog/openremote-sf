@@ -748,16 +748,16 @@ public class ICTAES
                {
                         RK[RKIndex + 6] = RK[RKIndex].xor ( getRCON(i) )
                            .xor( BigInteger.valueOf(
-                                   getFSb( RK[RKIndex + 5].shiftRight(16).and(BigInteger.valueOf(0xFF)).byteValue() )
+                                   getFSb( RK[RKIndex + 5].shiftRight(16).byteValue() & 0xFF)
                                 ).shiftLeft(24)) 
                            .xor( BigInteger.valueOf(
-                                   getFSb( RK[RKIndex + 5].shiftRight(8 ).and(BigInteger.valueOf(0xFF)).byteValue() )
+                                   getFSb( RK[RKIndex + 5].shiftRight(8 ).byteValue() & 0xFF)
                                 ).shiftLeft(16))
                            .xor( BigInteger.valueOf(
-                                   getFSb( RK[RKIndex + 5]               .and(BigInteger.valueOf(0xFF)).byteValue() )
+                                   getFSb( RK[RKIndex + 5]               .byteValue() & 0xFF)
                                 ).shiftLeft(8))
                            .xor( BigInteger.valueOf(
-                                   getFSb( RK[RKIndex + 5].shiftRight(24).and(BigInteger.valueOf(0xFF)).byteValue() )     
+                                   getFSb( RK[RKIndex + 5].shiftRight(24).byteValue() & 0xFF)     
                                 ) );
                    RK[RKIndex + 7 ] = RK[RKIndex + 1].xor(RK[RKIndex + 6 ]);
                    RK[RKIndex + 8 ] = RK[RKIndex + 2].xor(RK[RKIndex + 7 ]);
@@ -772,16 +772,16 @@ public class ICTAES
                {
                     RK[RKIndex + 8] = RK[RKIndex].xor ( getRCON(i) )
                            .xor( BigInteger.valueOf(
-                                   getFSb( RK[RKIndex + 7].shiftRight(16).and(BigInteger.valueOf(0xFF)).byteValue() )
+                                   getFSb( RK[RKIndex + 7].shiftRight(16).byteValue() & 0xFF)
                                 ).shiftLeft(24)) 
                            .xor( BigInteger.valueOf(
-                                   getFSb( RK[RKIndex + 7].shiftRight(8 ).and(BigInteger.valueOf(0xFF)).byteValue() )
+                                   getFSb( RK[RKIndex + 7].shiftRight(8 ).byteValue() & 0xFF)
                                 ).shiftLeft(16))
                            .xor( BigInteger.valueOf(
-                                   getFSb( RK[RKIndex + 7]               .and(BigInteger.valueOf(0xFF)).byteValue() )
+                                   getFSb( RK[RKIndex + 7]               .byteValue() & 0xFF)
                                 ).shiftLeft(8))
                            .xor( BigInteger.valueOf(
-                                   getFSb( RK[RKIndex + 7].shiftRight(24).and(BigInteger.valueOf(0xFF)).byteValue() )     
+                                   getFSb( RK[RKIndex + 7].shiftRight(24).byteValue() & 0xFF)     
                                 ) );
 
                    RK[RKIndex + 9 ] = RK[RKIndex + 1].xor(RK[RKIndex + 8 ]);
@@ -846,26 +846,26 @@ public class ICTAES
             SKIndex++;
 
             SK[SKIndex] = 
-                    getKT0( RK[RKIndex].shiftRight(24).and(BigInteger.valueOf(0xFF)).byteValue() ) 
+                    getKT0( RK[RKIndex].shiftRight(24).byteValue() & 0xFF) 
                     .xor(
-                    getKT1( RK[RKIndex].shiftRight(16).and(BigInteger.valueOf(0xFF)).byteValue() ) )
+                    getKT1( RK[RKIndex].shiftRight(16).byteValue() & 0xFF) )
                     .xor(
-                    getKT2( RK[RKIndex].shiftRight(8 ).and(BigInteger.valueOf(0xFF)).byteValue() ) )
+                    getKT2( RK[RKIndex].shiftRight(8 ).byteValue() & 0xFF) )
                     .xor(
-                    getKT3( RK[RKIndex]               .and(BigInteger.valueOf(0xFF)).byteValue() ) 
+                    getKT3( RK[RKIndex]               .byteValue() & 0xFF) 
                     );
 //            if (SK[SKIndex] < 0) SK[SKIndex] += Math.pow(2, 32);
             RKIndex++;
             SKIndex++;
 
             SK[SKIndex] = 
-                    getKT0( RK[RKIndex].shiftRight(24).and(BigInteger.valueOf(0xFF)).byteValue() ) 
+                    getKT0( RK[RKIndex].shiftRight(24).byteValue() & 0xFF) 
                     .xor(
-                    getKT1( RK[RKIndex].shiftRight(16).and(BigInteger.valueOf(0xFF)).byteValue() ) )
+                    getKT1( RK[RKIndex].shiftRight(16).byteValue() & 0xFF) )
                     .xor(
-                    getKT2( RK[RKIndex].shiftRight(8 ).and(BigInteger.valueOf(0xFF)).byteValue() ) )
+                    getKT2( RK[RKIndex].shiftRight(8 ).byteValue() & 0xFF) )
                     .xor(
-                    getKT3( RK[RKIndex]               .and(BigInteger.valueOf(0xFF)).byteValue() )
+                    getKT3( RK[RKIndex]               .byteValue() & 0xFF)
             ); 
 //            if (SK[SKIndex] < 0) SK[SKIndex] += Math.pow(2, 32);
             RKIndex++;
@@ -888,7 +888,6 @@ public class ICTAES
 void aesSetCtr( AESContext ctx )
 {
     ctx.nonce = System.currentTimeMillis();
-//    ctx.nonce = 155;
 }
 
 private List<BigInteger> AES_FROUND(BigInteger[] RK, int RKIndex, BigInteger Y0, BigInteger Y1, BigInteger Y2, BigInteger Y3)             
@@ -964,8 +963,7 @@ private int[] aesEncrypt( AESContext ctx,
 //    if (X3 < 0) X3 += Math.pow(2, 32);
     //AES_FROUND loop
     List<BigInteger> out;
-    int loops = 9;
-    loops += (ctx.nr > 10) ? 2 : (ctx.nr > 12) ? 4 : 0;
+    int loops = (ctx.nr <= 10) ? 9 : (ctx.nr <= 12) ? 11 : 13;
     for (int i = 0; i < loops; i++)
     {
         RKIndex += 4;
@@ -1088,8 +1086,7 @@ private int[] aesDecrypt( AESContext ctx,
 
     //AES_RROUND loop
     List<BigInteger> out;
-    int loops = 9;
-    loops += (ctx.nr > 10) ? 2 : (ctx.nr > 12) ? 4 : 0;
+    int loops = (ctx.nr <= 10) ? 9 : (ctx.nr <= 12) ? 11 : 13;
     for (int i = 0; i < loops; i++)
     {
         RKIndex += 4;
@@ -1332,14 +1329,13 @@ private int[] aesDecrypt( AESContext ctx,
             result[i] = intUnsignedToSigned(array[i]);
         }
         return result;
-    }
-    
+    }    
     
     public byte[] encrypt(byte[] packet)
     {
         AESContext aesKey = aesAllocKey();
         aesSetCtr(aesKey);
-        aesSetKey(aesKey, this.key, 128);
+        aesSetKey(aesKey, this.key, this.encryptionTypeLength);
         //Encrypt the array, providing it the original data length.
         int[] encrypted =  aesEncryptCtrMode(aesKey, 
                         byteArraySignedToUnsigned(packet), 
@@ -1348,12 +1344,12 @@ private int[] aesDecrypt( AESContext ctx,
         aesFreeKey(aesKey);
         return intArrayUnsignedToSigned(encrypted);
     }
-    
+        
     public byte[] decrypt(byte[] packet)
     {
         AESContext aesKey = aesAllocKey();
         aesSetCtr(aesKey);
-        aesSetKey(aesKey, this.key, 128);
+        aesSetKey(aesKey, this.key, this.encryptionTypeLength);
         int[] decrypted = null;
         try
         {
@@ -1395,7 +1391,18 @@ private int[] aesDecrypt( AESContext ctx,
 	 */
     public static void main(String[] args)
     {
-		String key = "0123456789012345"; //128 bit key
+        System.out.println("\nAES 128 check:");
+        boolean result = test_128();
+        System.out.println("Test passed: " + result);
+                
+        System.out.println("\nAES 256 check:");
+        result = test_256();
+        System.out.println("Test passed: " + result);
+    }
+    
+    private static boolean test_128()
+    {
+        String key = "0123456789012345"; //128 bit key
         ICTAES crypto = new ICTAES(key, EncryptionType.ENCRYPTION_AES_128);
         byte[] testMessage = createPollPacket().getPacket();
 		
@@ -1419,6 +1426,35 @@ private int[] aesDecrypt( AESContext ctx,
         System.out.println(ProtegeUtils.byteArrayToHex(dataDecrypted));
         System.out.println("DECRYPTED: " + ProtegeUtils.byteArrayToHex((decrypted)) + 
                 " (Size: " + decrypted.length + ")");
-        System.out.println("Decrypted ASCII: " + new String(decrypted));
+        return Arrays.equals(testMessage, decrypted);
+    }
+    
+    private static boolean test_256()
+    {
+        String key = "01234567890123456789012345678901"; //256 bit key
+        ICTAES crypto = new ICTAES(key, EncryptionType.ENCRYPTION_AES_256);
+        byte[] testMessage = createPollPacket().getPacket();
+		
+        System.out.println("INITIAL: " + ProtegeUtils.byteArrayToHex((testMessage)) + 
+                " (Size: " + testMessage.length + ")"); 
+				
+        //Encrypt the data section
+        byte[] header = Arrays.copyOf(testMessage, 6);
+        byte[] data = Arrays.copyOfRange(testMessage, 6, testMessage.length);
+        byte[] dataEncrypted = crypto.encrypt(data);
+        byte[] encrypted = ArrayUtils.addAll(header, dataEncrypted);
+		
+        System.out.println("ENCRYPTED: " + ProtegeUtils.byteArrayToHex((encrypted)) + 
+                " (Size: " + encrypted.length + ")");
+        //Decrypt the data section of the packet.
+        header = Arrays.copyOf(encrypted, 6);
+        data = Arrays.copyOfRange(encrypted, 6, encrypted.length);
+        byte[] dataDecrypted = crypto.decrypt(data);
+        byte[] decrypted = ArrayUtils.addAll(header, dataDecrypted);
+        System.out.println(ProtegeUtils.byteArrayToHex(dataDecrypted));
+        System.out.println("DECRYPTED: " + ProtegeUtils.byteArrayToHex((decrypted)) + 
+                " (Size: " + decrypted.length + ")");
+        
+        return Arrays.equals(testMessage, decrypted);
     }
 }
