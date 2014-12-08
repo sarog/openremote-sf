@@ -1,5 +1,5 @@
-Controller Pro 1.0.16
-=====================
+Controller Pro 1.1.0
+====================
 
 New Features:
 
@@ -11,6 +11,10 @@ Bug Fixes:
   - Fix broken changes introduced to test suite in 
     mredeker/Controller_2_0_1_Beehive_Proxy branch, as 
     part of ORCJAVA-424  (Juha Lindfors, ORCJAVA-425)
+  - Fix an issue with ORCJAVA-411 that used HTTP GET instead
+    of HTTP POST for controller MAC address announcement -- 
+    used when retrieving controller ID from a remote service
+    (Juha Lindfors, ORCJAVA-450)
 
 Controller Pro 1.0.14
 =====================

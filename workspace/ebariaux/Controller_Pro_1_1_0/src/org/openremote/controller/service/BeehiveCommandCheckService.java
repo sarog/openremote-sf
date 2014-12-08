@@ -313,8 +313,81 @@ public class BeehiveCommandCheckService
     /**
      * Executes HTTP GET to given URL and reads the response document for the request.
      *
-     * @param url         URL to connect to
-     * @param username    username to authenticate with
+     * @param url
+     *          URL to connect to
+     *
+     * @param username
+     *          username to authenticate with
+     *
+     * @return  HTTP response document
+     *
+     * @throws ConfigurationException
+     *            If HTTP GET request could not be executed. Typically indicates an error
+     *            that cannot be resolved without a re-start and re-configuration and
+     *            attempting to retry the request usually doesn't help.
+     *
+     * @throws ConnectionException
+     *            If the HTTP connection failed because of request time out, unresponsive
+     *            or unavailable server, connection was closed by the other side, or other
+     *            types of network errors. These types of errors can resolve themselves
+     *            sometimes by waiting and then re-attempting the request.
+     *
+     * @throws ServiceClosedException
+     *            If we were interrupted while the running flag were set to false. Should
+     *            proceed with an orderly shut-down.
+     */
+    private String httpGet(URL url, String username) throws ConfigurationException,
+                                                            ConnectionException,
+                                                            ServiceClosedException
+    {
+      return httpRequest(url, HttpMethod.GET, username);
+    }
+
+    /**
+     * Executes HTTP POST to given URL.
+     *
+     * @param url
+     *          URL to connect to
+     *
+     * @param username
+     *          username to authenticate with
+     *
+     * @return  HTTP response document
+     *
+     * @throws ConfigurationException
+     *            If HTTP POST request could not be executed. Typically indicates an error
+     *            that cannot be resolved without a re-start and re-configuration and
+     *            attempting to retry the request usually doesn't help.
+     *
+     * @throws ConnectionException
+     *            If the HTTP connection failed because of request time out, unresponsive
+     *            or unavailable server, connection was closed by the other side, or other
+     *            types of network errors. These types of errors can resolve themselves
+     *            some times by waiting and then re-attempting the request.
+     *
+     * @throws ServiceClosedException
+     *            If we were interrupted while the running flag were set to false. Should
+     *            proceed with an orderly shut-down.
+     */
+    private String httpPost(URL url, String username) throws ConfigurationException,
+                                                            ConnectionException,
+                                                            ServiceClosedException
+    {
+      return httpRequest(url, HttpMethod.POST, username);
+    }
+
+
+    /**
+     * Executes HTTP request to given URL and reads the response document for the request.
+     *
+     * @param url
+     *          URL to connect to
+     *
+     * @param method
+     *          HTTP method to use for the request
+     *
+     * @param username
+     *          username to authenticate with
      *
      * @return  HTTP response document
      *
@@ -333,11 +406,10 @@ public class BeehiveCommandCheckService
      *            If we were interrupted while the running flag were set to false. Should
      *            proceed with an orderly shut-down.
      */
-    private String httpGet(URL url, String username) throws ConfigurationException,
-                                                            ConnectionException,
-                                                            ServiceClosedException
+    private String httpRequest(URL url, HttpMethod method, String username)
+        throws ConfigurationException, ConnectionException, ServiceClosedException
     {
-      this.https = connect(url, username);
+      this.https = connect(url, method, username);
 
       int responseCode = getResponseCode();
 
@@ -347,6 +419,9 @@ public class BeehiveCommandCheckService
 
           return readResponse();
 
+// TODO :
+//   read responses from error documents as well
+//   otherwise connections aren't returned to the connection pool (!)
 
         case HttpURLConnection.HTTP_UNAUTHORIZED:
 
@@ -379,6 +454,7 @@ public class BeehiveCommandCheckService
           }
       }
     }
+
 
     /**
      * Reads an HTTPS response document from the connection input stream.
@@ -463,8 +539,14 @@ public class BeehiveCommandCheckService
     /**
      * Creates an HTTPS connection to a given URL with a HTTP Basic authentication.
      *
-     * @param url         URL to connect to
-     * @param username    username to authenticate with
+     * @param url
+     *          URL to connect to
+     *
+     * @param method
+     *          HTTP method to use for the request
+     *
+     * @param username
+     *          username to authenticate with
      *
      * @return  HTTPS connection
      *
@@ -483,16 +565,15 @@ public class BeehiveCommandCheckService
      *            If we were interrupted while the running flag were set to false. Should
      *            proceed with an orderly shut-down.
      */
-    private HttpsURLConnection connect(URL url, String username) throws ConnectionException,
-                                                                        ConfigurationException,
-                                                                        ServiceClosedException
+    private HttpsURLConnection connect(URL url, HttpMethod method, String username)
+        throws ConnectionException, ConfigurationException, ServiceClosedException
     {
       this.https = createConnection(url);
 
       try
       {
         https.setDoInput(true);
-        https.setRequestMethod("GET");
+        https.setRequestMethod(method.name());
         https.setReadTimeout(config.getRemoteCommandResponseTimeoutMillis());
         https.setConnectTimeout(config.getRemoteCommandConnectionTimeoutMillis());
         https.setRequestProperty("User-Agent", "OpenRemote Controller");  // TODO : add version
@@ -950,7 +1031,7 @@ public class BeehiveCommandCheckService
         {
           try
           {
-            String str = httpGet(new URL(url), username);
+            String str = httpPost(new URL(url), username);
 
             GenericResourceResultWithErrorMessage res =
                 new JSONDeserializer<GenericResourceResultWithErrorMessage>()
@@ -1039,6 +1120,12 @@ public class BeehiveCommandCheckService
 
       throw new ConfigurationException("LocalControllerID SNAFU");
     }
+  }
+
+
+  public enum HttpMethod
+  {
+    GET, POST, PUT, DELETE, HEAD, OPTIONS, TRACE
   }
 
   public static class ServiceClosedException extends OpenRemoteException
