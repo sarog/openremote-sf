@@ -21,7 +21,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.openremote.modeler.client.Constants;
-import org.openremote.modeler.client.event.UIElementEditedEvent;
 import org.openremote.modeler.client.event.WidgetDeleteEvent;
 import org.openremote.modeler.client.utils.IDUtil;
 import org.openremote.modeler.client.utils.WidgetSelectionUtil;
@@ -71,6 +70,10 @@ import com.google.gwt.user.client.Event;
  */
 public class ScreenCanvas extends ComponentContainer {
 
+   public interface Function {
+      public void execute ();
+   }
+   
    /** The absolute position. */
    private Point absolutePosition = null;
 
@@ -92,6 +95,7 @@ public class ScreenCanvas extends ComponentContainer {
     */
    private Map<UIGrid, GridLayoutContainerHandle> modelToScreenComponentsMapping = new HashMap<UIGrid, GridLayoutContainerHandle>();
 
+
    /**
     * Instantiates a new screen canvas.
     * 
@@ -108,7 +112,12 @@ public class ScreenCanvas extends ComponentContainer {
       if (screen.getGrids().size() > 0) {
          List<UIGrid> grids = screen.getGrids();
          for (UIGrid grid : grids) {
-            GridLayoutContainerHandle gridContainer = createGridLayoutContainer(grid);
+            final GridLayoutContainerHandle gridContainer = createGridLayoutContainer(grid);
+            LayoutContainer moveBackGround = new LayoutContainer();
+            moveBackGround.addStyleName("move-background");
+            moveBackGround.hide();
+            add(moveBackGround);
+            gridContainer.setData("moveBackGround", moveBackGround);
             this.add(gridContainer);
             gridContainer.setPosition(grid.getLeft() - GridLayoutContainerHandle.DEFALUT_HANDLE_WIDTH, grid.getTop()
                   - GridLayoutContainerHandle.DEFAULT_HANDLE_HEIGHT);
@@ -126,6 +135,11 @@ public class ScreenCanvas extends ComponentContainer {
             Resizable resizable = new Resizable(componentContainer, Constants.RESIZABLE_HANDLES);
             resizable.setMinHeight(10);
             resizable.setMinWidth(10);
+            LayoutContainer moveBackGround = new LayoutContainer();
+            moveBackGround.addStyleName("move-background");
+            moveBackGround.hide();
+            add(moveBackGround);
+            componentContainer.setData("moveBackGround", moveBackGround);
             createDragSource(this, componentContainer);
          }
       }
@@ -164,6 +178,15 @@ public class ScreenCanvas extends ComponentContainer {
       layout();
    }
 
+   public void hideBackground() {
+      for (ComponentContainer cc : widgetSelectionUtil.getSelectedWidgets()) {
+
+         LayoutContainer moveBackGround = cc.getData("moveBackGround");
+         moveBackGround.hide();
+      }
+
+   }
+
    /**
     * Adds the drop target dnd listener.
     * 
@@ -174,32 +197,21 @@ public class ScreenCanvas extends ComponentContainer {
       final ScreenCanvas canvas = this;
       DropTarget target = new DropTarget(dropTarget);
       target.addDNDListener(new DNDListener() {
- 
+
          @Override
          public void dragMove(DNDEvent e) {
-            
-            int xmove = e.getXY().x-mouseDragInitialPosition.x;
-            int ymove = e.getXY().y-mouseDragInitialPosition.y;
+            //TODO WB : after dragging a widget from a grid to canvas, check why there is an offset at first move of other widget
+            int xmove = e.getXY().x;
+            int ymove = e.getXY().y;
+            if (mouseDragInitialPosition != null) {
+               xmove = e.getXY().x-mouseDragInitialPosition.x;
+               ymove = e.getXY().y-mouseDragInitialPosition.y;
+           }
             mouseDragInitialPosition = e.getXY();
-            for (ComponentContainer cc : widgetSelectionUtil.getSelectedWidgets()) {
-               cc.addStyleName("translucent-background");
-               if (cc instanceof AbsoluteLayoutContainer) {
-                  ((AbsoluteLayoutContainer)cc).setPosition(((AbsoluteLayoutContainer)cc).getPosition(true).x+xmove, ((AbsoluteLayoutContainer)cc).getPosition(true).y+ymove);
-               } else if (cc instanceof GridCellContainer) {
-               GridCellContainer container = (GridCellContainer) cc;
-               container.setPosition(container.getPosition(false).x+xmove,container.getPosition(false).y+ymove);
-            } else if (cc instanceof GridLayoutContainerHandle) {
-               UIGrid grid = ((GridLayoutContainerHandle)cc).getGridlayoutContainer().getGrid();
-                grid.setLeft(grid.getLeft() + xmove);
-               grid.setTop(grid.getTop() + ymove);
-              // ((GridLayoutContainerHandle)cc).setPosition( ((GridLayoutContainerHandle)cc).getGridlayoutContainer().getPosition(false).x+xmove,((GridLayoutContainerHandle)cc).getGridlayoutContainer().getPosition(false).y+ymove);
-            }          
-             }
-            
-          /*  Object data = e.getData();
+
+            /*Object data = e.getData();
             if (e.getData() instanceof AbsoluteLayoutContainer) {
                Point position = getPosition(e);
-               
                moveBackGround.setPosition(position.x, position.y);
                moveBackGround.show();
             } else if (data instanceof GridCellContainer) {
@@ -213,13 +225,35 @@ public class ScreenCanvas extends ComponentContainer {
                      + GridLayoutContainerHandle.DEFAULT_HANDLE_HEIGHT);
                moveBackGround.show();
             }*/
+               
+            for (ComponentContainer cc : widgetSelectionUtil.getSelectedWidgets()) {
+
+               LayoutContainer moveBackGround = (LayoutContainer)cc.getData("moveBackGround");
+               if (cc instanceof AbsoluteLayoutContainer) {
+                  moveBackGround.setPosition(moveBackGround.getPosition(true).x+xmove, moveBackGround.getPosition(true).y+ymove);
+                  moveBackGround.show();
+               } else if (cc instanceof GridCellContainer) {
+                  if (moveBackGround != null) {
+                     moveBackGround.setPosition(moveBackGround.getPosition(true).x+xmove, moveBackGround.getPosition(true).y+ymove);
+                     moveBackGround.show();
+                  }
+               } else if (cc instanceof GridLayoutContainerHandle) {
+                  moveBackGround.setPosition(moveBackGround.getPosition(true).x+xmove, moveBackGround.getPosition(true).y+ymove);
+                  moveBackGround.show();
+               }
+
+            }
          }
 
          @Override
          public void dragLeave(DNDEvent e) {
             for (ComponentContainer cc : widgetSelectionUtil.getSelectedWidgets()) {
-               cc.removeStyleName("translucent-background");
+               LayoutContainer moveBackGround = cc.getData("moveBackGround");
+               if (moveBackGround != null) {                  
+                  moveBackGround.hide();               
+               }
             }
+            //TODO WB: drag leave does not work yet
             if (!canDrop(canvas, e)) {
                Object data = e.getData();
                if (data instanceof GridCellContainer) {
@@ -270,16 +304,6 @@ public class ScreenCanvas extends ComponentContainer {
           * @return
           */
          private boolean canDrop(final ScreenCanvas canvas, DNDEvent e) {
-            
-            //TODO check if any of the dragged widget are out of panel; if yes, return false
-            for (ComponentContainer cc : widgetSelectionUtil.getSelectedWidgets()) {
-               if (cc instanceof AbsoluteLayoutContainer) {
-               } else if (cc instanceof GridLayoutContainerHandle) {
-                 
-               }          
-             }
-            
-            
             if (absolutePosition == null) {
                absolutePosition = new Point(canvas.getAbsoluteLeft(), canvas.getAbsoluteTop());
             }
@@ -299,6 +323,7 @@ public class ScreenCanvas extends ComponentContainer {
            // Drop to "Absolute widgets" (screen), not to grid
             boolean canDrop = canDrop(canvas, e);
             Object data = e.getData();
+
             if (data instanceof GridCellContainer) {
                final GridCellContainer controlContainer = (GridCellContainer) data;
                if (!canDrop) {
@@ -317,6 +342,11 @@ public class ScreenCanvas extends ComponentContainer {
                   controlContainer.setPosition(position.x, position.y);
                   GridCellBounds recorder = controlContainer.getData(GridLayoutContainer.BOUNDS_RECORD_NAME);
                   AbsoluteLayoutContainer componentContainer = dragComponentFromGrid(screen, controlContainer, recorder);
+                  LayoutContainer moveBackGround = new LayoutContainer();
+                  moveBackGround.addStyleName("move-background");
+                  moveBackGround.hide();
+                  add(moveBackGround);
+                  componentContainer.setData("moveBackGround", moveBackGround);
                   createDragSource(canvas, componentContainer);
                   canvas.add(componentContainer);
                   componentContainer.setPosition(e.getClientX() - absolutePosition.x, e.getClientY()
@@ -343,62 +373,50 @@ public class ScreenCanvas extends ComponentContainer {
                   } else {
                      int xmove = e.getXY().x-mouseDragInitialPosition.x;
                      int ymove = e.getXY().y-mouseDragInitialPosition.y;
-
+                    
                      for (ComponentContainer cc : widgetSelectionUtil.getSelectedWidgets()) {
-                        cc.removeStyleName("translucent-background");
-                        cc.show();
+                        System.out.println("dropped "+cc.getId());
+                        LayoutContainer moveBackGround = (LayoutContainer)cc.getData("moveBackGround");
                         if (cc instanceof AbsoluteLayoutContainer) {
-                           ((AbsoluteLayoutContainer)cc).setPosition(((AbsoluteLayoutContainer)cc).getPosition(true).x+xmove, ((AbsoluteLayoutContainer)cc).getPosition(true).y+ymove);
-                           screen.removeAbsolute(((AbsoluteLayoutContainer)cc).getAbsolute());
-                           screen.addAbsolute(((AbsoluteLayoutContainer)cc).getAbsolute());
-                           Absolute absolute = ((AbsoluteLayoutContainer)cc).getAbsolute();
-                          fireEvent(new UIElementEditedEvent(absolute));
+                           cc.setPosition(moveBackGround.getPosition(true).x+xmove, moveBackGround.getPosition(true).y+ymove);
+                           moveBackGround.hide();
+                        } else if (cc instanceof GridCellContainer) {
+                           GridCellContainer container = (GridCellContainer) cc;
+                           cc.setPosition(moveBackGround.getPosition(true).x + container.getWidth(), moveBackGround.getPosition(true).y + container.getHeight());
+                           moveBackGround.hide();
                         } else if (cc instanceof GridLayoutContainerHandle) {
-                          UIGrid grid = ((GridLayoutContainerHandle)cc).getGridlayoutContainer().getGrid();
-                          //((GridLayoutContainerHandle)cc).setPosition(((GridLayoutContainerHandle)cc).getPosition(false).x+xmove, ((GridLayoutContainerHandle)cc).getPosition(false).y+ymove);
-                          grid.setLeft(grid.getLeft() + xmove);
-                          grid.setTop(grid.getTop() + ymove);
-                        }          
-                      }
+                           moveBackGround.hide();
+                          cc.setPosition(moveBackGround.getPosition(true).x , moveBackGround.getPosition(true).y);
+                        }
+                        cc.show();
+
+                     }
                      mouseDragInitialPosition = null;
-                     /*int gridX = position.x + GridLayoutContainerHandle.DEFALUT_HANDLE_WIDTH;
-                     int gridY = position.y + GridLayoutContainerHandle.DEFAULT_HANDLE_HEIGHT;
-                     if (gridX < 0) {
-                        gridX = 0;
-                     } else if (gridX > getWidth() - moveBackGround.getWidth()) {
-                        gridX = getWidth() - moveBackGround.getWidth();
-                     }
-                     if (gridY < 0) {
-                        gridY = 0;
-                     } else if (gridY > getHeight() - moveBackGround.getHeight()) {
-                        gridY = getHeight() - moveBackGround.getHeight();
-                     }
-                     gridContainer.setPosition(gridX - GridLayoutContainerHandle.DEFALUT_HANDLE_WIDTH, gridY
-                           - GridLayoutContainerHandle.DEFAULT_HANDLE_HEIGHT);
-                     widgetSelectionUtil.setSelectWidget(gridContainer);*/
+
                   }
                } else {
-                  Point position = getPosition(e);
                   final AbsoluteLayoutContainer controlContainer = (AbsoluteLayoutContainer) data;
                   if (canDrop) {
+                     
                      int xmove = e.getXY().x-mouseDragInitialPosition.x;
                      int ymove = e.getXY().y-mouseDragInitialPosition.y;
                     
                      for (ComponentContainer cc : widgetSelectionUtil.getSelectedWidgets()) {
-                        cc.removeStyleName("translucent-background");
+
+                        LayoutContainer moveBackGround = (LayoutContainer)cc.getData("moveBackGround");
                         if (cc instanceof AbsoluteLayoutContainer) {
-                           ((AbsoluteLayoutContainer)cc).setPosition(((AbsoluteLayoutContainer)cc).getPosition(true).x+xmove, ((AbsoluteLayoutContainer)cc).getPosition(true).y+ymove);
-                           screen.removeAbsolute(((AbsoluteLayoutContainer)cc).getAbsolute());
-                           screen.addAbsolute(((AbsoluteLayoutContainer)cc).getAbsolute());
-                           Absolute absolute = ((AbsoluteLayoutContainer)cc).getAbsolute();
-                        //  fireEvent(new UIElementEditedEvent(absolute));
+                           cc.setPosition(moveBackGround.getPosition(true).x+xmove, moveBackGround.getPosition(true).y+ymove);
+                           moveBackGround.hide();
+                        } else if (cc instanceof GridCellContainer) {
+                           GridCellContainer container = (GridCellContainer) cc;
+                           cc.setPosition(moveBackGround.getPosition(true).x + container.getWidth(), moveBackGround.getPosition(true).y + container.getHeight());
+                           moveBackGround.hide();
                         } else if (cc instanceof GridLayoutContainerHandle) {
-                          UIGrid grid = ((GridLayoutContainerHandle)cc).getGridlayoutContainer().getGrid();
-                          grid.setLeft(grid.getLeft() + xmove);
-                          grid.setTop(grid.getTop() + ymove);
-                        //  fireEvent(new UIElementEditedEvent(grid));
-                        }          
-                      }
+                           moveBackGround.hide();
+                          cc.setPosition(moveBackGround.getPosition(true).x , moveBackGround.getPosition(true).y);
+                        }
+                        cc.show();
+                     }
                      mouseDragInitialPosition = null;
                   } else {
                      MessageBox.confirm("Delete", "Are you sure you want to delete?", new Listener<MessageBoxEvent>() {
@@ -424,6 +442,11 @@ public class ScreenCanvas extends ComponentContainer {
                            UIGrid.DEFAULT_HEIGHT, UIGrid.DEFALUT_ROW_COUNT, UIGrid.DEFAULT_COL_COUNT);
                      screen.addGrid(grid);
                      componentContainer = createGridLayoutContainer(grid);
+                     LayoutContainer moveBackGround = new LayoutContainer();
+                     moveBackGround.addStyleName("move-background");
+                     moveBackGround.hide();
+                     add(moveBackGround);
+                     componentContainer.setData("moveBackGround", moveBackGround);
                      createGridDragSource(componentContainer, canvas);
                   } else if (dataModel.getBean() instanceof UITabbar) {
                      addTabbar(new ScreenTabbar(ScreenCanvas.this, new UITabbar(), widgetSelectionUtil));
@@ -438,6 +461,11 @@ public class ScreenCanvas extends ComponentContainer {
                      return;
                   } else {
                      componentContainer = createNewAbsoluteLayoutContainer(screen, (UIComponent) dataModel.getBean());
+                     LayoutContainer moveBackGround = new LayoutContainer();
+                     moveBackGround.addStyleName("move-background");
+                     moveBackGround.hide();
+                     add(moveBackGround);
+                     componentContainer.setData("moveBackGround", moveBackGround);
                      createDragSource(canvas, componentContainer);
                      Resizable resizable = new Resizable(componentContainer, Constants.RESIZABLE_HANDLES);
                      resizable.setMinHeight(10);
@@ -454,7 +482,13 @@ public class ScreenCanvas extends ComponentContainer {
                   widgetSelectionUtil.setSelectWidget(componentContainer);
                }
             }
+            for (ComponentContainer cc : widgetSelectionUtil.getSelectedWidgets()) {
 
+               LayoutContainer moveBackGround = cc.getData("moveBackGround");
+               if (moveBackGround != null) {
+                  moveBackGround.hide();                  
+               }
+            }
              if (tabbarContainer != null) {
                 tabbarContainer.el().updateZIndex(1);
              }
@@ -481,11 +515,27 @@ public class ScreenCanvas extends ComponentContainer {
       DragSource source = new DragSource(layoutContainer) {
          @Override
          protected void onDragStart(DNDEvent event) {
+            for (ComponentContainer cc : widgetSelectionUtil.getSelectedWidgets()) {
+               LayoutContainer lc = cc.getData("moveBackGround");
+               if (cc instanceof GridLayoutContainerHandle) {
+                  UIGrid grid = ((GridLayoutContainer) ((GridLayoutContainerHandle) cc)
+                        .getGridlayoutContainer()).getGrid();
+                  lc.setSize(grid.getWidth(), grid.getHeight());                  
+               } else {
+                  lc.setSize(cc.getWidth(),cc.getHeight());
+               }
+               lc.setPosition(cc.getPosition(true).x, cc.getPosition(true).y);
+               lc.show();
+               cc.hide();
+
+            }
+            
             if (absolutePosition == null) {
                absolutePosition = new Point(canvas.getAbsoluteLeft(), canvas.getAbsoluteTop());
             }
             absolutePosition.x = canvas.getAbsoluteLeft();
             absolutePosition.y = canvas.getAbsoluteTop();
+            
             Point mousePoint = event.getXY();
             Point distance = new Point(mousePoint.x - layoutContainer.getAbsoluteLeft(), mousePoint.y
                   - layoutContainer.getAbsoluteTop());
@@ -522,24 +572,6 @@ public class ScreenCanvas extends ComponentContainer {
       Point distance = ((LayoutContainer) event.getData()).getData(AbsoluteLayoutContainer.ABSOLUTE_DISTANCE_NAME);
       int left = mousePoint.x - distance.x - absolutePosition.x;
       int top = mousePoint.y - distance.y - absolutePosition.y;
-      return new Point(left, top);
-   }
-
-   private Point getGridPosition(DNDEvent event) {
-      Point mousePoint = event.getXY();
-      Point distance = ((LayoutContainer) event.getData()).getData(GridLayoutContainerHandle.GRID_DISTANCE_NAME);
-      int left = mousePoint.x - distance.x - absolutePosition.x;
-      int top = mousePoint.y - distance.y - absolutePosition.y;
-      return new Point(left, top);
-   }
-
-   private Point getGridCellContainerPosition(DNDEvent event) {
-      GridCellContainer container = event.getData();
-      Point mousePoint = event.getXY();
-      Point distance = ((LayoutContainer) event.getData()).getData(AbsoluteLayoutContainer.ABSOLUTE_DISTANCE_NAME);
-      GridCellBounds recorder = container.getData(GridLayoutContainer.BOUNDS_RECORD_NAME);
-      int left = mousePoint.x - distance.x - absolutePosition.x + recorder.getWidth();
-      int top = mousePoint.y - distance.y - absolutePosition.y + recorder.getHeight();
       return new Point(left, top);
    }
 
@@ -743,6 +775,14 @@ public class ScreenCanvas extends ComponentContainer {
       return screen;
    }
 
+  /* public LayoutContainer getMoveBackGround() {
+      return moveBackGround;
+   }
+
+   public void setMoveBackGround(LayoutContainer moveBackGround) {
+      this.moveBackGround = moveBackGround;
+   }*/
+
    /**
     * @param componentContainer
     */
@@ -750,6 +790,21 @@ public class ScreenCanvas extends ComponentContainer {
       DragSource gridSource = new DragSource(componentContainer) {
          @Override
          protected void onDragStart(DNDEvent event) {
+            for (ComponentContainer cc : widgetSelectionUtil.getSelectedWidgets()) {
+               LayoutContainer lc = cc.getData("moveBackGround");
+               if (cc instanceof GridLayoutContainerHandle) {
+                  UIGrid grid = ((GridLayoutContainer) ((GridLayoutContainerHandle) cc)
+                        .getGridlayoutContainer()).getGrid();
+                  lc.setSize(grid.getWidth(), grid.getHeight());                  
+               } else {
+                  lc.setSize(cc.getWidth(),cc.getHeight());
+               }
+               lc.setPosition(cc.getPosition(true).x, cc.getPosition(true).y);
+               lc.show();
+               cc.hide();
+
+            }
+            
             if (absolutePosition == null) {
                absolutePosition = new Point(canvas.getAbsoluteLeft(), canvas.getAbsoluteTop());
             }
@@ -767,7 +822,6 @@ public class ScreenCanvas extends ComponentContainer {
             Point distance = new Point(x, y);
             componentContainer.setData(GridLayoutContainerHandle.GRID_DISTANCE_NAME, distance);
             event.setData(componentContainer);
-            //componentContainer.hide();
             event.getStatus().setStatus(true);
             event.getStatus().update("drop here");
             event.cancelBubble();
@@ -928,5 +982,4 @@ public class ScreenCanvas extends ComponentContainer {
       screenGrid.update();
     }    
   }
-
 }
