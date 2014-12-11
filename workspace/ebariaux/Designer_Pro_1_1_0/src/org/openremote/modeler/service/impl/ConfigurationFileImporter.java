@@ -394,7 +394,14 @@ public class ConfigurationFileImporter {
           if (owner != null && owner.getSensorLink() != null) {
             SensorWithInfoDTO sensorDTO = owner.getSensorLink().getSensorDTO();
             if (sensorDTO != null && sensorDTO.getOid() != null) {
-              sensorDTO.setOid(sensorsOldOidToNewOid.get(sensorDTO.getOid()));
+              if (sensorsOldOidToNewOid.get(sensorDTO.getOid()) != null) {
+                sensorDTO.setOid(sensorsOldOidToNewOid.get(sensorDTO.getOid()));
+              } else {
+                // Widget references unknown sensor, clear link
+            	  owner.setSensorDTOAndInitSensorLink(null);
+            	  // and log (would be better to report to user somehow but no mechanism to do that in place)
+                serviceLog.warn("Widget " + component.getOid() + " was referencing unknown sensor id " + sensorDTO.getOid() + ", removed link");
+              }
             }
           }
         }
