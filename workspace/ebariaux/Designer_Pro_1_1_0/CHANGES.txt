@@ -3,6 +3,7 @@ Pro 1.1.0
 
 Fixes:
  - Fixed: On session timeout, URL redirection is incorrect (MODELER-539)
+ - Fixed: Could not import configuration back, NPE (MODELER-525)
 
 New features:
  - Use XML as persistence format for UI configuration instead of Java serialization (MODELER-450)
