@@ -1,3 +1,8 @@
+MODELER-525
+===========
+
+ - Fixed: Could not import configuration back, NPE
+
 Pro 1.0.11
 ==========
 
