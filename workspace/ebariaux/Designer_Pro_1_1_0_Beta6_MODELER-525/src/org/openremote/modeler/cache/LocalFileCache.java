@@ -2415,7 +2415,7 @@ public class LocalFileCache implements ResourceCache<File>
            return new ArrayList<Command>();
         }
      } catch (Exception e) {
-        cacheLog.warn("Some components referenced a removed object:  " + e.getMessage());
+        cacheLog.warn("Some component (" + command.getOid() + ":" + command.getDisplayName() + ") referenced a removed object:  " + e.getMessage());
         return new ArrayList<Command>();
      }
      return oneUIButtonEventList;
@@ -2438,7 +2438,7 @@ public class LocalFileCache implements ResourceCache<File>
          return new ArrayList<Command>();
       }
    } catch (Exception e) {
-      cacheLog.warn("Some components referenced a removed object:  " + e.getMessage());
+     cacheLog.warn("Some component (" + command.getOid() + ":" + command.getDisplayName() + ") referenced a removed object:  " + e.getMessage());
       return new ArrayList<Command>();
    }
    return oneUIButtonEventList;
