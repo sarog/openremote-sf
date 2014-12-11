@@ -146,7 +146,10 @@ public class UILabel extends UIComponent implements SensorOwner, SensorLinkOwner
        this.sensorLink = new SensorLink();
        this.sensorLink.setSensorDTO(sensorDTO);
     } else {
-       sensorLink.clear();
+    	if (sensorLink != null) {
+    		sensorLink.clear();
+    		sensorLink.setSensorDTO(null);
+    	}
     }
  }
 
