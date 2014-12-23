@@ -119,7 +119,7 @@ public class CreateISYDevicesActionHandler implements
 					deviceCommands.add(cmdFastOn);
 
 					DeviceCommand cmdFastOff = addDeviceCommand(device,
-							address, name + " cmd-off", "DFOF");
+							address, name + " cmd-fast off", "DFOF");
 					deviceCommands.add(cmdFastOff);
 
 					DeviceCommand cmdPower = addDeviceCommand(device, address,
@@ -138,7 +138,7 @@ public class CreateISYDevicesActionHandler implements
 							.getType());
 					if (lightHasDimmer) {
 						DeviceCommand cmdLevel = addDeviceCommand(device,
-								address, name + " cmd level", "get-level");
+								address, name + " cmd level", "status");
 						deviceCommands.add(cmdLevel);
 
 						DeviceCommand cmdSetLevel = addDeviceCommand(device,
