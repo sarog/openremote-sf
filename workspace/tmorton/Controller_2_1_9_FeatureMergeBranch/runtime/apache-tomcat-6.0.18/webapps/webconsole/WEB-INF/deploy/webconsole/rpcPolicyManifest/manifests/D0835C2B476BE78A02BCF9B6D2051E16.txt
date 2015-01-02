@@ -1,0 +1,2 @@
+serviceClass: org.openremote.web.console.service.AutoDiscoveryRPCService
+path: 2426CEEE752B7928B3D34D83BD4341FC.gwt.rpc
