@@ -47,9 +47,11 @@
 				<!-- Replace @VERSION@ with the version -->
 				<filter token="VERSION" value="${Revision}" />
 				<filter token="TITLE" value="${project.title}" />
+				<filter token="CONTROLLERURL" value="${controller.url}" />
+				<filter token="PANELNAME" value="${controller.panel.name}" />
 			</filterset>
 		</copy>
-				
+		
         <echo>Revision found: ${Revision}</echo>
 		<echo>Title found: ${project.title}</echo>
   </target>
