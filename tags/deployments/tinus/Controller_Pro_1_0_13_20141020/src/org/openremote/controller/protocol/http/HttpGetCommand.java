@@ -24,6 +24,10 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -72,6 +76,7 @@ public class HttpGetCommand implements ExecutableCommand, EventListener, Runnabl
    */
   private static Logger logger = Logger.getLogger(HttpGetCommandBuilder.HTTP_PROTOCOL_LOG_CATEGORY);
 
+  private static SimpleDateFormat dateFormatter;
   
   // Instance Fields ------------------------------------------------------------
   /** The uri to perform the http get request on */
@@ -114,6 +119,11 @@ public class HttpGetCommand implements ExecutableCommand, EventListener, Runnabl
   boolean doPoll = false;
   
   // Constructors  ----------------------------------------------------------------
+  static {
+     dateFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+     dateFormatter.setTimeZone(TimeZone.getTimeZone("UTC"));
+   }
+  
   public HttpGetCommand(URI uri, String xpathExpression, String regex, Integer pollingInterval, String method, String workload, String jsonpathExpression, String contentType)
   {
     this.uri = uri;
@@ -196,7 +206,29 @@ public class HttpGetCommand implements ExecutableCommand, EventListener, Runnabl
     }
     HttpUriRequest request = null;
     if (method.equalsIgnoreCase("GET")) {
-      request = new HttpGet(uri);
+       String uriStr = uri.toString();
+       if (uriStr.contains("vinotion=true")) {
+          Calendar now = Calendar.getInstance();
+          
+          if (now.get(Calendar.HOUR_OF_DAY) < 5) {
+             now.add(Calendar.DATE, -1);
+          }
+          
+          now.set(Calendar.HOUR_OF_DAY, 5);
+          now.set(Calendar.MINUTE, 0);
+          now.set(Calendar.SECOND, 0);
+          String fromTime = dateFormatter.format(now.getTime());
+          now.add(Calendar.DATE, 1);
+          now.add(Calendar.SECOND, -1);
+          String toTime = dateFormatter.format(now.getTime());
+          
+          String timeStr = "start=" + fromTime + "&end=" + toTime;  
+          uriStr = uriStr.replace("vinotion=true", timeStr);
+          logger.info("VINOTION DYNAMIC URL = '" + uriStr + "'");
+          request = new HttpGet(uriStr);
+       } else {
+          request = new HttpGet(uri);
+       }
     } else if (method.equalsIgnoreCase("POST")) {
       request = new HttpPost(uri);
       if ((workload != null) && (workload.trim().length() != 0)) {
