@@ -4,6 +4,7 @@
  **
  * OpenRemote, the Home of the Digital Home.
  * Copyright 2008-2013, OpenRemote Inc.
+ * Copyright 2009-2015, Juha Lindfors. All rights reserved.
  *
  * See the contributors.txt file in the distribution for a
  * full listing of individual contributors.
@@ -46,7 +47,8 @@
             <value>classpath:denonAVRSerial.properties</value>
             <value>classpath:enocean.properties</value>
             <value>classpath:ict_protege.properties</value>
-          </list>
+            <value>classpath:zwave.properties</value>
+        </list>
       </property>
   </bean>
 
@@ -112,6 +114,13 @@
   </bean>
 
   <bean id="lutronHomeWorksGateway" class="org.openremote.controller.protocol.lutron.LutronHomeWorksGateway"/>
+
+  <bean id="zwaveConfig" class="org.openremote.controller.ZWaveConfiguration">
+    <property name="comPort" value="${zwave.comPort}" />
+    <property name="commLayer" value="${zwave.commLayer}" />
+    <property name="padHost" value="${zwave.pad.host}" />
+    <property name="padPort" value="${zwave.pad.port}" />
+  </bean>
 
   <bean id="enoceanConfig" class="org.openremote.controller.EnOceanConfiguration">
     <property name="comPort" value="${enocean.comPort}" />
