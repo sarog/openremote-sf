@@ -181,60 +181,6 @@ public class ProtegePacketHandler implements Runnable
             log.debug("Encrypted data: " + ProtegeUtils.byteArrayToHex(data));
             byte[] decrypted = connectionManager.getCrypto().decrypt(data);
             return ArrayUtils.addAll(header, decrypted);
-//            try
-//            {
-////                byte[] header = Arrays.copyOf(packet, 6);
-////                byte[] data = Arrays.copyOfRange(packet, 6, packet.length);
-////                log.error("Header: " + ProtegeUtils.byteArrayToHex(header));
-////                log.error("Encrypted data: " + ProtegeUtils.byteArrayToHex(data));
-////                /*            
-////                 AESCrypt decrypter = new AESCrypt(connectionManager.getEncryptionKey());
-////                 InputStream encryptInput = new BufferedInputStream(new ByteArrayInputStream(data));
-////                 ByteArrayOutputStream decryptOutput = new ByteArrayOutputStream();
-////                 decrypter.decrypt(data.length, encryptInput, decryptOutput);
-////                 //byte[] decrypted = decryptOutput.toByteArray();
-////                 */
-////                byte[] decrypted = AES.decrypt(data, connectionManager.getEncryptionKey());
-////
-//////                byte[] decrypted = AES2.decrypt(data);
-////                log.error("Decrypted data: " + ProtegeUtils.byteArrayToHex(decrypted));
-////                return ArrayUtils.addAll(header, decrypted);
-//            }
-//            catch (Exception ex)
-//            {
-//                log.error("Exception during decryption. " + ex);
-//            }
-//            catch (GeneralSecurityException ex)
-//            {
-//                log.error("Security exception during decryption. " + ex);
-//            }
-//            catch (UnsupportedEncodingException ex)
-//            {
-//                log.error("Unsupported encoding specified for decryption. " + ex);
-//            }
-//            catch (IOException ex)
-//            {
-//                log.error("Stream exception during packet decryption. " + ex);
-//            }
-//        }
-//            switch (connectionManager.getEncryptionType())
-//            {
-//                case ProtegeSystemConstants.ENCRYPTION_AES_128:
-//                    packet = decryptAES128(packet);
-//                    break;
-//
-//                case ProtegeSystemConstants.ENCRYPTION_AES_192:
-//                    packet = decryptAES192(packet);
-//                    break;
-//
-//                case ProtegeSystemConstants.ENCRYPTION_AES_256:
-//                    packet = decryptAES256(packet);
-//                    break;
-//
-//                case ProtegeSystemConstants.ENCRYPTION_NONE:
-//                default:
-            //no decryption required
-//            }
         }
         return packet;
     }
@@ -471,9 +417,7 @@ public class ProtegePacketHandler implements Runnable
                 case SYSTEM_EVENT_ASCII:
                     String event = getASCIIEvent(dataPacket);
                     log.debug("New event: " + event);
-                    eventSensorMap = (HashMap<Integer, Sensor>) sensors.get(ProtegeDataType.PANEL_SERIAL_NUMBER); //As there are no parameters with the event packet, it has been stored here.
-                    ProtegeEventHandler eventHandler = new ProtegeEventHandler(event, eventSensorMap);
-                    new Thread(eventHandler, "ProtegePacketHandler").start();
+                    ProtegeEventHandler.getInstance().logEvent(event);
                     break;
 
                 case END_OF_DATA:
@@ -534,6 +478,7 @@ public class ProtegePacketHandler implements Runnable
         String result = "";
         try
         {
+            dataPacket[dataPacket.length - 1] = '.';
             result = new String(dataPacket, "US-ASCII");
         }
         catch (UnsupportedEncodingException ex)
@@ -652,7 +597,7 @@ public class ProtegePacketHandler implements Runnable
                 default:
                 {
                     connectionManager.notifyAck();
-                    log.error("ProtegePacketHandler received an unhandled NACK packet.");
+                    log.error("Received an unhandled NACK packet (Please check your encryption settings).");
                 }
             }
         }
