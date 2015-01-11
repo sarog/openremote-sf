@@ -214,9 +214,9 @@ public class PollingHelper {
             handler.sendEmptyMessage(NETWORK_ERROR);
          } catch (SocketException e) {
         	if (isPolling) {
-        		isPolling = false;
-        		Log.e(LOG_CATEGORY, "polling [" + pollingStatusIds +"] failed.", e);
-        		handler.sendEmptyMessage(NETWORK_ERROR);
+        		//isPolling = false;
+        		//handler.sendEmptyMessage(NETWORK_ERROR);
+            Log.e(LOG_CATEGORY, "polling [" + pollingStatusIds +"] failed.", e);
         	}
          } catch (IllegalArgumentException e) {
             isPolling = false;
