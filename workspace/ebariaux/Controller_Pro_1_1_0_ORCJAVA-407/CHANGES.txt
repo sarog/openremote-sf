@@ -1,3 +1,8 @@
+ORCJAVA-407
+===========
+
+  - Fixed: Drools exception when executing rules after controller xml has been reloaded
+
 Controller Pro 1.1.0
 ====================
 
