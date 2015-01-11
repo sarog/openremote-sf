@@ -1,3 +1,12 @@
+Controller Pro 1.1.1
+====================
+
+Bug Fixes:
+
+  - Fixed: RRD4J Protocol commands that change the start or end time of a graph also
+	  cause the end or start time respectively to be fixed (Richard Turner, ORCJAVA-451)
+
+
 Controller Pro 1.1.0
 ====================
 
