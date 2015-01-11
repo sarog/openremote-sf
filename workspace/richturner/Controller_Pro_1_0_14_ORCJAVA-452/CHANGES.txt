@@ -1,3 +1,8 @@
+ORCJAVA-452
+===========
+
+  - Add ability to reset RRD4J graph time axis
+
 Controller Pro 1.0.14
 =====================
 
