@@ -24,6 +24,7 @@ import org.openremote.controller.ControllerConfiguration;
 import org.openremote.controller.EnOceanConfiguration;
 import org.openremote.controller.RoundRobinConfiguration;
 import org.openremote.controller.LutronHomeWorksConfig;
+import org.openremote.controller.ICTProtegeConfiguration;
 import org.openremote.controller.OpenRemoteRuntime;
 import org.openremote.controller.Constants;
 import org.openremote.controller.utils.Logger;
@@ -95,7 +96,8 @@ public abstract class ServiceContext
     DEVICE_STATE_CACHE("statusCache"),                        // TODO : Deprecated, see ORCJAVA-197
     COMPONENT_CONTROL_SERVICE("controlCommandService"),       // TODO : should be retrieved through deployer interface
     DENONAVRSERIAL_CONFIGURATION("denonAVRSerialConfiguration"), // TODO : To be removed, see ORCJAVA-183
-    ENOCEAN_CONFIGURATION("enoceanConfig");                   // TODO : To be removed, see ORCJAVA-183
+    ENOCEAN_CONFIGURATION("enoceanConfig"),                   // TODO : To be removed, see ORCJAVA-183
+    ICT_PROTEGE_CONFIGURATION("ICTProtegeConfig");            // TODO : To be removed, see ORCJAVA-183
 
     private String springBeanName;
 
@@ -184,6 +186,29 @@ public abstract class ServiceContext
       );
     }
   }
+
+
+  /**
+   * TODO : This is temporary and should go away with configuration
+   * refactoring as part of the deployment unit, see ORCJAVA-183 :
+   * http://jira.openremote.org/browse/ORCJAVA-183
+   */
+  public static ICTProtegeConfiguration getICTProtegeConfiguration()
+  {
+    try
+    {
+      return (ICTProtegeConfiguration) getInstance().getService(ServiceName.ICT_PROTEGE_CONFIGURATION);
+    }
+
+    catch (ClassCastException e)
+    {
+      throw new Error(
+          "ICT Protege Configuration service has had an incompatible change.", e
+      );
+    }
+  }
+
+
 
   /**
    * TODO :
