@@ -20,25 +20,20 @@
  */
 package org.openremote.controller.protocol.ictprotege;
 
-import flexjson.Path;
 import java.io.File;
 import java.io.IOException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 import org.openremote.controller.utils.Logger;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
 import org.openremote.controller.model.sensor.Sensor;
-import java.util.logging.Level;
-import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -47,304 +42,143 @@ import org.xml.sax.SAXException;
 
 /**
  * Class to save events from the Protege Controller.
- * 
+ *
  * @author Damon Williams
  */
 public class ProtegeEventHandler implements Runnable
 {
 
-    private String eventMessage = "";
-    private final Map<Integer, Sensor> sensors;
+    private static final File logFile = new File("../logs/ICTProtege/EventLog.xml");
     private static final Logger log = ProtegeUtils.log;
-    int numSensors = 0;
-    int whichSensor = 1;
-    //private int eventSensorNumber = 0;
-    private String[] eventList;
-    private int[] sensorList;
+    private static ProtegeEventHandler instance;
+    private static ProtegeEventWriter eventWriter;
     
-    
-    public ProtegeEventHandler(String eventMessage, Map<Integer, Sensor> sensors)
+    private List<Sensor> sensors;
+    private BlockingQueue<String> eventQueue;
+    private LinkedList<String> sensorValues;
+    private boolean stopRequested;
+
+    public static synchronized ProtegeEventHandler getInstance()
     {
-        this.eventMessage = eventMessage;
-        this.sensors = sensors;
-        
-        numSensors = sensors.size();
-        eventList = new String[numSensors];
-        sensorList = new int[numSensors];
-        for (Sensor s : sensors.values())
+        if (instance == null)
         {
-            if (whichSensor == 1) {
-                sensorList[0] = s.getSensorID();
-            } else if (whichSensor == 2) {
-                sensorList[1] = s.getSensorID();
-            } else if (whichSensor == 3) {
-                sensorList[2] = s.getSensorID();
-            }
-            whichSensor++;
+            instance = new ProtegeEventHandler();
+            new Thread(instance, "ProtegeEventHandler").start();
         }
-    } 
+        return instance;
+    }
+
+    private ProtegeEventHandler()
+    {
+        this.eventQueue = new LinkedBlockingQueue<String>();
+        this.sensorValues = new LinkedList<String>();
+        ProtegeEventHandler.eventWriter = new ProtegeEventWriter();
+    }
+
+    public void logEvent(String message)
+    {
+        eventQueue.add(message);
+    }
 
     @Override
     public void run()
     {
-        try
+        while (!stopRequested)
         {
-            saveEvent();
-        }
-        catch (SAXException ex)
-        {
-            log.debug("SAX Exception thrown." + ex);
-        }
-        catch (IOException ex)
-        {
-            log.debug("IO Exception thrown. " + ex);
+            try
+            {
+                String eventMessage = eventQueue.take(); //blocking
+                String eventTime = eventWriter.saveEvent(eventMessage);
+                while (sensorValues.size() >= sensors.size())
+                {
+                    sensorValues.poll(); //Remove oldest event
+                }
+                sensorValues.offer(eventMessage + " \n(" + eventTime + ")"); //Add new event
+                updateSensors();
+            }
+            catch (InterruptedException e)
+            {
+            }
         }
     }
 
-    private void saveEvent() throws SAXException, IOException
-    {    
-        File checkFolder = new File("../logs/ICTProtege");
-        if(!checkFolder.exists()) {
-            File dir = new File("../logs/ICTProtege");
-            dir.mkdir();
-        }
-
-        File checkFile = new File("../logs/ICTProtege/EventLog.xml");
-        if(!checkFile.exists()) {
-            log.debug("EVENT FILE DOESN'T EXIST");
-            try
-            {
-                DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
-                DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
-                DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
-                Calendar cal = Calendar.getInstance();
-
-                // root elements
-                Document doc = docBuilder.newDocument();
-                Element rootElement = doc.createElement("Events");
-                doc.appendChild(rootElement);
-
-                // event elements
-                Element event = doc.createElement("Event");
-                rootElement.appendChild(event);
-
-                // set attribute to event element
-                int nextNodeID = 1;
-                Attr attr = doc.createAttribute("id");
-                attr.setValue("" + nextNodeID);
-                event.setAttributeNode(attr);
-                // Event Message elements
-                String substring = eventMessage.substring(0, eventMessage.length()-1);
-                Element EventMessageElement = doc.createElement("EventMessage");
-                EventMessageElement.appendChild(doc.createTextNode(substring));
-                event.appendChild(EventMessageElement);
-
-                // Timestamp
-                Element timeStamp = doc.createElement("Timestamp");
-                timeStamp.appendChild(doc.createTextNode(dateFormat.format(cal.getTime())));
-                event.appendChild(timeStamp);
-
-                log.debug("WRITING NEW XML FILE");
-                
-                // write the content into xml file
-                TransformerFactory transformerFactory = TransformerFactory.newInstance();
-                Transformer transformer = transformerFactory.newTransformer();
-                DOMSource source = new DOMSource(doc);
-                StreamResult result = new StreamResult(new File("../logs/ICTProtege/EventLog.xml"));
-
-                transformer.transform(source, result);
-                
-                for (Sensor s : sensors.values())
-                {
-                    UpdateSensor update = new UpdateSensor(s);
-                    //eventSensorNumber++;
-                    new Thread(update, "UpdateEventString").start();
-                }
-                //eventSensorNumber = 0;
-            }
-            catch (ParserConfigurationException pce)
-            {
-                log.debug("Parser configuration failure");
-            }
-            catch (TransformerException tfe)
-            {
-                log.debug("Transformer Exception thrown");
-            }
-        } else {
-
-            try
-            {
-                DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
-                DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
-                DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
-                Calendar cal = Calendar.getInstance();
-
-                // root elements
-                Document doc = docBuilder.parse("../logs/ICTProtege/EventLog.xml");
-                Element rootElement = doc.getDocumentElement();
-                //doc.appendChild(rootElement);
-
-                // event elements
-                Element event = doc.createElement("Event");
-                rootElement.appendChild(event);
-
-                // set attribute to event element
-                int nextNodeID = getNextNodeId();
-                Attr attr = doc.createAttribute("id");
-                attr.setValue("" + nextNodeID);
-                event.setAttributeNode(attr);
-
-                // Event Message elements
-                Element EventMessageElement = doc.createElement("EventMessage");
-                String substring = eventMessage.substring(0, eventMessage.length()-1);
-                EventMessageElement.appendChild(doc.createTextNode(substring));
-                event.appendChild(EventMessageElement);
-
-                // Timestamp
-                Element timeStamp = doc.createElement("Timestamp");
-                timeStamp.appendChild(doc.createTextNode(dateFormat.format(cal.getTime())));
-                event.appendChild(timeStamp);
-                
-                // write the content into xml file
-                TransformerFactory transformerFactory = TransformerFactory.newInstance();
-                Transformer transformer = transformerFactory.newTransformer();
-                DOMSource source = new DOMSource(doc);
-                StreamResult result = new StreamResult("../logs/ICTProtege/EventLog.xml");
-
-                // Output to console for testing
-                //StreamResult result = new StreamResult(System.out);
-                transformer.transform(source, result);
-
-                for (Sensor s : sensors.values())
-                {
-                   // eventSensorNumber++;
-                    UpdateSensor update = new UpdateSensor(s);
-                    new Thread(update, "UpdateEventString").start();
-                }
-               // eventSensorNumber = 0;
-            }
-            catch (ParserConfigurationException pce)
-            {
-                log.debug("Parser configuration failure");
-            }
-            catch (TransformerException tfe)
-            {
-                log.debug("Transformer Exception thrown");
-            }
-        }
-        
-    }
-
-    private String[] readError()
+    public static void requestStop()
     {
-        String[] outputLastThreeEvents = new String[3];
-        String latestEvent = "";
-        String secondEvent = "";
-        String thirdEvent = "";
-        outputLastThreeEvents[0] = "";
-        outputLastThreeEvents[1] = "";
-        outputLastThreeEvents[2] = "";
-        int eventNum = 1;
+        if (instance != null)
+        {
+            instance.stopRequested = true;
+        }
+    }
+
+    public static synchronized File getICTLogFile()
+    {
+        return logFile;
+    }
+
+    private static final Comparator<Sensor> sensorIDComparator = new Comparator<Sensor>() {
+    @Override
+    public int compare(Sensor s1, Sensor s2) {
+        return s2.getSensorID() - s1.getSensorID();
+        }
+    };
+    
+    public void setSensors(Map<Integer, Sensor> sensorMap)
+    {
+        sensors = new LinkedList<Sensor>(sensorMap.values());
+        Collections.sort(sensors, sensorIDComparator);
+        sensorValues = readLastXEvents(sensorMap.size());
+        updateSensors();
+    }
+
+    private void updateSensors()
+    {
+        for (int i = 0; i < sensors.size(); i++)
+        {        
+            String event = (i < sensorValues.size()) ? sensorValues.get(i)
+                    : "_";
+            sensors.get(i).update(event);
+        }
+    }
+
+    private LinkedList<String> readLastXEvents(int numEvents)
+    {
+        LinkedList<String> lastXEvents = new LinkedList<String>();
         try
         {
-            File fXmlFile = new File("../logs/ICTProtege/EventLog.xml");
             DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-            Document doc = dBuilder.parse(fXmlFile);
+            Document doc = dBuilder.parse(ProtegeEventHandler.getICTLogFile());
             doc.getDocumentElement().normalize();
             NodeList nList = doc.getElementsByTagName("Event");
-            
-            int numMinus = 0;
-            int numNodes = getNextNodeId() - 1;
-            
-            if (numNodes < 3) {
-                if (numNodes == 1) {
-                    numMinus = 2;
-                } else if (numNodes == 2) {
-                    numMinus = 1;
-                }
-            }
-            
-            for (int temp = nList.getLength() - 1; temp > nList.getLength() - (4 - numMinus); temp--)
+
+            int numNodes = nList.getLength();
+
+            for (int i = numNodes - 1; i >= numNodes - numEvents; i--)
             {
-                
-                Node nNode = nList.item(temp);
+                if (i < 0 ) //check if there are no more events in the file
+                {
+                    return lastXEvents;
+                }
+                Node nNode = nList.item(i);
                 if (nNode.getNodeType() == Node.ELEMENT_NODE)
                 {
                     Element eElement = (Element) nNode;
-                    
-                    if (eventNum == 1) {
-                        latestEvent += (eElement.getAttribute("id") + ":");
-                        latestEvent+= ("\n" + eElement.getElementsByTagName("EventMessage").item(0).getTextContent());
-                        latestEvent += ("\nTimestamp : " + eElement.getElementsByTagName("Timestamp").item(0).getTextContent());
-                        latestEvent += "\n";
-                        outputLastThreeEvents[0] = latestEvent;
-                    } else if (eventNum == 2) {
-                        secondEvent += (eElement.getAttribute("id") + ":");
-                        secondEvent += ("\n" + eElement.getElementsByTagName("EventMessage").item(0).getTextContent());
-                        secondEvent += ("\nTimestamp : " + eElement.getElementsByTagName("Timestamp").item(0).getTextContent());
-                        secondEvent += "\n";  
-                        outputLastThreeEvents[1] = secondEvent;
-                    } else {
-                        thirdEvent += (eElement.getAttribute("id") + ":");
-                        thirdEvent += ("\n" + eElement.getElementsByTagName("EventMessage").item(0).getTextContent());
-                        thirdEvent += ("\nTimestamp : " + eElement.getElementsByTagName("Timestamp").item(0).getTextContent());
-                        thirdEvent += "\n";   
-                        outputLastThreeEvents[2] = thirdEvent;
-                    }
-                    eventNum++;
+                    String event = eElement.getElementsByTagName("EventMessage").item(0).getTextContent() +
+                            ("\n (" + eElement.getElementsByTagName("Timestamp").item(0).getTextContent() + ")");
+                    lastXEvents.push(event);
                 }
             }
         }
-        catch (Exception e)
+        //XML errors will be fixed on write
+        catch (ParserConfigurationException ex)
         {
-            e.printStackTrace();
         }
-        return outputLastThreeEvents;
-    }
-
-    private int getNextNodeId() throws ParserConfigurationException, SAXException, IOException
-    {
-        String filepath = "../logs/ICTProtege/EventLog.xml";
-        DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
-        DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
-        Document doc = docBuilder.parse(filepath);
-
-        NodeList list = doc.getElementsByTagName("Event");
-
-        return list.getLength() + 1;
-    }
-
-    public class UpdateSensor implements Runnable
-    {
-
-        private Sensor sensor = null;
-
-        public UpdateSensor( Sensor sensor)
+        catch (SAXException ex)
         {
-            this.sensor = sensor;
         }
-
-        @Override
-        public void run()
+        catch (IOException ex)
         {
-
-            updateEventString();
         }
-
-        public void updateEventString()
-        {
-            String[] output = readError();
-            if (sensor.getSensorID() == sensorList[0]) {
-                sensor.update(output[0]);
-                //log.error("" + eventList[0]);
-            } else if (sensor.getSensorID() == sensorList[1]) {
-                sensor.update(output[1]);
-                //log.error("" + eventList[1]);
-            } else if (sensor.getSensorID() == sensorList[2]) {
-                sensor.update(output[2]);
-                //log.error("" + eventList[2]);
-            }
-        }
+        return lastXEvents;
     }
 }

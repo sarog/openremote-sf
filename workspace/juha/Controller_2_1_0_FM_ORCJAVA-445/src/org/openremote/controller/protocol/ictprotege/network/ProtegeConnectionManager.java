@@ -36,6 +36,7 @@ import org.openremote.controller.protocol.ictprotege.EncryptionType;
 import org.openremote.controller.protocol.ictprotege.ProtegeCommandBuilder;
 import org.openremote.controller.protocol.ictprotege.ProtegeCommandType;
 import org.openremote.controller.protocol.ictprotege.ProtegeDataType;
+import org.openremote.controller.protocol.ictprotege.ProtegeEventHandler;
 import org.openremote.controller.protocol.ictprotege.ProtegePacket;
 import org.openremote.controller.protocol.ictprotege.ProtegeRecordType;
 import org.openremote.controller.protocol.ictprotege.ProtegeUtils;
@@ -402,13 +403,18 @@ public boolean superDebugMode = false;
             }
         }
         map.put(index, sensor);
-        log.debug("Adding sensor: " + packet.getRecordType().name()
+        log.debug("Adding sensor: " + packet.getRecordType()
                 + " with RecordID: " + index + " to " + dataType + ".");
         if (packet.getRecordType() != ProtegeRecordType.CONFIG)
         {
             monitoringPackets.add(packet);
-            send(packet);
-        }
+            send(packet);            
+            if (packet.getCommandType() == ProtegeCommandType.SYSTEM_REQUEST_EVENTS)
+            {
+                Map<Integer, Sensor> eventSensors = sensors.get(ProtegeDataType.PANEL_SERIAL_NUMBER); //As there are no parameters with the event packet, it has been stored here.  
+                ProtegeEventHandler.getInstance().setSensors(eventSensors);  
+            }
+        } 
     }
 
     /**
@@ -426,6 +432,14 @@ public boolean superDebugMode = false;
         {
             log.debug("Removing sensor: " + sensorMap.get(packet.getRecordID()).getName() + " from bin " + sensorMap.toString());
             sensorMap.remove(packet.getRecordID());
+            if (packet.getCommandType() == ProtegeCommandType.SYSTEM_REQUEST_EVENTS)
+            {
+                Map<Integer, Sensor> eventSensors = sensors.get(ProtegeDataType.PANEL_SERIAL_NUMBER); //As there are no parameters with the event packet, it has been stored here.  
+                if (eventSensors == null || eventSensors.isEmpty())
+                {
+                    ProtegeEventHandler.requestStop();
+                }
+            }
         } catch (NullPointerException e) {}
         try
         {
