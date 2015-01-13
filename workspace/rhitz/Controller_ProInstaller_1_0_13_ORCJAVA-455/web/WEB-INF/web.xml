@@ -293,6 +293,16 @@
   </servlet-mapping>
 
   <servlet>
+    <servlet-name>commandRESTServlet</servlet-name>
+    <servlet-class>org.openremote.controller.rest.CommandRESTServlet</servlet-class>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>commandRESTServlet</servlet-name>
+    <url-pattern>/rest/commands</url-pattern>
+  </servlet-mapping>
+
+  <servlet>
     <servlet-name>statusRESTServlet</servlet-name>
     <servlet-class>org.openremote.controller.rest.StatusCommandRESTServlet</servlet-class>
   </servlet>
@@ -300,6 +310,16 @@
   <servlet-mapping>
     <servlet-name>statusRESTServlet</servlet-name>
     <url-pattern>/rest/status/*</url-pattern>
+  </servlet-mapping>
+
+  <servlet>
+    <servlet-name>statusByNameRESTServlet</servlet-name>
+    <servlet-class>org.openremote.controller.rest.StatusCommandByNameRESTServlet</servlet-class>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>statusByNameRESTServlet</servlet-name>
+    <url-pattern>/rest/status</url-pattern>
   </servlet-mapping>
 
   <servlet>
