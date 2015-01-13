@@ -313,6 +313,16 @@
   </servlet-mapping>
 
   <servlet>
+    <servlet-name>deployerRESTServlet</servlet-name>
+    <servlet-class>org.openremote.controller.rest.DeployerRESTServlet</servlet-class>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>deployerRESTServlet</servlet-name>
+    <url-pattern>/rest/deploy</url-pattern>
+  </servlet-mapping>
+
+  <servlet>
     <servlet-name>resourceServlet</servlet-name>
     <servlet-class>org.openremote.controller.servlet.ResourceServlet</servlet-class>
   </servlet>
