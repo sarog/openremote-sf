@@ -1,6 +1,7 @@
 /*
  * OpenRemote, the Home of the Digital Home.
  * Copyright 2008-2013, OpenRemote Inc.
+ * Copyright 2009-2015, Juha Lindfors. All rights reserved.
  *
  * See the contributors.txt file in the distribution for a
  * full listing of individual contributors.
@@ -22,6 +23,7 @@ package org.openremote.controller.service;
 
 import org.openremote.controller.ControllerConfiguration;
 import org.openremote.controller.EnOceanConfiguration;
+import org.openremote.controller.ZWaveConfiguration;
 import org.openremote.controller.RoundRobinConfiguration;
 import org.openremote.controller.LutronHomeWorksConfig;
 import org.openremote.controller.ICTProtegeConfiguration;
@@ -45,7 +47,7 @@ import org.openremote.controller.statuscache.StatusCache;
  * The actual service provider is bound at runtime and can therefore vary according to deployment
  * environment.
  *
- * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
+ * @author Juha Lindfors
  */
 public abstract class ServiceContext
 {
@@ -93,6 +95,9 @@ public abstract class ServiceContext
     CONTROLLER_CONFIGURATION("configuration"),                // TODO : To be removed, see ORCJAVA-183
     ROUND_ROBIN_CONFIGURATION("roundRobinConfig"),            // TODO : To be removed, see ORCJAVA-183
     LUTRON_HOMEWORKS_CONFIGURATION("lutronHomeWorksConfig"),  // TODO : To be removed, see ORCJAVA-183
+    ZWAVE_CONFIGURATION("zwaveConfig"),                       // TODO : To be removed, see ORCJAVA-183
+    MARANTZ_AVR_CONFIGURATION("marantzAVRConfig"),            // TODO : To be removed, see ORCJAVA-183
+    AMX_NI_CONFIGURATION("AMXNIConfig"),                      // TODO : To be removed, see ORCJAVA-183
     DEVICE_STATE_CACHE("statusCache"),                        // TODO : Deprecated, see ORCJAVA-197
     COMPONENT_CONTROL_SERVICE("controlCommandService"),       // TODO : should be retrieved through deployer interface
     DENONAVRSERIAL_CONFIGURATION("denonAVRSerialConfiguration"), // TODO : To be removed, see ORCJAVA-183
@@ -187,6 +192,20 @@ public abstract class ServiceContext
     }
   }
 
+  public static ZWaveConfiguration getZWaveConfiguration()
+  {
+    try
+    {
+      return (ZWaveConfiguration)getInstance().getService(ServiceName.ZWAVE_CONFIGURATION);
+    }
+
+    catch (ClassCastException e)
+    {
+      throw new Error(
+          "ZWave Configuration service has had an incompatible change.", e
+      );
+    }
+  }
 
   /**
    * TODO : This is temporary and should go away with configuration

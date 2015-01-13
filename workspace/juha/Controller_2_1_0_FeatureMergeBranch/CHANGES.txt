@@ -1,4 +1,3 @@
-
 Controller 2.1.0 (2015-XX-XX Twin Galaxies)
 ===========================================
 
@@ -18,6 +17,9 @@ New Features:
     (Greg Rapp, Phil Taylor, ORCJAVA-302)
   - Lagarto server (panStamps) integration (Daniel Berenguer)
   - Support 'custom' sensor types with virtual commands (ORCJAVA-217)
+
+  - ZWave:
+     * Updated protocol stack (Rainer Hitz, ORCJAVA-440)
 
   - KNX: 
      * Added distinct levels for 'DIM' and 'SCALE' commands that allow
