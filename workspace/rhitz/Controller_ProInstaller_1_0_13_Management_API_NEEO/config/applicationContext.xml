@@ -180,16 +180,22 @@
       <property name = "statusCache" ref="statusCache"/>
       <property name = "changedStatusTable" ref = "changedStatusTable"/>
     </bean>
-    
+
+    <bean id = "deployerService"
+      class = "org.openremote.controller.service.impl.DeployerServiceImpl">
+
+      <constructor-arg ref="deployer"/>
+    </bean>
+
     <bean id = "changedStatusTable" class="org.openremote.controller.statuscache.ChangedStatusTable" />
 
 
 
-  <!--
-   | TODO
-   |
-   |
-   +-->
+    <!--
+    | TODO
+    |
+    |
+    +-->
 	<bean id = "statusCache" class="org.openremote.controller.statuscache.StatusCache">
 
     <constructor-arg ref = "changedStatusTable"/>

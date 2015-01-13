@@ -194,7 +194,7 @@ public class Deployer
    * detect changes from the file's timestamp, adding/deleting particular files, etc. and
    * control the deployer lifecycle accordingly, initiating soft restarts, shutdowns, and so on.
    */
-  private ControllerDefinitionWatch controllerDefinitionWatch;
+  //private ControllerDefinitionWatch controllerDefinitionWatch;
 
   
   /**
@@ -293,7 +293,7 @@ public class Deployer
       this.name = serviceName;
     }
     
-    this.controllerDefinitionWatch = new ControllerDefinitionWatch(this);
+    //this.controllerDefinitionWatch = new ControllerDefinitionWatch(this);
 
     log.debug("Deployer ''{0}'' initialized.", name);
   }
@@ -367,7 +367,7 @@ public class Deployer
     }
 
 
-    controllerDefinitionWatch.start();
+    //controllerDefinitionWatch.start();
 
     started = true;
     
@@ -883,7 +883,7 @@ public class Deployer
 
     // TODO : ORCJAVA-188 -- pause() candidate for more generic lifecycle interface
 
-    controllerDefinitionWatch.pause();
+    //controllerDefinitionWatch.pause();
   }
 
 
@@ -898,7 +898,7 @@ public class Deployer
     {
       // TODO : ORCJAVA-188 -- resume() candidate for more generic lifecycle interface
 
-      controllerDefinitionWatch.resume();
+      //controllerDefinitionWatch.resume();
     }
 
     finally
