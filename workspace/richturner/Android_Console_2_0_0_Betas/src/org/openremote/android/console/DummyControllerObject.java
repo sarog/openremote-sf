@@ -29,6 +29,6 @@ package org.openremote.android.console;
 public class DummyControllerObject extends ControllerObject {
 
 	public DummyControllerObject() {
-		super("", "", "", "");
+		super("", "", "", "", 1.0, 1.0);
 	}
 }

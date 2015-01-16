@@ -144,8 +144,19 @@ public class Navigate extends BusinessEntity {
       this.fromScreen = fromScreen;
    }
 
+   public void setIsBack(boolean isBack) {
+      this.back = isBack;
+   }
+
    public void setFromGroup(int fromGroup) {
       this.fromGroup = fromGroup;
    }
+   
+   public void setIsPreviousScreen(boolean previousScreen) {
+     this.previousScreen = previousScreen;
+   }
 
+   public void setIsNextScreen(boolean nextScreen) {
+     this.nextScreen = nextScreen;
+   }
 }

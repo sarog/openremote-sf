@@ -3,21 +3,18 @@ package org.openremote.android.console;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
-import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteStatement;
 import android.util.Log;
 
 import java.util.ArrayList;
-import java.util.List;
 
-import org.openremote.android.console.net.SavedServersNetworkCheckTestAsyncTask;
 public class ControllerDataHelper {
 	 public static final String TAG = Constants.LOG_CATEGORY + "DataHelper";
 	 
    private static final String DATABASE_NAME = "example.db";
-   private static final int DATABASE_VERSION = 2;
+   private static final int DATABASE_VERSION = 4;
    private static final String TABLE_NAME = "table1";
    private OpenHelper openHelper;
    private SQLiteDatabase db;
@@ -29,8 +26,8 @@ public class ControllerDataHelper {
    private SQLiteStatement findStmt;
    
    private static final String INSERT = "insert into "
-      + TABLE_NAME + "(name, info, defaultpanel, username, userpass) values (?,?,?,?,?)";
-   private static final String UPDATE = "update " + TABLE_NAME + " set name=?, info=?, defaultpanel=?, username=?, userpass=?"
+      + TABLE_NAME + "(name, info, defaultpanel, username, userpass, xscale, yscale) values (?,?,?,?,?,?,?)";
+   private static final String UPDATE = "update " + TABLE_NAME + " set name=?, info=?, defaultpanel=?, username=?, userpass=?, xscale=?, yscale=?"
        + " where name = ?";
    private static final String DELETE = "delete from "
 		      + TABLE_NAME + " where name = ?";
@@ -112,6 +109,8 @@ public class ControllerDataHelper {
 			insertStmt.bindString(3, controller.getDefaultPanel());
 			insertStmt.bindString(4, controller.getUsername());
 			insertStmt.bindString(5, controller.getUserPass());
+			insertStmt.bindString(6, Double.toString(controller.getXScale()));
+			insertStmt.bindString(7, Double.toString(controller.getYScale()));
 			insertStmt.executeInsert();
 			if (opened)
 				closeConnection();
@@ -128,14 +127,17 @@ public class ControllerDataHelper {
 				newController.getDefaultPanel(),
 				newController.getUsername(),
 				newController.getUserPass(),
-				
+				Double.toString(newController.getXScale()),
+				Double.toString(newController.getYScale())
 		};
 		ContentValues cv = new ContentValues();
 		cv.put("name", newController.getUrl());
 		cv.put("defaultpanel", newController.getDefaultPanel());
 		cv.put("username", newController.getUsername());
 		cv.put("userpass", newController.getUserPass());
-		
+		cv.put("xScale", Double.toString(newController.getXScale()));
+		cv.put("yScale", Double.toString(newController.getYScale()));
+
 		try {
 			boolean opened = openConnection();
 			db.update(TABLE_NAME, cv, "name = ?", new String[] {oldController.getUrl()});
@@ -218,7 +220,9 @@ public class ControllerDataHelper {
   				 cursor.getString(0),
   				 cursor.getString(2),
   				 cursor.getString(3),
-  				 cursor.getString(4));
+  				 cursor.getString(4), 
+  				 Double.parseDouble(cursor.getString(5)),
+			     Double.parseDouble(cursor.getString(6)));
   	 } catch (Exception e) {
   		 Log.e(TAG, "Failed to create ControllerObject from SQLLiteCursor");
   	 }
@@ -246,7 +250,7 @@ public class ControllerDataHelper {
       }
       @Override
       public void onCreate(SQLiteDatabase db) {
-         db.execSQL("CREATE TABLE " + TABLE_NAME + " (name TEXT PRIMARY KEY, info TEXT, defaultpanel TEXT, username TEXT, userpass TEXT)");
+         db.execSQL("CREATE TABLE " + TABLE_NAME + " (name TEXT PRIMARY KEY, info TEXT, defaultpanel TEXT, username TEXT, userpass TEXT, xscale TEXT, yscale TEXT)");
       }
       @Override
       public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {

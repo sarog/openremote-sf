@@ -24,9 +24,8 @@ import org.openremote.android.console.model.AppSettingsModel;
 import org.openremote.android.console.net.IPAutoDiscoveryClient;
 import org.openremote.android.console.util.AsyncResourceLoader;
 import org.openremote.android.console.util.ImageUtil;
-
 import roboguice.inject.InjectView;
-
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
@@ -65,10 +64,10 @@ public class Main extends GenericActivity {
     private TextView loadingText;
 
     /** Called when the activity is first created. */
+    @SuppressLint("NewApi")
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
         
         /*
          * Temporary fix for ANDROID-90 Bug relating to NetworkOnMainThreadException
@@ -134,8 +133,17 @@ public class Main extends GenericActivity {
      */
     private void readDisplayMetrics() {
       DisplayMetrics dm = getApplicationContext().getResources().getDisplayMetrics();
+      ControllerObject controller = AppSettingsModel.getCurrentController(this);
       Screen.SCREEN_WIDTH = dm.widthPixels;
       Screen.SCREEN_HEIGHT = dm.heightPixels;
+      double xScale = 1.0;
+	  double yScale = 1.0;
+      if ( controller != null ) {
+         xScale = controller.getXScale();
+		 yScale = controller.getXScale();
+	  }
+      Screen.WIDTH_SCALE =  xScale;
+      Screen.HEIGHT_SCALE = yScale;
     }
     
     /**

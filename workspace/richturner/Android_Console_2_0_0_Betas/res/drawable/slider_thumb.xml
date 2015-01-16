@@ -3,7 +3,7 @@
 	<item>
 	    <shape>	    	
 	    	<solid android:color="#20000000" />
-  	    	<corners android:bottomLeftRadius="10dp" android:bottomRightRadius="10dp" android:topLeftRadius="10dp" android:topRightRadius="10dp" />
+  	    	<corners android:bottomLeftRadius="12dp" android:bottomRightRadius="12dp" android:topLeftRadius="12dp" android:topRightRadius="12dp" />
     	</shape>
 	</item>
 	
@@ -15,11 +15,11 @@
 		        android:endColor="#f9f9f9"
 		        android:type="linear" />
 		    
-		    <corners android:bottomLeftRadius="10dp" android:bottomRightRadius="10dp" android:topLeftRadius="10dp" android:topRightRadius="10dp" />
+		    <corners android:bottomLeftRadius="12dp" android:bottomRightRadius="12dp" android:topLeftRadius="12dp" android:topRightRadius="12dp" />
 		    
 		    <stroke android:width="2dp" android:color="#f3f3f3"/>
 		    
-		    <size android:height="20dp" android:width="20dp" />
+		    <size android:height="24dp" android:width="24dp" />
 		</shape>
 	</item>
 </layer-list>

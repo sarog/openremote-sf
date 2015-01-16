@@ -386,7 +386,7 @@ public class AppSettingsActivity extends GenericActivity {
         for (int i = 0; i < length; i++) {
 
         	if (!dh.controllerExists(result.get(i))) {
-        		ControllerObject controller = new ControllerObject(result.get(i), "", "", "");
+        		ControllerObject controller = new ControllerObject(result.get(i), "", "", "", 1.0, 1.0);
         		dh.addController(controller);
         		addControllerToList(controller);
         	}

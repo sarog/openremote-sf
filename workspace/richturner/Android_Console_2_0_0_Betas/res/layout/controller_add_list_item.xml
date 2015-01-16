@@ -18,7 +18,6 @@
 	    android:src="@drawable/plus_icon" />
  
     <TextView
-        xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/controllerURL"
         android:layout_width="wrap_content"
         android:layout_height="?android:attr/listPreferredItemHeight"

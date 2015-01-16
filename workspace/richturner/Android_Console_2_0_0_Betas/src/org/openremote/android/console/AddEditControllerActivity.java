@@ -54,6 +54,8 @@ public class AddEditControllerActivity extends GenericActivity {
     private String username;
     private String userpass;
     private boolean editMode;
+    private double xScale = 1.0;
+    private double yScale = 1.0;
     
     public void onCreate(Bundle savedState) {
         super.onCreate(savedState);
@@ -82,6 +84,8 @@ public class AddEditControllerActivity extends GenericActivity {
         	username = controller.getUsername();
         	userpass = controller.getUserPass();
         	userpass = TextUtils.isEmpty(userpass) ? "" : PASSWORD_MASK; // We don't store raw password 
+        	xScale = controller.getXScale();
+        	yScale = controller.getYScale();
         }
         
         setContentView(R.layout.add_edit_controller);        
@@ -95,6 +99,8 @@ public class AddEditControllerActivity extends GenericActivity {
         final EditText controllerPanelText = (EditText) findViewById(R.id.controller_default_panel_edit_text);
         final EditText controllerUsernameText = (EditText) findViewById(R.id.controller_username_edit_text);
         final EditText controllerPasswordText = (EditText) findViewById(R.id.controller_password_edit_text);
+        final EditText controllerXScaleText = (EditText) findViewById(R.id.controller_x_scale);
+        final EditText controllerYScaleText = (EditText) findViewById(R.id.controller_y_scale);
         Button saveBtn = (Button) findViewById(R.id.edit_controller_save_button);
         Button cancelBtn = (Button) findViewById(R.id.edit_controller_cancel_button);
         
@@ -102,6 +108,8 @@ public class AddEditControllerActivity extends GenericActivity {
         controllerPanelText.setText(defaultPanel);
         controllerUsernameText.setText(username);
         controllerPasswordText.setText(userpass);
+        controllerXScaleText.setText(Double.toString(xScale));
+        controllerYScaleText.setText(Double.toString(yScale));
         
         saveBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -110,6 +118,21 @@ public class AddEditControllerActivity extends GenericActivity {
 	            defaultPanel = controllerPanelText.getText().toString().trim();
 	            username = controllerUsernameText.getText().toString().trim();
 	            userpass = controllerPasswordText.getText().toString().trim();
+	            String xTemp = controllerXScaleText.getText().toString().trim();
+	            String yTemp = controllerYScaleText.getText().toString().trim();
+	            
+	            try
+	            {
+	            	xScale = Double.parseDouble(xTemp);
+	            	yScale = Double.parseDouble(yTemp);
+	            }
+	            catch(Exception e)
+	            {
+	          	  	Toast toast = Toast.makeText(AddEditControllerActivity.this, "Scale factor must be a numeric value between 0.1 and 5.0", 1);
+	          	  	toast.show();
+	          	  	xScale = 1.0;
+	          	  	yScale = 1.0;
+	            }	            
 	            
 	            if (TextUtils.isEmpty(controllerUrl)) {
 	          	  Toast toast = Toast.makeText(AddEditControllerActivity.this, "You must specify a Controller URL.", 1);
@@ -138,6 +161,8 @@ public class AddEditControllerActivity extends GenericActivity {
 									controller.getUrl().equals(controllerUrl) &&
 									controller.getDefaultPanel().equals(defaultPanel) &&
 									controller.getUsername().equals(username) &&
+									controller.getXScale().equals(xScale) &&
+									controller.getYScale().equals(yScale) &&
 									((controller.getUserPass().equals("") && userpass.equals("")) || (!controller.getUserPass().equals("") && !userpass.equals(PASSWORD_MASK)))
 							) {
 								// Nothing has changed so just finish
@@ -148,7 +173,7 @@ public class AddEditControllerActivity extends GenericActivity {
 							}
 							
 							// If we get this far then update or create the specified controller
-							ControllerObject newController = new ControllerObject(controllerUrl, defaultPanel, username, userpass);
+							ControllerObject newController = new ControllerObject(controllerUrl, defaultPanel, username, userpass, xScale, yScale);
 							
 							if (editMode) {
 								// If controller url changed check new one doesn't already exist

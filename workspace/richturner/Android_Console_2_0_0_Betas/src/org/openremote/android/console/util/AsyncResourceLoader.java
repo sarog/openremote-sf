@@ -153,6 +153,8 @@ public class AsyncResourceLoader extends RoboAsyncTask<AsyncResourceLoaderResult
           }
         }
       }
+      
+      updateLoadingTextOnUiThread("screens");
     }
 
     catch (ControllerAuthenticationFailureException e)
@@ -283,7 +285,7 @@ public class AsyncResourceLoader extends RoboAsyncTask<AsyncResourceLoaderResult
         intent.setData(Uri.parse(Main.LOAD_RESOURCE));
         break;
       case TO_CONTROLLER_LIST:
-        intent.setClass(context, ControllerListActivity.class);
+        intent.setClass(context, AppSettingsActivity.class);
         break;        
       default:
         ViewHelper.showAlertViewWithTitle(context, "Send Request Error",

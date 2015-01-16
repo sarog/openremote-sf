@@ -36,6 +36,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
@@ -91,7 +92,7 @@ public class SwitchView extends SensoryControlView {
   		switchLayout.setLayoutParams(params);
       
       button = new Button(context, null, android.R.attr.buttonStyleSmall);
-      button.setTextSize(Constants.DEFAULT_FONT_SIZE);
+      button.setTextSize(TypedValue.COMPLEX_UNIT_DIP, Constants.DEFAULT_FONT_SIZE_DIP);
       button.setLayoutParams(new RelativeLayout.LayoutParams(width, height));
       
       if (switchComponent.getOnImage() != null) {

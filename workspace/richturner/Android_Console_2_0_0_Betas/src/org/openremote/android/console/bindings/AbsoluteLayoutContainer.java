@@ -46,6 +46,12 @@ public class AbsoluteLayoutContainer extends LayoutContainer {
       this.top = Integer.valueOf(nodeMap.getNamedItem("top").getNodeValue());
       this.width = Integer.valueOf(nodeMap.getNamedItem("width").getNodeValue());
       this.height = Integer.valueOf(nodeMap.getNamedItem("height").getNodeValue());
+      
+      this.left   = (int)((double)this.left * Screen.WIDTH_SCALE); 
+      this.top    = (int)((double)this.top * Screen.HEIGHT_SCALE); 
+      this.width  = (int)((double)this.width * Screen.WIDTH_SCALE); 
+      this.height = (int)((double)this.height * Screen.HEIGHT_SCALE); 
+      
       NodeList nodes = node.getChildNodes();
       int nodeNum = nodes.getLength();
       for (int i = 0; i < nodeNum; i++) {
