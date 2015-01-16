@@ -19,9 +19,10 @@
 */
 package org.openremote.android.console.util;
 
-import java.io.IOException;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map.Entry;
 
 import android.app.Activity;
 import android.content.Context;
@@ -37,9 +38,10 @@ import android.view.InflateException;
  * Image Utility class.
  * 
  * @author Dan Cong
+ * @author Rich Turner
  */
 public class ImageUtil {
-  private static List<Bitmap> bitmapCache = new ArrayList<Bitmap>();
+  private static LinkedHashMap<String, List<Bitmap>> bitmapCache = new LinkedHashMap<String, List<Bitmap>>();
   
    private ImageUtil() {
    }
@@ -59,15 +61,14 @@ public class ImageUtil {
 	   opts.inTempStorage=new byte[32 * 1024]; 
      BitmapDrawable ret = null;
       
-	  Bitmap decodedBitmap = createBitmap(pathName, reqWidth, reqHeight);
+	  Bitmap decodedBitmap = createBitmap(pathName, reqWidth, reqHeight, true, true);
 	  if (decodedBitmap != null)
     		  ret = new BitmapDrawable(ctx.getResources(), decodedBitmap);
       
       return ret;
    }
    
-   
-   private static Bitmap createBitmap(String pathName, int reqWidth, int reqHeight) {
+   private static Bitmap createBitmap(String pathName, int reqWidth, int reqHeight, boolean shrinkOnly, boolean maintainAspect) {
       Bitmap bitmap = null;
       BitmapFactory.Options opts=new BitmapFactory.Options();
       opts.inDither=false;                     //Disable Dithering mode
@@ -79,19 +80,64 @@ public class ImageUtil {
     	  // Determine required sample size of the image
     	  opts.inJustDecodeBounds = true;
     	  BitmapFactory.decodeFile(pathName, opts);
+        opts.inJustDecodeBounds = false;
+        
+        if (maintainAspect) {
+          double ar = (double)opts.outWidth / opts.outHeight;
+          boolean wIsLimit = Math.abs(opts.outWidth - reqWidth) < Math.abs(opts.outHeight - reqHeight);
+          if (wIsLimit) {
+            reqWidth = shrinkOnly ? Math.min(reqWidth, opts.outWidth) : reqWidth;
+            reqHeight = (int)Math.round((double)reqWidth / ar);
+          } else {
+            reqHeight = shrinkOnly ? Math.min(reqHeight, opts.outHeight) : reqHeight;
+            reqWidth = (int)Math.round((double)reqHeight * ar);
+          }
+        } else {
+          reqWidth = shrinkOnly ? Math.min(reqWidth, opts.outWidth) : reqWidth;
+          reqHeight = shrinkOnly ? Math.min(reqHeight, opts.outHeight) : reqHeight;
+        }
+        
+        // Find image that matches this size
+    	  List<Bitmap> bitmaps = bitmapCache.get(pathName.toLowerCase());
+    	  if (bitmaps != null) {
+    	    for (Bitmap b : bitmaps) {
+            double bw = b.getWidth();
+            double bh = b.getHeight();
+    	      if (bw == reqWidth && bh == reqHeight) {
+  	          bitmap = b;
+  	          break;
+    	      }
+//    	      if (bitmapWrapper.sampleSize <= opts.inSampleSize) {
+//    	        bitmap = bitmapWrapper.bitmap;
+//    	        break;
+//    	      }
+    	    }
+    	  }
     	  
-    	  // Calculate inSampleSize
-    	  opts.inSampleSize = calculateInSampleSize(opts, reqWidth, reqHeight);
-    	  opts.inJustDecodeBounds = false;
-    	  
-    	  bitmap = BitmapFactory.decodeFile(pathName, opts);
+    	  // Generate the bitmap if not found in the cache 
+    	  if (bitmap == null)
+    	  {
+          // Calculate sample size
+          opts.inSampleSize = calculateInSampleSize(opts, reqWidth, reqHeight);
+    	    bitmap = BitmapFactory.decodeFile(pathName, opts);
+    	    if (bitmap.getWidth() != reqWidth || bitmap.getHeight() != reqHeight) {
+    	      Bitmap oldBitmap = bitmap;
+    	      bitmap = Bitmap.createScaledBitmap(oldBitmap, reqWidth, reqHeight, false);
+    	      if (bitmap != oldBitmap) {
+    	        oldBitmap.recycle();
+    	      }
+    	    }
+    	    
+    	    if (bitmaps == null) {
+    	      bitmaps = new ArrayList<Bitmap>();
+    	      bitmapCache.put(pathName, bitmaps);
+    	    }
+    	    bitmaps.add(bitmap);
+    	  }
       } catch (OutOfMemoryError e) {
           Log.e("Out of Memory error: ", pathName);
       }
-      
-      if (bitmap != null)
-        bitmapCache.add(bitmap);
-      
+
       return bitmap;
    }
    
@@ -105,52 +151,20 @@ public class ImageUtil {
      return croppedBitmap;
    }
    
-   public static BitmapDrawable createScaledDrawableFromPath(Context ctx, String pathName, int width, int height) {
-     return createScaledDrawableFromPath(ctx, pathName, width, height, false, false);
-   }
+  public static BitmapDrawable createScaledDrawableFromPath(Context ctx, String pathName, int width, int height) {
+    return createScaledDrawableFromPath(ctx, pathName, width, height, false, false);
+  }
    
-   public static BitmapDrawable createScaledDrawableFromPath(Context ctx, String pathName, int width, int height, boolean shrinkOnly, boolean maintainAspect) {
-	     BitmapDrawable drawable = null;
-	     Bitmap bitmap = null;
-	     Bitmap tempBitmap = createBitmap(pathName, width, height);
-
-	     if (tempBitmap != null) {
-         int bWidth = tempBitmap.getWidth();
-         int bHeight = tempBitmap.getHeight();
-
-         // check if want to maintain aspect ratio
-         if (maintainAspect) {
-           double ratio = (double)bWidth/bHeight;
-           if (width >= height) {
-             width = (int)Math.round(height * ratio);
-           } else {
-             height = (int)Math.round(width / ratio);
-           }
-//           width = ratio > 1 ? (int)Math.round((double)width / ratio) : width;
-//           height = ratio > 1 ? height : (int)Math.round((double)height * ratio);
-         }
-
-         if (bWidth >= width || bHeight >= height || !shrinkOnly)
-         {
-           // Resize image
-           bitmap = Bitmap.createScaledBitmap(tempBitmap, width, height, false);
-           if (tempBitmap != bitmap) {
-             bitmapCache.remove(tempBitmap);
-             tempBitmap.recycle();
-             bitmapCache.add(bitmap);
-           }
-           tempBitmap = null;
-         } else {
-           bitmap = tempBitmap;
-         }
-	     }
-	     
-		  if (bitmap != null)
-		  {
-    		drawable = new BitmapDrawable(ctx.getResources(), bitmap);
-		  }
-	     return drawable;
-	   }
+  public static BitmapDrawable createScaledDrawableFromPath(Context ctx, String pathName, int width, int height, boolean shrinkOnly, boolean maintainAspect) {
+    BitmapDrawable drawable = null;
+    Bitmap bitmap = createBitmap(pathName, width, height, shrinkOnly, maintainAspect);
+   
+    if (bitmap != null) {
+      drawable = new BitmapDrawable(ctx.getResources(), bitmap);
+    }
+     
+    return drawable;
+  }
    
   public static Pair<Integer, Integer> getNativeImageSize(String pathName) {
     Pair<Integer, Integer> size = null;
@@ -217,9 +231,11 @@ public class ImageUtil {
    }
    
    public static void clearBitmaps() {
-     for (Bitmap b : bitmapCache) {
-       b.recycle();
-       b = null;
+     for (Entry<String, List<Bitmap>> bList : bitmapCache.entrySet()) {
+       for (Bitmap b : bList.getValue()) {
+         b.recycle();
+         b = null;
+       }
      }
      bitmapCache.clear();
    }

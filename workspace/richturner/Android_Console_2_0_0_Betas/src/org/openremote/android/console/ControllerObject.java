@@ -10,18 +10,22 @@ public class ControllerObject {
     private String defaultPanel;
 		private String username;
 		private String userpass;
+	private Double xScale;
+	private Double yScale;
     private String group;
     private boolean isControllerUp;
     private boolean availabilityCheckDone;
     private List<String> failoverControllers = new ArrayList<String>();
     
-    public ControllerObject(String url, String defaultPanel, String username, String userpass) {
+    public ControllerObject(String url, String defaultPanel, String username, String userpass, double xScale, double yScale) {
     	url = formatUrl(url);
     	
     	this.url = url;
     	this.defaultPanel = defaultPanel;
     	this.username = username;
     	this.userpass = userpass;
+    	this.xScale = xScale;
+		this.yScale = yScale;
     }
     
 //   public boolean isIs_Selected(){
@@ -35,7 +39,15 @@ public class ControllerObject {
 //   public String getFailoverFor(){
 //	   return failoverForcontroller;
 //   }
+    
+    public Double getXScale() {
+        return xScale;
+    }
    
+	public Double getYScale() {
+        return yScale;
+    }
+
     public String getUrl() {
         return url;
     }

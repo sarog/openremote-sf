@@ -24,13 +24,24 @@ import org.openremote.android.console.bindings.GridLayoutContainer;
 import org.openremote.android.console.bindings.LayoutContainer;
 
 import android.content.Context;
+import android.view.View;
 import android.view.ViewGroup;
+import android.view.View.OnLongClickListener;
 import android.widget.FrameLayout;
 
 public class LayoutContainerView extends FrameLayout {
 
    protected LayoutContainerView(Context context) {
       super(context);
+      
+      this.setLongClickable(true);
+      this.setOnLongClickListener(new OnLongClickListener() {
+        
+        @Override
+        public boolean onLongClick(View v) {
+          return true;
+        }
+      });
    }
 
    public static LayoutContainerView buildWithLayoutContainer(Context context, LayoutContainer layout) {

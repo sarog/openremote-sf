@@ -23,6 +23,9 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+
 import org.apache.http.HttpResponse;
 import org.openremote.android.console.bindings.Gesture;
 import org.openremote.android.console.bindings.Group;
@@ -66,6 +69,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.OrientationEventListener;
+import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.GestureDetector.OnGestureListener;
@@ -337,27 +341,28 @@ public class GroupActivity extends GenericActivity implements OnGestureListener 
    @Override
    public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
       // The panel or group is empty.
-      if (currentGroupView == null) {
-         return false;
+      if (currentGroupView != null) {
+        if (e1.getX() - e2.getX() > SWIPE_MIN_DISTANCE && Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) {
+           Log.i("OpenRemote-FLING", "right to left");
+           onScreenGestureEvent(Gesture.GESTURE_SWIPE_TYPE_RIGHT2LEFT);
+           Navigate navNext = new Navigate();
+           navNext.setIsNextScreen(true);
+           handleNavigate(navNext);
+        } else if (e2.getX() - e1.getX() > SWIPE_MIN_DISTANCE && Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) {
+           Log.i("OpenRemote-FLING", "left to right");
+           onScreenGestureEvent(Gesture.GESTURE_SWIPE_TYPE_LEFT2RIGHT);
+           Navigate navPrevious = new Navigate();
+           navPrevious.setIsPreviousScreen(true);
+           handleNavigate(navPrevious);
+        } else if (e1.getY() - e2.getY() > SWIPE_MIN_DISTANCE && Math.abs(velocityY) > SWIPE_THRESHOLD_VELOCITY) {
+           Log.i("OpenRemote-FLING", "bottom to top");
+           onScreenGestureEvent(Gesture.GESTURE_SWIPE_TYPE_BOTTOM2TOP);
+        } else if (e2.getY() - e1.getY() > SWIPE_MIN_DISTANCE && Math.abs(velocityY) > SWIPE_THRESHOLD_VELOCITY) {
+           Log.i("OpenRemote-FLING", "top to bottom");
+           onScreenGestureEvent(Gesture.GESTURE_SWIPE_TYPE_TOP2BOTTOM);
+        }
       }
-      if (e1.getX() - e2.getX() > SWIPE_MIN_DISTANCE && Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) {
-         Log.i("OpenRemote-FLING", "right to left");
-         onScreenGestureEvent(Gesture.GESTURE_SWIPE_TYPE_RIGHT2LEFT);
-         return moveRight();
-      } else if (e2.getX() - e1.getX() > SWIPE_MIN_DISTANCE && Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) {
-         Log.i("OpenRemote-FLING", "left to right");
-         onScreenGestureEvent(Gesture.GESTURE_SWIPE_TYPE_LEFT2RIGHT);
-         return moveLeft();
-      } else if (e1.getY() - e2.getY() > SWIPE_MIN_DISTANCE && Math.abs(velocityY) > SWIPE_THRESHOLD_VELOCITY) {
-         Log.i("OpenRemote-FLING", "bottom to top");
-         onScreenGestureEvent(Gesture.GESTURE_SWIPE_TYPE_BOTTOM2TOP);
-         return true;
-      } else if (e2.getY() - e1.getY() > SWIPE_MIN_DISTANCE && Math.abs(velocityY) > SWIPE_THRESHOLD_VELOCITY) {
-         Log.i("OpenRemote-FLING", "top to bottom");
-         onScreenGestureEvent(Gesture.GESTURE_SWIPE_TYPE_TOP2BOTTOM);
-         return true;
-      }
-      return false;
+      return true;
    }
 
    /**
@@ -400,7 +405,7 @@ public class GroupActivity extends GenericActivity implements OnGestureListener 
               }
             }.execute();
          }
-         if (gesture.getNavigate() != null) {
+         else if (gesture.getNavigate() != null) {
             handleNavigate(gesture.getNavigate());
          }
       }
@@ -408,8 +413,7 @@ public class GroupActivity extends GenericActivity implements OnGestureListener 
 
    @Override
    public void onLongPress(MotionEvent e) {
-      // Do nothing.
-
+     loadSettings();
    }
 
    @Override
@@ -842,9 +846,12 @@ public class GroupActivity extends GenericActivity implements OnGestureListener 
 //}
    
    @Override
-   public void onBackPressed() {
-  	 // Just go to settings for now
-  	 loadSettings();
+   public void onBackPressed() 
+   {
+	   Navigate nav = new Navigate();
+	   nav.setIsBack(true);
+	   navigateTo(nav);
+	   // TODO
    }
    
    private void loadSettings() {

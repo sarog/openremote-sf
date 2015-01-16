@@ -37,6 +37,8 @@ public class Screen extends BusinessEntity {
    */
    public static int SCREEN_WIDTH = 320;
    public static int SCREEN_HEIGHT = 480;
+   public static double WIDTH_SCALE = 1.00;		// width scale to fit screen 
+   public static double HEIGHT_SCALE = 1.00;	// height scale to fit screen
    public static int SCREEN_STATUS_BAR_HEIGHT = 0;
    
    private int screenId;

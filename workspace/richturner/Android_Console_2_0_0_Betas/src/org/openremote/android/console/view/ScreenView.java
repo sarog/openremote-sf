@@ -21,12 +21,14 @@ package org.openremote.android.console.view;
 
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
+
 import org.openremote.android.console.Constants;
 import org.openremote.android.console.bindings.Background;
 import org.openremote.android.console.bindings.LayoutContainer;
 import org.openremote.android.console.bindings.Screen;
 import org.openremote.android.console.model.PollingHelper;
 import org.openremote.android.console.util.ImageUtil;
+
 import android.R;
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -37,6 +39,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.util.Log;
 import android.util.Pair;
 import android.view.Gravity;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.ImageView.ScaleType;
 import android.widget.RelativeLayout;

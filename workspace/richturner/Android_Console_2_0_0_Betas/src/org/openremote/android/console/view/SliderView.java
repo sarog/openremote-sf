@@ -24,6 +24,7 @@ package org.openremote.android.console.view;
 import org.openremote.android.console.Constants;
 import org.openremote.android.console.R;
 import org.openremote.android.console.bindings.Image;
+import org.openremote.android.console.bindings.Screen;
 import org.openremote.android.console.bindings.Slider;
 import org.openremote.android.console.model.ListenerConstant;
 import org.openremote.android.console.model.OREvent;
@@ -33,8 +34,6 @@ import org.openremote.android.console.model.PollingStatusParser;
 import org.openremote.android.console.util.ImageUtil;
 
 import android.content.Context;
-import android.graphics.Color;
-import android.graphics.Matrix;
 import android.graphics.Shader.TileMode;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
@@ -62,9 +61,9 @@ import android.view.View;
  * 
  */
 public class SliderView extends SensoryControlView implements View.OnTouchListener {
-	public static final int TRACK_HEIGHT = 9;
+	public static final int TRACK_HEIGHT = 14;
 	public static final int TRACK_BORDER = 0;
-	public static final int THUMB_SIZE = 23;
+	public static final int THUMB_SIZE = 30;
 	public static final double MAX_MIN_IMAGE_SIZE_RATIO_LIMIT = 0.2;
 	public static final int MAX_MIN_IMAGE_TRACK_SPACING = 2;
 	private Context context;
@@ -112,11 +111,9 @@ public class SliderView extends SensoryControlView implements View.OnTouchListen
 		minValue = slider.getMinValue();
 		value = minValue;
 		
-		LayoutInflater inflater = (LayoutInflater) context
-				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
-		RelativeLayout sliderLayout = (RelativeLayout) inflater.inflate(R.layout.slider,
-				(ViewGroup) findViewById(R.id.slider_layout));
+		RelativeLayout sliderLayout = (RelativeLayout) inflater.inflate(R.layout.slider, (ViewGroup) findViewById(R.id.slider_layout));
 		RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(width, height);
 		sliderLayout.setLayoutParams(params);
 
@@ -138,19 +135,20 @@ public class SliderView extends SensoryControlView implements View.OnTouchListen
 		// Configure min and max images
 		RelativeLayout.LayoutParams mnLayoutParams = (RelativeLayout.LayoutParams) minImage.getLayoutParams();
 		RelativeLayout.LayoutParams mxLayoutParams = (RelativeLayout.LayoutParams) maxImage.getLayoutParams();
-		int spacing = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 
-        MAX_MIN_IMAGE_TRACK_SPACING, getResources().getDisplayMetrics());
+		int spacing = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, MAX_MIN_IMAGE_TRACK_SPACING, getResources().getDisplayMetrics());
+		int trackHeight = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, TRACK_HEIGHT, getResources().getDisplayMetrics());
 		int minHeight = 0;
 		int minWidth = 0;
 		int minSpacing = 0;
 		int maxHeight = 0;
 		int maxWidth = 0;
 		int maxSpacing = 0;
-		Image minImg = slider.getMinImage();
-		
-		if (minImg != null) {
-			Drawable drawable = ImageUtil.createScaledDrawableFromPath(context, Constants.FILE_FOLDER_PATH
-					+ minImg.getSrc(), slider.getFrameWidth(), slider.getFrameHeight(), true, true);
+		int minMaxWidthLimit = (int)Math.round(isVertical ? slider.getFrameWidth() : MAX_MIN_IMAGE_SIZE_RATIO_LIMIT * slider.getFrameWidth());
+		int minMaxHeightLimit = (int)Math.round(isVertical ? MAX_MIN_IMAGE_SIZE_RATIO_LIMIT * slider.getFrameHeight() : slider.getFrameWidth());
+
+		Image minImg = slider.getMinImage();		
+		if (minImg != null) {		  
+			Drawable drawable = ImageUtil.createScaledDrawableFromPath(context, Constants.FILE_FOLDER_PATH + minImg.getSrc(), minMaxWidthLimit, minMaxHeightLimit, true, true);
 			minImage.setImageDrawable(drawable);
 			minWidth = drawable.getIntrinsicWidth();
 			minHeight = drawable.getIntrinsicHeight();
@@ -159,8 +157,7 @@ public class SliderView extends SensoryControlView implements View.OnTouchListen
 
 		Image maxImg = slider.getMaxImage();
 		if (maxImg != null) {
-      Drawable drawable = ImageUtil.createScaledDrawableFromPath(context, Constants.FILE_FOLDER_PATH
-              + maxImg.getSrc(), slider.getFrameWidth(), slider.getFrameHeight(), true, true);
+      Drawable drawable = ImageUtil.createScaledDrawableFromPath(context, Constants.FILE_FOLDER_PATH + maxImg.getSrc(), minMaxWidthLimit, minMaxHeightLimit, true, true);
 			maxImage.setImageDrawable(drawable);
 			maxWidth = drawable.getIntrinsicWidth();
 			maxHeight = drawable.getIntrinsicHeight();
@@ -201,8 +198,7 @@ public class SliderView extends SensoryControlView implements View.OnTouchListen
 		// Configure the thumb
 		Drawable thumbDrawable;
 		
-		RelativeLayout.LayoutParams thumbLayoutParams = (RelativeLayout.LayoutParams) thumb
-				.getLayoutParams();
+		RelativeLayout.LayoutParams thumbLayoutParams = (RelativeLayout.LayoutParams) thumb.getLayoutParams();
 
 		Image thumbImg = slider.getThumbImage();
 		if (thumbImg != null) {
@@ -215,11 +211,16 @@ public class SliderView extends SensoryControlView implements View.OnTouchListen
 		int thumbU = isVertical ? thumbDrawable.getIntrinsicHeight() : thumbDrawable.getIntrinsicWidth();
 		int thumbV = isVertical ? thumbDrawable.getIntrinsicWidth() : thumbDrawable.getIntrinsicHeight();
 		halfThumb = (int)Math.round((double)thumbU / 2);
-
-		if (isVertical) {
+		thumbLayoutParams.width = thumbU;
+		thumbLayoutParams.height = thumbV;
+		
+		if (isVertical) 
+		{
 			thumbLayoutParams.addRule(RelativeLayout.CENTER_HORIZONTAL);
 			thumbLayoutParams.addRule(RelativeLayout.ABOVE, minImage.getId());
-		} else {
+		} 
+		else 
+		{
 			thumbLayoutParams.addRule(RelativeLayout.CENTER_VERTICAL);
 			thumbLayoutParams.addRule(RelativeLayout.RIGHT_OF, minImage.getId());
 		}
@@ -233,10 +234,8 @@ public class SliderView extends SensoryControlView implements View.OnTouchListen
 		int minTrackV = TRACK_HEIGHT;
 		int maxTrackV = TRACK_HEIGHT;
 		Drawable minTrackDrawable, maxTrackDrawable;
-		RelativeLayout.LayoutParams minLayoutParams = (RelativeLayout.LayoutParams) minTrack
-				.getLayoutParams();
-		RelativeLayout.LayoutParams maxLayoutParams = (RelativeLayout.LayoutParams) maxTrack
-				.getLayoutParams();
+		RelativeLayout.LayoutParams minLayoutParams = (RelativeLayout.LayoutParams) minTrack.getLayoutParams();
+		RelativeLayout.LayoutParams maxLayoutParams = (RelativeLayout.LayoutParams) maxTrack.getLayoutParams();
 
 		Image minTImg = slider.getMinTrackImage();
 		if (minTImg != null) {

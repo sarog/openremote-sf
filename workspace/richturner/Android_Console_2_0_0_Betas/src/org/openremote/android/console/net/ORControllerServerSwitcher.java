@@ -174,7 +174,9 @@ public class ORControllerServerSwitcher
               return controllerURL;
             }*/
             
-            return new ControllerObject(url,controller.getDefaultPanel(), controller.getUsername(), controller.getUserPass());
+            return new ControllerObject(url,controller.getDefaultPanel(), 
+            		controller.getUsername(), controller.getUserPass(), 
+            		controller.getXScale(), controller.getYScale());
         }
         catch(Exception e){
       	  e.printStackTrace();

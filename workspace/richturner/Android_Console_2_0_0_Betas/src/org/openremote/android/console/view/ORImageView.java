@@ -31,10 +31,11 @@ import org.openremote.android.console.util.ImageUtil;
 
 import android.content.Context;
 import android.graphics.Color;
-import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.os.Message;
+import android.util.TypedValue;
+import android.view.Gravity;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -53,12 +54,18 @@ public class ORImageView extends ComponentView implements SensoryDelegate {
    public ORImageView(Context context, Image image) {
       super(context);
       setComponent(image);
+      
+      textView = new TextView(getContext());
+      //textView.setLines(1);
+      textView.setHorizontallyScrolling(false);
+      textView.setGravity(Gravity.CENTER);
+      textView.setIncludeFontPadding(false);
+       
       if (image != null) {
     	 imageWidth = image.getFrameWidth();
     	 imageHeight = image.getFrameHeight();
          image.setLinkedLabel();// read label from cache.
          imageView = new ImageView(context);
-         textView = new TextView(getContext());
          addImageView(image.getSrc());
          if (image.getSensor() != null) {
             addPollingSensoryListener();
@@ -113,7 +120,9 @@ public class ORImageView extends ComponentView implements SensoryDelegate {
                   textView.setText(label.getText());
                }
                if (label.getFontSize() > 0) {
-                  textView.setTextSize(label.getFontSize());
+                  textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, label.getFontSize());
+               } else {
+                 textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, Constants.DEFAULT_FONT_SIZE_DIP);
                }
                if (label.getColor() != null) {
                   textView.setTextColor(Color.parseColor(label.getColor()));

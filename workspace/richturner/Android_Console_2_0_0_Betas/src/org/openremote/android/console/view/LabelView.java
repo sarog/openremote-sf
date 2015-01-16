@@ -20,6 +20,7 @@
 package org.openremote.android.console.view;
 
 import org.openremote.android.console.bindings.Label;
+import org.openremote.android.console.bindings.Screen;
 import org.openremote.android.console.bindings.Sensor;
 import org.openremote.android.console.model.ListenerConstant;
 import org.openremote.android.console.model.OREvent;
@@ -31,6 +32,7 @@ import android.content.Context;
 import android.graphics.Color;
 import android.os.Handler;
 import android.os.Message;
+import android.text.TextUtils;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.widget.FrameLayout;
@@ -75,17 +77,17 @@ public class LabelView extends ComponentView implements SensoryDelegate {
      	setGravity(Gravity.CENTER);
       textView.setId(label.getComponentId());
       textView.setLines(1);
+      textView.setHorizontallyScrolling(true);
       textView.setGravity(Gravity.CENTER);
       LayoutParams layout = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
       layout.gravity = Gravity.CENTER;
-      textView.setIncludeFontPadding(false);
       
       text = label.getText();
       if (text != null) {
          textView.setText(text);
       }
       if (label.getFontSize() > 0) {
-      	textView.setTextSize(TypedValue.COMPLEX_UNIT_PX, label.getFontSize());
+      	textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, label.getFontSize());
       	
       	if (textView.getLineHeight() > label.getFrameHeight()) {
       		int spacing = (int)Math.round(((float)label.getFrameHeight() - textView.getLineHeight()) / 2.8); // Trial and error

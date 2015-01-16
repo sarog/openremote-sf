@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">OpenRemote</string>
-    <string name="app_version">2.1.1</string>
+    <string name="app_version">2.2.0</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
     <string name="quit">Quit</string>
@@ -15,6 +15,8 @@
     <string name="enter_default_panel">Default Panel Name:</string>
     <string name="enter_username">Username:</string>
     <string name="enter_password">Password:</string>
+    <string name="x_scale">X Scale:</string>
+	<string name="y_scale">Y Scale:</string>
     <string name="title_controller_list">Controller List</string>
     <string name="title_panel_list">Select Panel</string>
     <string name="save">Save</string>
