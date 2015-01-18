@@ -87,12 +87,13 @@ public class LabelView extends ComponentView implements SensoryDelegate {
          textView.setText(text);
       }
       if (label.getFontSize() > 0) {
-      	textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, label.getFontSize());
-      	
-      	if (textView.getLineHeight() > label.getFrameHeight()) {
-      		int spacing = (int)Math.round(((float)label.getFrameHeight() - textView.getLineHeight()) / 2.8); // Trial and error
-          layout.setMargins(0, spacing, 0, 0);
-      	}
+        float textSize = Math.round(((Screen.WIDTH_SCALE+Screen.HEIGHT_SCALE)/2) * label.getFontSize());
+      	textView.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize);
+//      	
+//      	if (textView.getLineHeight() > label.getFrameHeight()) {
+//      		int spacing = (int)Math.round(((float)label.getFrameHeight() - textView.getLineHeight()) / 2.8); // Trial and error
+//          layout.setMargins(0, spacing, 0, 0);
+//      	}
       }
       if (label.getColor() != null) {
       	textView.setTextColor(Color.parseColor(label.getColor()));
