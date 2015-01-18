@@ -140,7 +140,7 @@ public class Main extends GenericActivity {
 	  double yScale = 1.0;
       if ( controller != null ) {
          xScale = controller.getXScale();
-		 yScale = controller.getXScale();
+         yScale = controller.getYScale();
 	  }
       Screen.WIDTH_SCALE =  xScale;
       Screen.HEIGHT_SCALE = yScale;
