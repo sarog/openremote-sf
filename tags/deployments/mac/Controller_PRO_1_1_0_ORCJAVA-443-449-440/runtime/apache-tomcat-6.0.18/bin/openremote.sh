@@ -18,7 +18,7 @@
 # ============================================================================
 #
 # Modifications added for specific OpenRemote use scenarios. 
-# Copyright 2008-2012 OpenRemote, Inc.
+# Copyright 2008-2014 OpenRemote, Inc.
 #
 # Authors:
 #   Juha Lindfors (juha@openremote.org)
@@ -209,6 +209,128 @@ LD_LIBRARY_PATH="$LD_LIBRARY_PATH:$CATALINA_BASE/webapps/controller/WEB-INF/lib/
 
 
 ##
+# Prints a variable name and its value. Mostly used for printing external environment
+# values to communicate settings on the standard output stream.
+#
+# $1 is expected to contain the variable name to print.
+##
+printVariable()
+{
+  if [ -z "${PRINTING_VARIABLES}" ] ; then
+    PRINTING_VARIABLES="true"
+
+    echo ""
+    echo "Configured Variable Values:"
+  fi
+
+  echo "  $1 = ${!1}"
+}
+
+##
+# Sets up connection properties for Beehive services from environment variables, if they
+# have been set. Otherwise uses default values.
+##
+setBeehiveServiceConfigurations()
+{
+  local PRINT_VALUES
+
+  if [ "$1" = "printValues" ]; then
+    local PRINT_VALUES="true"
+  fi
+
+
+  # Base URI for all Beehive services. This base URI will be used to construct service URIs
+  # unless a service-specific override has been set...
+
+  if [ -z "${BEEHIVE_BASE_URI}" ] ; then
+    BEEHIVE_BASE_URI="https://beehive.openremote.org"
+
+  elif [ -n "${PRINT_VALUES}" ] ; then
+    printVariable BEEHIVE_BASE_URI
+
+  fi
+
+
+  # Remote Command Service Variables...
+
+  if [ -z "${BEEHIVE_REMOTE_SERVICE_PATH}" ] ; then
+    BEEHIVE_REMOTE_SERVICE_PATH="remote"
+
+  elif [ -n "${PRINT_VALUES}" ] ; then
+    printVariable BEEHIVE_REMOTE_SERVICE_PATH
+
+  fi
+
+  if [ -z "${BEEHIVE_REMOTE_SERVICE_URI}" ] ; then
+    BEEHIVE_REMOTE_SERVICE_URI="$BEEHIVE_BASE_URI/$BEEHIVE_REMOTE_SERVICE_PATH"
+
+  elif [ -n "${PRINT_VALUES}" ] ; then
+    printVariable BEEHIVE_REMOTE_SERVICE_URI
+
+  fi
+
+
+  # Beehive Sync Service Variables...
+
+  if [ -z "${BEEHIVE_SYNC_SERVICE_PATH}" ] ; then
+    BEEHIVE_SYNC_SERVICE_PATH="3.0/alpha5/rest/"
+
+  elif [ -n "${PRINT_VALUES}" ] ; then
+    printVariable BEEHIVE_SYNC_SERVICE_PATH
+
+  fi
+
+  if [ -z "${BEEHIVE_SYNC_SERVICE_URI}" ] ; then
+    BEEHIVE_SYNC_SERVICE_URI="$BEEHIVE_BASE_URI/$BEEHIVE_SYNC_SERVICE_PATH"
+
+  elif [ -n "${PRINT_VALUES}" ] ; then
+    printVariable BEEHIVE_SYNC_SERVICE_URI
+
+  fi
+
+
+
+  # Beehive Device Discovery Variables...
+
+  if [ -z "${BEEHIVE_DEVICE_DISCOVERY_SERVICE_PATH}" ] ; then
+    BEEHIVE_DEVICE_DISCOVERY_SERVICE_PATH="dds/rest/"
+
+  elif [ -n "${PRINT_VALUES}" ] ; then
+    printVariable BEEHIVE_DEVICE_DISCOVERY_SERVICE_PATH
+
+  fi
+
+  if [ -z "${BEEHIVE_DEVICE_DISCOVERY_SERVICE_URI}" ] ; then
+    BEEHIVE_DEVICE_DISCOVERY_SERVICE_URI="$BEEHIVE_BASE_URI/$BEEHIVE_DEVICE_DISCOVERY_SERVICE_PATH"
+
+  elif [ -n "${PRINT_VALUES}" ] ; then
+    printVariable BEEHIVE_DEVICE_DISCOVERY_SERVICE_URI
+
+  fi
+
+}
+
+
+setControllerID()
+{
+  local PRINT_VALUES
+
+  if [ "$1" = "printValues" ]; then
+    local PRINT_VALUES="true"
+  fi
+
+
+  if [ -z "${OPENREMOTE_CONTROLLER_ID}" ] ; then
+    OPENREMOTE_CONTROLLER_ID="1"
+
+  elif [ -n "${PRINT_VALUES}" ] ; then
+    printVariable OPENREMOTE_CONTROLLER_ID
+
+  fi
+}
+
+
+##
 # Set Tomcat's console logging to match controller's console output threshold.
 # Note that TC uses JUL log level names where as the controller uses Log4j
 # threshold names so we need to do some mapping of values below...
@@ -305,6 +427,10 @@ executeTomcat()
             -Dtomcat.server.console.log.level="$TOMCAT_SERVER_CONSOLE_LOG_LEVEL" \
             -Dopenremote.controller.startup.log.level="$CONTROLLER_STARTUP_LOG_LEVEL" \
             -Dopenremote.controller.console.threshold="$CONTROLLER_CONSOLE_THRESHOLD" \
+            -Dopenremote.remote.command.service.uri="$BEEHIVE_REMOTE_SERVICE_URI" \
+            -Dopenremote.device.discovery.service.uri="$BEEHIVE_DEVICE_DISCOVERY_SERVICE_URI" \
+            -Dopenremote.sync.service.uri="$BEEHIVE_SYNC_SERVICE_URI" \
+            -Dopenremote.controller.id="$OPENREMOTE_CONTROLLER_ID" \
             -Djava.library.path=\"$CATALINA_BASE/webapps/controller/WEB-INF/lib/native\" \
             \"$LOGGING_CONFIG\" $2  -classpath \"$3\" org.apache.catalina.startup.Bootstrap start $PID_REDIRECT $REDIRECT
 
@@ -336,6 +462,7 @@ if [ "$1" = "run" ]; then
   setTomcatConsoleLevel
   printTomcatEnvVariables
 
+
   # Let the user know how the logging has been configured...
 
   echo ""
@@ -349,6 +476,18 @@ if [ "$1" = "run" ]; then
   echo "     "
   echo ""
   echo "-----------------------------------------------------------------------"
+
+
+  # Parameterize Beehive Service URIs...
+
+  setBeehiveServiceConfigurations printValues
+
+  # Parameterize fixed controller ID...
+
+  setControllerID printValues
+
+  echo ""
+  echo ""
 
   # run tomcat...
 
@@ -380,6 +519,16 @@ elif [ "$1" = "start" ]; then
   setTomcatConsoleLevel
   printTomcatEnvVariables
 
+
+  # Parameterize Beehive Service URIs...
+
+  setBeehiveServiceConfigurations
+
+  # Parameterize Controller ID...
+
+  setControllerID
+
+
   # run Tomcat as service...
 
   executeTomcat "$_RUNJAVA" "$JAVA_OPTS" "$CLASSPATH" service
@@ -410,6 +559,69 @@ elif [ "$1" = "stop" ] ; then
     fi
   fi
 
+elif [ "$1" = "config" ] ; then
+
+  echo "The following environment variables can be set to configure controller behavior:"
+  echo ""
+  echo "General"
+  echo "-------"
+  echo ""
+  echo "  BEEHIVE_BASE_URI:"
+  echo ""
+  echo "    Set to use a different default base URI for all Beehive services. Setting the base"
+  echo "    URI will not affect Beehive service application paths. Individual services may be"
+  echo "    configured with separate domains and paths using their specific environment variables."
+  echo ""
+  echo "  OPENREMOTE_CONTROLLER_ID:"
+  echo ""
+  echo "    Set when a non-interactive controller registration with a fixed controller ID is"
+  echo "    required. Value should be an integer representing a unique controller ID for this"
+  echo "    controller instance."
+  echo ""
+  echo ""
+  echo "Beehive Sync Service"
+  echo "--------------------"
+  echo ""
+  echo "  BEEHIVE_SYNC_SERVICE_PATH:"
+  echo ""
+  echo "    Set to modify the application path of Beehive download/sync service. This path is"
+  echo "    appended to BEEHIVE_BASE_URI value. Value should *not* include a leading URI slash."
+  echo ""
+  echo "  BEEHIVE_SYNC_SERVICE_URI:"
+  echo ""
+  echo "    Set to use custom URI with Beehive sync service. This variable will override both"
+  echo "    BEEHIVE_BASE_URI and BEEHIVE_SYN_SERVICE_PATH settings."
+  echo ""
+  echo ""
+  echo "Beehive Remote Command Service"
+  echo "------------------------------"
+  echo ""
+  echo "  BEEHIVE_REMOTE_SERVICE_PATH:"
+  echo ""
+  echo "    Set to modify the application path of Beehive remote command service. This path is"
+  echo "    appended to BEEHIVE_BASE_URI value. Value should *not* include a leading URI slash."
+  echo ""
+  echo "  BEEHIVE_REMOTE_SERVICE_URI:"
+  echo ""
+  echo "    Set to use custom URI for Beehive remote service. This variable will override both"
+  echo "    BEEHIVE_BASE_URI and BEEHIVE_REMOTE_SERVICE_PATH settings."
+  echo ""
+  echo ""
+  echo "Beehive Device Discovery Service"
+  echo "--------------------------------"
+  echo ""
+  echo "  BEEHIVE_DEVICE_DISCOVERY_SERVICE_PATH:"
+  echo ""
+  echo "    Set to modify the application path of Beehive device discovery service. This path is"
+  echo "    appended to BEEHIVE_BASE_URI value. Value should *not* include a leading URI slash."
+  echo ""
+  echo "  BEEHIVE_DEVICE_DISCOVERY_SERVICE_URI:"
+  echo ""
+  echo "    Set to use custom URI for Beehive device discovery service. This variable will override"
+  echo "    both BEEHIVE_BASE_URI and BEEHIVE_DEVICE_DISCOVERY_SERVICE_PATH settings."
+  echo ""
+  echo ""
+
 else
 
   echo "Usage: openremote.sh ( commands ... )"
@@ -425,6 +637,13 @@ else
   echo ""
   echo "  stop -force"
   echo "       Stop OpenRemote Controller (followed by kill -KILL)"
+  echo ""
+  echo "  config"
+  echo "       Display information about OpenRemote Controller environment variable"
+  echo "       configuration."
+  echo ""
+  echo ""
+
   exit 1
 
 fi
