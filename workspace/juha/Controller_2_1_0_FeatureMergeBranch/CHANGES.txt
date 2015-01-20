@@ -1,4 +1,4 @@
-Controller 2.1.0 (2015-XX-XX Twin Galaxies)
+Controller 2.1.0 (2015-01-20 Twin Galaxies)
 ===========================================
 
 New Features:
