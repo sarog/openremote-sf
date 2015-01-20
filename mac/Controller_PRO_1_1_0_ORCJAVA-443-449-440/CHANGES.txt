@@ -1,3 +1,10 @@
+ORCJAVA-440
+===========
+
+  - Z-wave configuration changes required for 
+    Z-wave config command classes (Rainer Hitz)
+
+
 ORCJAVA-449
 ===========
 
