@@ -1,3 +1,8 @@
+ORCJAVA-461
+===========
+
+  - Improvements to the Russound protocol implementation (Torbjorn Osterdahl)
+
 Controller Pro 1.1.0
 ====================
 
