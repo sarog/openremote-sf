@@ -27,6 +27,7 @@ import java.net.Socket;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.concurrent.Semaphore;
+import java.util.concurrent.TimeUnit;
 
 import org.openremote.controller.model.sensor.Sensor;
 import org.openremote.controller.utils.Logger;
@@ -106,34 +107,39 @@ public class RussoundClient {
       byte[] buffer = new byte[1024];
       int total = 0;
       
-      int parseData(int i) {
-         if (buffer[i] == (byte)0xf7) {
-            // End-flag received, do some work with the data
-            // Increment i since we need to include the end-byte
-            i++;
-            // Copy the message
-            byte[] message = Arrays.copyOf(buffer, i);
-            // Copy the buffer onto itself to remove the message from buffer
-            System.arraycopy(buffer, i, buffer, 0, total - i);
-            total = total - i;
-            
-            logger.debug("Received Message (" + message.length + " byte) (hex): " + byteArrayToHex(message));
-            
-            if (message[7] != 0x02) {
-               // Unless we receive a acknowledge we send an acknowledge our selves and release the lock 
-               sendAcknowledge(message);
-               
-               sendCommandSemaphore.release();
-               logger.debug("Released Lock");
-            }
-            
-            if ((message.length==34) && (message[0]==(byte)0xF0) && (message[9]==(byte)0x04)) {  //zone-status
-               consumeStatus(message);
-            } else if ((message.length==24) && (message[0]==(byte)0xF0) && (message[9]==(byte)0x05) && (message[13]==(byte)0x00)) {  //turn-on-volume
-               consumeTurnonVolumeStatus(message);
-            } 
+      void parseData() {
+         if (buffer[0] != (byte)0xf0) {
+            // Russound messages are expected to begin with 0xf0
+            logger.warn("Received potentialy invalid message " + byteArrayToHex(Arrays.copyOf(buffer, total)));
          }
-         return i;
+         for (int i = 0; i < total; i++) {
+            if (buffer[i] == (byte)0xf7) {
+               // End-flag received, do some work with the data
+               // Increment i since we need to include the end-byte
+               i++;
+               // Copy the first message
+               byte[] message = Arrays.copyOf(buffer, i);
+               // Copy the buffer onto itself to remove the first message from buffer
+               System.arraycopy(buffer, i, buffer, 0, total - i);
+               total = total - i;
+               
+               logger.debug("Received Message (" + message.length + " byte) (hex): " + byteArrayToHex(message));
+               
+               if (message[7] != 0x02) {
+                  // Unless we receive a acknowledge we send an acknowledge our selves and release the lock 
+                  sendAcknowledge(message);
+                  
+                  sendCommandSemaphore.release();
+                  logger.debug("Released Lock");
+               }
+               
+               if ((message.length==34) && (message[0]==(byte)0xF0) && (message[9]==(byte)0x04)) {  //zone-status
+                  consumeStatus(message);
+               } else if ((message.length==24) && (message[0]==(byte)0xF0) && (message[9]==(byte)0x05) && (message[13]==(byte)0x00)) {  //turn-on-volume
+                  consumeTurnonVolumeStatus(message);
+               } 
+            }
+         }         
       }
 
       @Override
@@ -149,11 +155,10 @@ public class RussoundClient {
                int readCount = is.read(buffer, total, avail);
                total += readCount;
    
-               for (int i = 0; i < total; i++) {
-                  i = parseData(i);
-               }
+               parseData();
             } catch (Exception e) {
                logger.error("Could not receive Russound data", e);
+               try { Thread.sleep(200); } catch (InterruptedException eX) { eX.printStackTrace(); }
             }
          }
       }
@@ -242,13 +247,24 @@ public class RussoundClient {
    }
    
    private void sendData(int[] data) {
+      boolean aquiredLock = false;
+      boolean timedout = false;
       if (data[7] != 0x02) {
          // Unless it is an acknowledge a lock is acquired
-         try {
-            sendCommandSemaphore.acquire();
-            logger.debug("Aquired Lock");
-         } catch (InterruptedException e) {
-            logger.error("Failed aquire lock");
+         while (!(aquiredLock || timedout)) {
+            try {
+               // For keypadId 0x70 the controller does not expect an timeout. 100ms is sufficent to give it time to consume the message.
+               // For other keypadId's we need to wait for the reply and send an Acknowledge, but maximum 2500 ms, since this is also how long the controller will be waiting. 
+               int timeout = (keypadId == 0x70)?100:2500;
+               aquiredLock = sendCommandSemaphore.tryAcquire(timeout, TimeUnit.MILLISECONDS);
+               if (!aquiredLock) {
+                  // There was a timeout
+                  timedout = true;
+               }
+               logger.debug("Aquired Lock");
+            } catch (InterruptedException e) {
+               logger.error("Failed aquire lock");
+            }
          }
       }
       
