@@ -3,6 +3,7 @@ Controller Pro 1.2.0
 
 New Features:
   - Add ability to reset RRD4J graph time axis (Richard Turner, ORCJAVA-452)
+  - Improvements to the Russound protocol implementation (Torbjorn Osterdahl, ORCJAVA-461)
 
 Controller Pro 1.1.0
 ====================
