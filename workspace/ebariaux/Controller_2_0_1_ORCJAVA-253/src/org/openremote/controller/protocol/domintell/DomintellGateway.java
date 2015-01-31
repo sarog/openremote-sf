@@ -139,6 +139,12 @@ public class DomintellGateway {
 
    private class DomintellConnectionThread extends Thread {
 
+      /**
+       * Timeout on the reader thread i.e. we must receive a packet within that delay since the last read
+       * We should receive the clock update every minute from the Domintell master, so using 61s for this should be safe.
+       */
+      private static final int READ_TIMEOUT = 61000;
+
       DatagramSocket socket;
       
       private DomintellReaderThread readerThread;
@@ -150,9 +156,7 @@ public class DomintellGateway {
           while (!isInterrupted()) {
             try {
                socket = new DatagramSocket();
-               
-               // We should receive the clock update every minute from the Domintell master, so this should never timeout
-               socket.setSoTimeout(60000);
+               socket.setSoTimeout(READ_TIMEOUT);
 
                log.info("Trying to connect to " + domintellConfig.getAddress() + " on port " + domintellConfig.getPort());
               socket.connect(InetAddress.getByName(domintellConfig.getAddress()), domintellConfig.getPort());
