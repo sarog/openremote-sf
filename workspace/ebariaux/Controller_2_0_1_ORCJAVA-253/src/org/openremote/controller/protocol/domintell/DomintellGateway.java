@@ -155,10 +155,10 @@ public class DomintellGateway {
         if (socket == null) {
           while (!isInterrupted()) {
             try {
-               socket = new DatagramSocket();
-               socket.setSoTimeout(READ_TIMEOUT);
+              socket = new DatagramSocket();
+              socket.setSoTimeout(READ_TIMEOUT);
 
-               log.info("Trying to connect to " + domintellConfig.getAddress() + " on port " + domintellConfig.getPort());
+              log.info("Trying to connect to " + domintellConfig.getAddress() + " on port " + domintellConfig.getPort());
               socket.connect(InetAddress.getByName(domintellConfig.getAddress()), domintellConfig.getPort());
               log.info("Socket connected");
               readerThread = new DomintellReaderThread(socket);
