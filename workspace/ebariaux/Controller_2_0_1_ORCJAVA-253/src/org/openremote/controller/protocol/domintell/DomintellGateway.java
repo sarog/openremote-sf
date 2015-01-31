@@ -101,13 +101,13 @@ public class DomintellGateway {
     }
 
    /**
-    * Gets the HomeWorks device from the cache, creating it if not already
+    * Gets the Domintell Module from the cache, creating it if not already
     * present.
     * 
     * @param address
     * @return
     * @return
-    * @throws LutronHomeWorksDeviceException 
+    * @throws DomintellModuleException 
     */
    public DomintellModule getDomintellModule(String moduleType, DomintellAddress address, Class<? extends DomintellModule> moduleClass) throws DomintellModuleException {      
      DomintellModule module = moduleCache.get(moduleType + address);
