@@ -5,7 +5,7 @@ Bug Fixes:
 
   - Fixed: RRD4J Protocol commands that change the start or end time of a graph also
 	  cause the end or start time respectively to be fixed (Richard Turner, ORCJAVA-451)
-
+  - Fixed: Drools exception when executing rules after controller xml has been reloaded (ORCJAVA-407)
 
 Controller Pro 1.1.0
 ====================
