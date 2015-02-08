@@ -173,6 +173,7 @@ public class DomintellGateway {
                 if (!readerThread.isAlive()) {
                   log.info("Reader thread is dead, clean and re-try to connect");
                   socket.disconnect();
+                  socket.close();
                   readerThread = null;
                   writerThread.interrupt();
                   writerThread = null;
