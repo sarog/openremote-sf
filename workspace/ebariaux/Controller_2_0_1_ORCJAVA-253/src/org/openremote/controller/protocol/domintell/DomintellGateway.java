@@ -179,31 +179,24 @@ public class DomintellGateway {
                 }
               }
             } catch (SocketException e) {
-              // TODO Auto-generated catch block
-              e.printStackTrace();
-
+              log.warn("Failed to connect to Domintell, retrying later", e);
               // We could not connect, sleep for a while before trying again
               try {
                 Thread.sleep(15000);
               } catch (InterruptedException e1) {
-                // TODO Auto-generated catch block
-                e1.printStackTrace();
+                log.trace("Been interrupted while waiting to re-connect", e1);
               }
 
             } catch (IOException e) {
-              // TODO Auto-generated catch block
-              e.printStackTrace();
+               log.warn("Failed to connect to Domintell, retrying later", e);
               // We could not connect, sleep for a while before trying again
               try {
                 Thread.sleep(15000);
               } catch (InterruptedException e1) {
-                // TODO Auto-generated catch block
-                e1.printStackTrace();
+                 log.trace("Been interrupted while waiting to re-connect", e1);
               }
-
             } catch (InterruptedException e) {
-              // TODO Auto-generated catch block
-              e.printStackTrace();
+               log.trace("Connection thread has been interrupted", e);
             }
           }
         }
