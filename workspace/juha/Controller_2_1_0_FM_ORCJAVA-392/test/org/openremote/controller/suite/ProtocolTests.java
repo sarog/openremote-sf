@@ -1,6 +1,6 @@
 /*
- * OpenRemote, the Home of the Digital Home.
- * Copyright 2008-2011, OpenRemote Inc.
+-* OpenRemote, the Home of the Digital Home.
+-* Copyright 2008-2011, OpenRemote Inc.
  *
  * See the contributors.txt file in the distribution for a
  * full listing of individual contributors.
@@ -23,16 +23,18 @@ package org.openremote.controller.suite;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.openremote.controller.protocol.EventListenerTest;
+import org.openremote.controller.protocol.socket.UDPListenerCommandTest;
 
 /**
  * Test protocol support classes.
  *
- * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
+ * @author Juha Lindfors
  */
 @RunWith(Suite.class)
 @Suite.SuiteClasses(
    {
-       EventListenerTest.class
+       EventListenerTest.class,
+       UDPListenerCommandTest.class
    }
 )
 public class ProtocolTests
