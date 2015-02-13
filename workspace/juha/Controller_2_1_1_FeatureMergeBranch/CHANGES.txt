@@ -1,3 +1,14 @@
+
+Controller 2.1.1 (2015-02-12 Twin Galaxies)
+===========================================
+
+Bug Fixes:
+
+  - Remerge issue ORCJAVA-392 to correctly
+    include changes in UDP listener
+
+
+
 Controller 2.1.0 (2015-01-20 Twin Galaxies)
 ===========================================
 
