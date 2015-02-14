@@ -28,6 +28,7 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.util.HashMap;
+import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
 import org.openremote.controller.DomintellConfig;
@@ -267,10 +268,14 @@ public class DomintellGateway {
 
    private class DomintellReaderThread extends Thread {
       private DatagramSocket socket;
+      
+      // A pattern to match the date/time packet sent by the DETH02
+      private Pattern dateTimePattern;
 
       public DomintellReaderThread(DatagramSocket socket) {
         super();
         this.socket = socket;
+        this.dateTimePattern = Pattern.compile("\\d{1,2}:\\d{1,2} \\d{1,2}/\\d{1,2}/\\d{1,2}");
       }
 
       @Override
@@ -327,6 +332,8 @@ public class DomintellGateway {
               }
               // Get out of our read loop, this will terminate the thread
               break;
+            } else if (dateTimePattern.matcher(packetText).matches()) {
+               log.debug("Domintell system reported date/time: " + packetText);
             } else {
                // First 3 chars in module type
                // Next 6 is address
