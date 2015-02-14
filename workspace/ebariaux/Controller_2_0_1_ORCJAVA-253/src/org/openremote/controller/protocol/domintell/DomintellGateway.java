@@ -291,6 +291,12 @@ public class DomintellGateway {
              DatagramPacket p = new DatagramPacket(buffer, buffer.length);
              socket.receive(p);
              String packetText = new String(p.getData(), 0, p.getLength(), "ISO-8859-1");
+             
+             // Get rid of line ending
+             if (packetText.endsWith("\n")) {
+                packetText = packetText.substring(0, packetText.lastIndexOf("\n") - 1);
+             }
+             
             log.info("Reader thread got packet >" + packetText + "<");
             if (packetText.startsWith("INFO:Session opened:INFO")) {
               synchronized (loginState) {
