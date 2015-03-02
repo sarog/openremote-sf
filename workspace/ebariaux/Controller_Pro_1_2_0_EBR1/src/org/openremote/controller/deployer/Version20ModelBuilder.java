@@ -31,6 +31,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.jdom.Document;
 import org.jdom.Element;
@@ -43,6 +44,7 @@ import org.openremote.controller.exception.InitializationException;
 import org.openremote.controller.exception.XMLParsingException;
 import org.openremote.controller.model.Command;
 import org.openremote.controller.model.sensor.Sensor;
+import org.openremote.controller.service.DeployerCommandListener;
 import org.openremote.controller.statuscache.StatusCache;
 import org.openremote.controller.utils.PathUtil;
 
@@ -334,6 +336,13 @@ public class Version20ModelBuilder extends AbstractModelBuilder
    * The commandFactory should update it's commandBuilder with the new configuration before building the model
    */
   private CommandFactory commandFactory;
+
+  /**
+   * Listeners that get notified with the list of new commands when a new configuration
+   * was deployed.
+   */
+  private List<DeployerCommandListener> commandListeners =
+      new CopyOnWriteArrayList<DeployerCommandListener>();
   
   // Constructors -------------------------------------------------------------------------------
 
@@ -485,7 +494,17 @@ public class Version20ModelBuilder extends AbstractModelBuilder
   {
     return deviceStateCache;
   }
-  
+
+  /**
+   * Sets the listeners that get notified when a new configuration was deployed.
+   *
+   * @param listeners  listeners that get notified with the list of new commands when
+   *                   a new configuration was deployed.
+   */
+  public void setCommandListeners(List<DeployerCommandListener> listeners)
+  {
+    this.commandListeners.addAll(listeners);
+  }
 
 
   // Implements ModelBuilder --------------------------------------------------------------------
@@ -693,10 +712,10 @@ public class Version20ModelBuilder extends AbstractModelBuilder
 
     Set<Command> commands = buildCommandObjectModelFromXML();
 
-    // Initialize the status cache's event context so commands can be used directly
-    // from within scripts and rules...
-
-    deviceStateCache.initializeEventContext(commands);
+    for (DeployerCommandListener curListener : commandListeners)
+    {
+      curListener.processNewCommands(commands);
+    }
   }
 
 
