@@ -266,6 +266,7 @@ public class DomintellGateway {
             }
           }
         }
+        log.debug("Writer thread stopping");
       }
 
    }
