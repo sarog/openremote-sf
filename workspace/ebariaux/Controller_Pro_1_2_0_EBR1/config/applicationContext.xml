@@ -47,6 +47,7 @@
             <value>classpath:amx_ni.properties</value>
             <value>classpath:denonAVRSerial.properties</value>
             <value>classpath:enocean.properties</value>
+            <value>classpath:domintell.properties</value>
           </list>
       </property>
   </bean>
@@ -129,6 +130,13 @@
     <property name="commLayer" value="${enocean.commLayer}" />
     <property name="serialProtocol" value="${enocean.serialProtocol}" />
   </bean>
+
+  <bean id="domintellConfig" class="org.openremote.controller.DomintellConfig">
+    <property name="address" value="${domintell.address}"/>
+    <property name="port" value="${domintell.port}"/>
+  </bean>
+
+  <bean id="domintellGateway" class="org.openremote.controller.protocol.domintell.DomintellGateway"/>
 
   <!-- TODO -->
   <bean id = "controlCommandService"
@@ -294,6 +302,7 @@ The needed classes have to be provided as a jar file and copied to lib folder.
         <entry key = "onewire"          value-ref = "oneWireCommandBuilder"/>
         <entry key = "lutron_homeworks" value-ref = "lutronHomeWorksCommandBuilder"/>
         <entry key = "marantz_avr"		value-ref = "marantzAVRCommandBuilder"/>
+        <entry key = "domintell"        value-ref = "domintellCommandBuilder"/>
         <entry key = "datetime"         value-ref = "datetimeCommandBuilder"/>
         <entry key = "wol"              value-ref = "wolCommandBuilder"/>
         <entry key = "russound"         value-ref = "russoundCommandBuilder"/>
@@ -419,6 +428,10 @@ The needed classes have to be provided as a jar file and copied to lib folder.
   <bean id="marantzAVRCommandBuilder" class = "org.openremote.controller.protocol.marantz_avr.MarantzAVRCommandBuilder">
     <property name="gateway" ref="marantzAVRGateway"/>
   </bean>
+
+    <bean id="domintellCommandBuilder" class = "org.openremote.controller.protocol.domintell.DomintellCommandBuilder">
+      <property name="gateway" ref="domintellGateway"/>
+    </bean>
 
   <bean id="AMXNICommandBuilder" class = "org.openremote.controller.protocol.amx_ni.AMXNICommandBuilder">
     <property name="gateway" ref="AMXNIGateway"/>
