@@ -78,6 +78,12 @@ public class DomintellCommandBuilder implements CommandBuilder {
     */
    public final static String DOMINTELL_XMLPROPERTY_TEMP_MODE = "temp_mode";
 
+   // TODO: move this to a more generic place, as it's used by all protocols
+   /**
+    * String contact for parsing name XML entries from controller.xml file.
+    * This applies to all protocols.
+    */
+   public final static String XMLPROPERTY_NAME = "name";
 
    // Class Members --------------------------------------------------------------------------------
 
@@ -183,7 +189,7 @@ public class DomintellCommandBuilder implements CommandBuilder {
             modeAsString = propertyValue;
          }
 
-         else {
+         else if (!XMLPROPERTY_NAME.equalsIgnoreCase(propertyName)) {
             log.warn("Unknown Domintell property '<" + XML_ELEMENT_PROPERTY + " " + XML_ATTRIBUTENAME_NAME + " = \"" + propertyName + "\" " + XML_ATTRIBUTENAME_VALUE + " = \"" + propertyValue + "\"/>'.");
          }
       }
