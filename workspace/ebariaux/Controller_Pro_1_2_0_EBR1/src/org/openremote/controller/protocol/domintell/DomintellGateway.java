@@ -1,6 +1,6 @@
 /*
  * OpenRemote, the Home of the Digital Home.
- * Copyright 2008-2011, OpenRemote Inc.
+ * Copyright 2008-2015, OpenRemote Inc.
  *
  * See the contributors.txt file in the distribution for a
  * full listing of individual contributors.
@@ -28,15 +28,16 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.util.HashMap;
+import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
 import org.openremote.controller.DomintellConfig;
 import org.openremote.controller.protocol.domintell.model.DimmerModule;
 import org.openremote.controller.protocol.domintell.model.DomintellModule;
+import org.openremote.controller.protocol.domintell.model.InputModule;
 import org.openremote.controller.protocol.domintell.model.RelayModule;
 import org.openremote.controller.protocol.domintell.model.TemperatureModule;
-import org.openremote.controller.protocol.lutron.LutronHomeWorksDeviceException;
-import org.openremote.controller.protocol.lutron.MessageQueueWithPriorityAndTTL;
+import org.openremote.controller.protocol.MessageQueueWithPriorityAndTTL;
 
 public class DomintellGateway {
 
@@ -72,6 +73,8 @@ public class DomintellGateway {
       moduleClasses.put("TE2", TemperatureModule.class);
       moduleClasses.put("LC3", TemperatureModule.class);
       moduleClasses.put("PBL", TemperatureModule.class);
+      moduleClasses.put("IS4", InputModule.class);
+      moduleClasses.put("IS8", InputModule.class);
    }
    
    public synchronized void startGateway() {
@@ -98,13 +101,13 @@ public class DomintellGateway {
     }
 
    /**
-    * Gets the HomeWorks device from the cache, creating it if not already
+    * Gets the Domintell Module from the cache, creating it if not already
     * present.
     * 
     * @param address
     * @return
     * @return
-    * @throws LutronHomeWorksDeviceException 
+    * @throws DomintellModuleException 
     */
    public DomintellModule getDomintellModule(String moduleType, DomintellAddress address, Class<? extends DomintellModule> moduleClass) throws DomintellModuleException {      
      DomintellModule module = moduleCache.get(moduleType + address);
@@ -136,6 +139,12 @@ public class DomintellGateway {
 
    private class DomintellConnectionThread extends Thread {
 
+      /**
+       * Timeout on the reader thread i.e. we must receive a packet within that delay since the last read
+       * We should receive the clock update every minute from the Domintell master, so using 61s for this should be safe.
+       */
+      private static final int READ_TIMEOUT = 61000;
+
       DatagramSocket socket;
       
       private DomintellReaderThread readerThread;
@@ -146,12 +155,10 @@ public class DomintellGateway {
         if (socket == null) {
           while (!isInterrupted()) {
             try {
-               socket = new DatagramSocket();
-               
-               // We should receive the clock update every minute from the Domintell master, so this should never timeout
-               socket.setSoTimeout(60000);
+              socket = new DatagramSocket();
+              socket.setSoTimeout(READ_TIMEOUT);
 
-               log.info("Trying to connect to " + domintellConfig.getAddress() + " on port " + domintellConfig.getPort());
+              log.info("Trying to connect to " + domintellConfig.getAddress() + " on port " + domintellConfig.getPort());
               socket.connect(InetAddress.getByName(domintellConfig.getAddress()), domintellConfig.getPort());
               log.info("Socket connected");
               readerThread = new DomintellReaderThread(socket);
@@ -166,37 +173,31 @@ public class DomintellGateway {
                 if (!readerThread.isAlive()) {
                   log.info("Reader thread is dead, clean and re-try to connect");
                   socket.disconnect();
+                  socket.close();
                   readerThread = null;
                   writerThread.interrupt();
                   writerThread = null;
                 }
               }
             } catch (SocketException e) {
-              // TODO Auto-generated catch block
-              e.printStackTrace();
-
+              log.warn("Failed to connect to Domintell, retrying later", e);
               // We could not connect, sleep for a while before trying again
               try {
                 Thread.sleep(15000);
               } catch (InterruptedException e1) {
-                // TODO Auto-generated catch block
-                e1.printStackTrace();
+                log.trace("Been interrupted while waiting to re-connect", e1);
               }
 
             } catch (IOException e) {
-              // TODO Auto-generated catch block
-              e.printStackTrace();
+               log.warn("Failed to connect to Domintell, retrying later", e);
               // We could not connect, sleep for a while before trying again
               try {
                 Thread.sleep(15000);
               } catch (InterruptedException e1) {
-                // TODO Auto-generated catch block
-                e1.printStackTrace();
+                 log.trace("Been interrupted while waiting to re-connect", e1);
               }
-
             } catch (InterruptedException e) {
-              // TODO Auto-generated catch block
-              e.printStackTrace();
+               log.trace("Connection thread has been interrupted", e);
             }
           }
         }
@@ -248,7 +249,12 @@ public class DomintellGateway {
               }
             }
           }
-          DomintellCommandPacket cmd = queue.blockingPoll();
+          DomintellCommandPacket cmd = null;
+          try {
+               cmd = queue.blockingPoll();
+          } catch (InterruptedException e) {
+             break;
+          }
           if (cmd != null) {
             log.info("Sending >" + cmd.toString() + "< on socket");
             byte[] buf = cmd.toString().getBytes();
@@ -266,10 +272,14 @@ public class DomintellGateway {
 
    private class DomintellReaderThread extends Thread {
       private DatagramSocket socket;
+      
+      // A pattern to match the date/time packet sent by the DETH02
+      private Pattern dateTimePattern;
 
       public DomintellReaderThread(DatagramSocket socket) {
         super();
         this.socket = socket;
+        this.dateTimePattern = Pattern.compile("\\d{1,2}:\\d{1,2} \\d{1,2}/\\d{1,2}/\\d{1,2}");
       }
 
       @Override
@@ -290,6 +300,12 @@ public class DomintellGateway {
              DatagramPacket p = new DatagramPacket(buffer, buffer.length);
              socket.receive(p);
              String packetText = new String(p.getData(), 0, p.getLength(), "ISO-8859-1");
+             
+             // Get rid of line ending
+             if (packetText.endsWith("\n")) {
+                packetText = packetText.substring(0, packetText.lastIndexOf("\n") - 1);
+             }
+             
             log.info("Reader thread got packet >" + packetText + "<");
             if (packetText.startsWith("INFO:Session opened:INFO")) {
               synchronized (loginState) {
@@ -320,6 +336,8 @@ public class DomintellGateway {
               }
               // Get out of our read loop, this will terminate the thread
               break;
+            } else if (dateTimePattern.matcher(packetText).matches()) {
+               log.debug("Domintell system reported date/time: " + packetText);
             } else {
                // First 3 chars in module type
                // Next 6 is address
