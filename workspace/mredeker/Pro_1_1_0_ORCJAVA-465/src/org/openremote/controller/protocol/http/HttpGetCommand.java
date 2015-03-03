@@ -1,6 +1,6 @@
 /*
  * OpenRemote, the Home of the Digital Home.
- * Copyright 2008-2011, OpenRemote Inc.
+ * Copyright 2008-2015, OpenRemote Inc.
  *
  * See the contributors.txt file in the distribution for a
  * full listing of individual contributors.
@@ -51,7 +51,7 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.CoreProtocolPNames;
 import org.openremote.controller.command.ExecutableCommand;
 import org.openremote.controller.model.sensor.Sensor;
-import org.openremote.controller.protocol.EventListener;
+import org.openremote.controller.protocol.ReadCommand;
 import org.openremote.controller.utils.Logger;
 import org.w3c.dom.Document;
 
@@ -63,7 +63,7 @@ import com.jayway.jsonpath.JsonPath;
  * @author Marcus 2009-4-26
  * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
  */
-public class HttpGetCommand implements ExecutableCommand, EventListener, Runnable
+public class HttpGetCommand extends ReadCommand implements ExecutableCommand
 {
 
   // Class Members --------------------------------------------------------------
@@ -104,14 +104,6 @@ public class HttpGetCommand implements ExecutableCommand, EventListener, Runnabl
   /** The polling interval which is used for the sensor update thread */
   private Integer pollingInterval;
 
-  /** The thread that is used to peridically update the sensor */
-  private Thread pollingThread;
-  
-  /** The sensor which is updated */
-  private Sensor sensor;
-  
-  /** Boolean to indicate if polling thread should run */
-  boolean doPoll = false;
   
   // Constructors  ----------------------------------------------------------------
   public HttpGetCommand(URI uri, String xpathExpression, String regex, Integer pollingInterval, String method, String workload, String jsonpathExpression, String contentType)
@@ -146,14 +138,11 @@ public class HttpGetCommand implements ExecutableCommand, EventListener, Runnabl
     return username;
   }
 
-  public Integer getPollingInterval() {
-     return pollingInterval;
+  @Override
+  public int getPollingInterval() {
+    return pollingInterval;
   }
 
-  public void setPollingInterval(Integer pollingInterval) {
-     this.pollingInterval = pollingInterval;
-  }
-  
   // Implements ExecutableCommand
   // -----------------------------------------------------------------
 
@@ -163,26 +152,6 @@ public class HttpGetCommand implements ExecutableCommand, EventListener, Runnabl
     requestURL();
   }
 
-  @Override
-  public void setSensor(Sensor sensor)
-  {
-    logger.debug("*** setSensor called as part of EventListener init *** sensor is: " + sensor);
-    if (pollingInterval == null) {
-      throw new RuntimeException("Could not set sensor because no polling interval was given");
-    }
-    this.sensor = sensor;
-    this.doPoll = true;
-    pollingThread = new Thread(this);
-    pollingThread.setName("Polling thread for sensor: " + sensor.getName());
-    pollingThread.start();
-  }
-
-  @Override
-  public void stop(Sensor sensor)
-  {
-    this.doPoll = false;
-  }
-  
   
   // Private Instance Methods ---------------------------------------------------------------------
   private String requestURL()
@@ -241,64 +210,58 @@ public class HttpGetCommand implements ExecutableCommand, EventListener, Runnabl
   }
   
   @Override
-  public void run() {
-     logger.debug("Sensor thread started for sensor: " + sensor);
-     while (doPoll) {
-        String readValue = this.requestURL();
-        if (regex != null) {
-          Pattern regexPattern = Pattern.compile(regex);
-          Matcher matcher = regexPattern.matcher(readValue);
-          if (matcher.find()) {
-            String result = matcher.group();
-            logger.info("result of regex evaluation: " + result);
-            sensor.update(result);
-          } else {
-            logger.info("regex evaluation did not find a match");
-            sensor.update("N/A");
-          }
-        } else if (xpathExpression != null) {
-          DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-          //The following line had "true" but I changed this to "false" since it did not work with
-          //documents that actually had a namespace defined. (MR)
-          factory.setNamespaceAware(false);
-          String result;
-          try
-          {
-            DocumentBuilder builder = factory.newDocumentBuilder();
-            ByteArrayInputStream bin = new ByteArrayInputStream(readValue.getBytes());
-            Document doc = builder.parse(bin);
+  public String read(Sensor sensor) {
+    logger.debug("read sensor: " + sensor);
+    String readResult = null;
+    String readValue = this.requestURL();
+    if (regex != null) {
+      Pattern regexPattern = Pattern.compile(regex);
+      Matcher matcher = regexPattern.matcher(readValue);
+      if (matcher.find()) {
+        String result = matcher.group();
+        logger.info("result of regex evaluation: " + result);
+        readResult = result;
+      } else {
+        logger.info("regex evaluation did not find a match");
+        readResult = "N/A";
+      }
+    } else if (xpathExpression != null) {
+      DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+      //The following line had "true" but I changed this to "false" since it did not work with
+      //documents that actually had a namespace defined. (MR)
+      factory.setNamespaceAware(false);
+      String result;
+      try
+      {
+        DocumentBuilder builder = factory.newDocumentBuilder();
+        ByteArrayInputStream bin = new ByteArrayInputStream(readValue.getBytes());
+        Document doc = builder.parse(bin);
 
-            XPathFactory xfac = XPathFactory.newInstance();
-            XPath xpath = xfac.newXPath();
-            XPathExpression expr = xpath.compile(xpathExpression);
-            result = (String)expr.evaluate(doc, XPathConstants.STRING);
-            logger.info("result of xpath evaluation: " + result);
-            sensor.update(result);
-          } catch (Exception e)
-          {
-            logger.error("Could not perform xpath evaluation", e);
-            sensor.update("N/A");
-          }
-        } else if (jsonpathExpression !=null) {
-          try {
-            Object result = JsonPath.read(readValue, jsonpathExpression);
-            sensor.update(result.toString());
-          } catch (Exception e) 
-          {
-            sensor.update("N/A");
-            logger.error("Could not perform jsonpath evaluation", e);    
-          }
-        } else {
-          sensor.update(readValue);
-        }
-        try {
-           Thread.sleep(pollingInterval); // We wait for the given pollingInterval before requesting URL again
-        } catch (InterruptedException e) {
-           doPoll = false;
-           pollingThread.interrupt();
-        }
-     }
-     logger.debug("*** Out of run method: " + sensor);
+        XPathFactory xfac = XPathFactory.newInstance();
+        XPath xpath = xfac.newXPath();
+        XPathExpression expr = xpath.compile(xpathExpression);
+        result = (String)expr.evaluate(doc, XPathConstants.STRING);
+        logger.info("result of xpath evaluation: " + result);
+        readResult = result;
+      } catch (Exception e)
+      {
+        logger.error("Could not perform xpath evaluation", e);
+        readResult = "N/A";
+      }
+    } else if (jsonpathExpression !=null) {
+      try {
+        Object result = JsonPath.read(readValue, jsonpathExpression);
+        readResult = result.toString();
+      } catch (Exception e) 
+      {
+        readResult = "N/A";
+        logger.error("Could not perform jsonpath evaluation", e);    
+      }
+    } else {
+       readResult = readValue;
+    }
+    logger.debug("*** Out of read method: " + readResult);
+    return readResult;
   }
 
 }
