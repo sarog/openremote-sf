@@ -451,6 +451,17 @@ public abstract class Sensor
       return deviceReader.pollingThreadRunning;
   }
 
+  /**
+   * Used in test to verify interval was populated from ReadCommand
+   * @return
+   */
+  public int getDeviceReaderInterval()
+  {
+    if (deviceReader == null)
+      return -1;
+    else
+      return deviceReader.interval;     
+  }
 
 
   // Object Overrides -----------------------------------------------------------------------------
@@ -541,6 +552,24 @@ public abstract class Sensor
     private Thread pollingThread;
 
     /**
+     * The actual interval used
+     */
+    private int interval;
+    
+
+    public DeviceReader() {
+        String eventProducerType = (eventProducer instanceof ReadCommand)?"ReadCommand":"StatusCommand";
+        if (eventProducer instanceof ReadCommand)
+        {
+          this.interval = ((ReadCommand)eventProducer).getPollingInterval();
+        } else
+        {
+          this.interval = ReadCommand.POLLING_INTERVAL;
+        }
+        log.info("Created polling thread for sensor (ID = {0}, name = {1}), event producer type: {2}, polling interval {3}", getSensorID(), getName(), eventProducerType, this.interval);
+    }
+    
+    /**
      * Starts the device polling thread.
      */
     public void start()
@@ -609,7 +638,7 @@ public abstract class Sensor
 
         try
         {
-          Thread.sleep(ReadCommand.POLLING_INTERVAL);
+          Thread.sleep(this.interval);
         }
         catch (InterruptedException e)
         {
