@@ -171,7 +171,7 @@ public class LoggerTest
   {
     Logger log = Logger.getLogger(Constants.CONTROLLER_ROOT_LOG_CATEGORY + ".test");
 
-    log.info(null);
+    log.info((String)null);
 
     log.info(null, new Object[] {null, null});
 
