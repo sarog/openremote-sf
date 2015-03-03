@@ -185,11 +185,11 @@ public class SensorTest
 
 
   /**
-   * Test that the binding of event producer to sensor works correctly.
+   * Test that the binding of event producer to sensor works correctly and also test default polling interval
    *
    * @throws Exception if test fails
    */
-  @Test public void testSensorRead() throws Exception
+  @Test public void testSensorReadWithDefaultPolling() throws Exception
   {
     Sensor s1 = new SwitchSensor("switch", 84, cache, new SwitchRead("switch", 84));
 
@@ -199,7 +199,7 @@ public class SensorTest
     String returnValue = getSensorValueFromCache(84);
 
     Assert.assertTrue(returnValue.equals("on"));
-
+    Assert.assertEquals(ReadCommand.POLLING_INTERVAL, s1.getDeviceReaderInterval());
 
 
     Sensor s2 = new RangeSensor("range", 33, cache, new RangeRead("range", 33, 0, 1), 0, 1);
@@ -210,6 +210,7 @@ public class SensorTest
     returnValue = getSensorValueFromCache(33);
 
     Assert.assertTrue(returnValue.equals("0"));
+    Assert.assertEquals(ReadCommand.POLLING_INTERVAL, s2.getDeviceReaderInterval());
   }
 
 
@@ -230,7 +231,31 @@ public class SensorTest
     
   }
 
-
+  /**
+   * Test read commands which override getPollingInterval
+   */
+  @Test public void testReadCommandWithPollingInterval() throws Exception
+  {
+    Sensor s1 = new SwitchSensor("switchPoll100", 100, cache, new SwitchReadPolling("switchPoll100", 100, 100));
+    cache.registerSensor(s1);
+    s1.start();
+    
+    String returnValue = getSensorValueFromCache(100);
+    Assert.assertTrue(returnValue.equals("on"));
+    Assert.assertFalse(s1.isEventListener());
+    Assert.assertTrue(s1.isPolling());
+    Assert.assertEquals(100, s1.getDeviceReaderInterval());
+    
+    Sensor s2 = new SwitchSensor("switchPoll777", 777, cache, new SwitchReadPolling("switchPoll777", 777, 777));
+    cache.registerSensor(s2);
+    s2.start();
+    
+    returnValue = getSensorValueFromCache(777);
+    Assert.assertTrue(returnValue.equals("on"));    
+    Assert.assertFalse(s2.isEventListener());
+    Assert.assertTrue(s2.isPolling());
+    Assert.assertEquals(777, s2.getDeviceReaderInterval());
+  }
 
 
   // TODO : test contract on modifying sensor properties -- getProperties() method
@@ -276,6 +301,35 @@ public class SensorTest
     }
   }
 
+  private static class SwitchReadPolling extends ReadCommand
+  {
+
+    private String expectedName;
+    private int expectedid;
+    private int interval;
+
+    SwitchReadPolling(String expectedName, int expectedid, int interval)
+    {
+      this.expectedName = expectedName;
+      this.expectedid = expectedid;
+      this.interval = interval;
+    }
+
+    public String read(Sensor s)
+    {
+      Assert.assertTrue(s instanceof SwitchSensor);
+      Assert.assertTrue(s.getProperties().size() == 0);
+      Assert.assertTrue(s.getSensorID() == expectedid);
+      Assert.assertTrue(s.getName().equals(expectedName));
+
+      return "on";
+    }
+
+    @Override
+   public int getPollingInterval() {
+      return this.interval;
+   }
+  }
 
   private static class RangeRead extends ReadCommand
   {
