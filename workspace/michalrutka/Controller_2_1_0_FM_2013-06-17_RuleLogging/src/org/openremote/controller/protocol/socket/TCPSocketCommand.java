@@ -194,8 +194,8 @@ public class TCPSocketCommand implements ExecutableCommand, EventListener, Runna
 
    private String readReply(java.net.Socket socket) throws IOException {
       BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-      char[] buffer = new char[200];
-      int readChars = bufferedReader.read(buffer, 0, 200); // blocks until message received
+      char[] buffer = new char[2000];
+      int readChars = bufferedReader.read(buffer, 0, 2000); // blocks until message received
       if (readChars > 0) {
          String reply = new String(buffer, 0, readChars);
          return reply;
@@ -249,12 +249,17 @@ public class TCPSocketCommand implements ExecutableCommand, EventListener, Runna
            Pattern regexPattern = Pattern.compile(regex);
            Matcher matcher = regexPattern.matcher(readValue);
            if (matcher.find()) {
-             String result = matcher.group();
+             String result;
+             if (matcher.groupCount() > 0) {
+               result = matcher.group(1);
+             } else {
+               result = matcher.group();
+             }
              logger.info("result of regex evaluation: " + result);
              sensor.update(result);
            } else {
              logger.info("regex evaluation did not find a match");
-             sensor.update("N/A");
+             // Don't overwrite probably a valid prior response with a meaningless "N/A"
            }
          } else {
            sensor.update(readValue);
