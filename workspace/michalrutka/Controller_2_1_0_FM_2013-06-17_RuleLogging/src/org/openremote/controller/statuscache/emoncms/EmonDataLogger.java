@@ -21,7 +21,7 @@ import java.net.URI;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
-import java.util.List;
+import java.util.*;
 
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.ResponseHandler;
@@ -48,9 +48,12 @@ public class EmonDataLogger extends EventProcessor {
 
    private final static Logger log = Logger.getLogger(Constants.RUNTIME_EVENTPROCESSOR_LOG_CATEGORY + ".emonlogger" );
 
+   private static long MINIMUM_UPDATE_INTERVAL = 60000; // 60s between two consecutive updates with the same value
    
    private String emonURL;
    private List<String> sensors;
+   private Map<String, Date>   sensorsUpdate;
+   private Map<String, String> sensorsValues;
    
    @Override
    public String getName() {
@@ -61,14 +64,35 @@ public class EmonDataLogger extends EventProcessor {
    public synchronized void push(EventContext ctx) {
       String sensorName = ctx.getEvent().getSource();
       try {
+         Date update = sensorsUpdate.get(sensorName);
+         if(update == null){
+            update = new Date(0);
+            sensorsUpdate.put(sensorName, update);
+         }
+         Date now = new Date();
          if (sensors.contains(sensorName)) {
-            double value = Double.parseDouble(ctx.getEvent().getValue().toString().trim());
-            String url = emonURL+ URLEncoder.encode("{"+sensorName+":"+value+"}");
-            log.debug("Trying to log value '" + value + "' for sensor '" + sensorName + "' to EmonCMS");
-            DefaultHttpClient client = new DefaultHttpClient();
-            HttpUriRequest request = new HttpGet(url);
-            request.addHeader("User-Agent", "OpenRemoteController");
-            client.execute(request);
+            String sval = ctx.getEvent().getValue().toString().trim();
+            String ssto = sensorsValues.get(sensorName);
+            if(ssto == null)
+            {
+               ssto = "";
+            }
+            if(ssto.equals(sval)&&(now.getTime()-update.getTime()<MINIMUM_UPDATE_INTERVAL))
+            {
+              log.trace("Skipping to log value '"+sval+"' for sensor '"+sensorName+"'");
+            }
+            else
+            {
+              sensorsValues.put(sensorName, sval); 
+              sensorsUpdate.put(sensorName, now);
+              double value = Double.parseDouble(sval);
+              String url = emonURL+ URLEncoder.encode("{"+sensorName+":"+value+"}");
+              log.debug("Trying to log value '" + value + "' for sensor '" + sensorName + "' to EmonCMS");
+              DefaultHttpClient client = new DefaultHttpClient();
+              HttpUriRequest request = new HttpGet(url);
+              request.addHeader("User-Agent", "OpenRemoteController");
+              client.execute(request);
+            }
          }
       } catch (NumberFormatException nfe) {
          log.debug("The value: '" + ctx.getEvent().getValue().toString().trim() + "' could not be converted into a double.");
@@ -99,8 +123,10 @@ public class EmonDataLogger extends EventProcessor {
 
    public void setSensors(List<String> sensors) {
       for(String s: sensors){
-         log.debug("Adding '{0}' for monitoring with EmonCMS.", s);
+         log.debug("Adding '"+s+"' for monitoring to EmonCMS.");
       }
+      sensorsValues = new HashMap<String, String>();
+      sensorsUpdate = new HashMap<String, Date>();
       this.sensors = sensors;
    }
    
