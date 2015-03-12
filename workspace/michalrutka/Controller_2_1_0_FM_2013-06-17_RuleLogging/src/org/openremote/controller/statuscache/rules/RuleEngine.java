@@ -166,9 +166,11 @@ public class RuleEngine extends EventProcessor
         boolean _debug = true;
         if (eventSources.keySet().contains(evt.getSourceID()))
         {
-          knowledgeSession.retract(eventSources.get(evt.getSourceID()));
-
-          eventSources.remove(evt.getSourceID());
+           try{
+             knowledgeSession.retract(eventSources.get(evt.getSourceID()));
+           }finally{
+             eventSources.remove(evt.getSourceID());
+           }
           _debug = false;
         }
 
@@ -191,6 +193,7 @@ public class RuleEngine extends EventProcessor
       knowledgeSession.fireAllRules();
       
       _factCount = knowledgeSession.getFactCount();
+      if(_factCount >= 1000) // look for runaway insertion of facts
       if(_factCount != factCount){
          log.debug("Fact count changed from {0} to {1} on fireAllRules() after \"{2}\"", factCount, _factCount, evt.getSource());
       }
@@ -330,7 +333,11 @@ public class RuleEngine extends EventProcessor
     }
 
     catch (Throwable t)
-    {}
+    {
+       log.debug("Exception in addEventListener");
+    }
+    
+    log.debug("Rule engine started");
 
     knowledgeSession.fireAllRules();
   }
@@ -341,11 +348,14 @@ public class RuleEngine extends EventProcessor
    */
   @Override public void stop()
   {
+    log.debug("Stopping RuleEngine");
     if (knowledgeSession != null)
     {
       knowledgeSession.dispose();
+      log.debug("Knowledge session disposed");
     }
-    
+    eventSources.clear();
+
     kb = null;
   }
 
@@ -546,6 +556,8 @@ public class RuleEngine extends EventProcessor
           {
             initLog.error(error.getMessage());
           }
+        }else{
+           initLog.info("Added rule definition ''{0}'' to knowledge.", definitions.get(resource).getName());
         }
       }
 
