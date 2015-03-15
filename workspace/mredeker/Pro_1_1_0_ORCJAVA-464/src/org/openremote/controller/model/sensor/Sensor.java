@@ -451,19 +451,6 @@ public abstract class Sensor
       return deviceReader.pollingThreadRunning;
   }
 
-  /**
-   * Used in test to verify interval was populated from ReadCommand
-   * @return
-   */
-  public int getDeviceReaderInterval()
-  {
-    if (deviceReader == null)
-      return -1;
-    else
-      return deviceReader.interval;     
-  }
-
-
   // Object Overrides -----------------------------------------------------------------------------
 
   /**

@@ -191,26 +191,33 @@ public class SensorTest
    */
   @Test public void testSensorReadWithDefaultPolling() throws Exception
   {
-    Sensor s1 = new SwitchSensor("switch", 84, cache, new SwitchRead("switch", 84));
+    SwitchRead readCommand = new SwitchRead("switch", 84);
+    Sensor s1 = new SwitchSensor("switch", 84, cache, readCommand);
 
     cache.registerSensor(s1);
     s1.start();
 
+    // Give it enough time to poll at least twice
+    Thread.sleep(ReadCommand.POLLING_INTERVAL * 3);
+
     String returnValue = getSensorValueFromCache(84);
 
     Assert.assertTrue(returnValue.equals("on"));
-    Assert.assertEquals(ReadCommand.POLLING_INTERVAL, s1.getDeviceReaderInterval());
+    assertWithinRange(ReadCommand.POLLING_INTERVAL, readCommand.getPolledInterval(), 5);
 
-
-    Sensor s2 = new RangeSensor("range", 33, cache, new RangeRead("range", 33, 0, 1), 0, 1);
+    RangeRead readCommand2 = new RangeRead("range", 33, 0, 1);
+    Sensor s2 = new RangeSensor("range", 33, cache, readCommand2, 0, 1);
 
     cache.registerSensor(s2);
     s2.start();
 
+    // Give it enough time to poll at least twice
+    Thread.sleep(ReadCommand.POLLING_INTERVAL * 3);
+
     returnValue = getSensorValueFromCache(33);
 
     Assert.assertTrue(returnValue.equals("0"));
-    Assert.assertEquals(ReadCommand.POLLING_INTERVAL, s2.getDeviceReaderInterval());
+    assertWithinRange(ReadCommand.POLLING_INTERVAL, readCommand2.getPolledInterval(), 10);
   }
 
 
@@ -236,25 +243,33 @@ public class SensorTest
    */
   @Test public void testReadCommandWithPollingInterval() throws Exception
   {
-    Sensor s1 = new SwitchSensor("switchPoll100", 100, cache, new SwitchReadPolling("switchPoll100", 100, 100));
+    SwitchReadPolling readCommand = new SwitchReadPolling("switchPoll100", 100, 100);
+    Sensor s1 = new SwitchSensor("switchPoll100", 100, cache, readCommand);
     cache.registerSensor(s1);
     s1.start();
+    
+    // Give it enough time to poll at least twice
+    Thread.sleep(100 * 3);
     
     String returnValue = getSensorValueFromCache(100);
     Assert.assertTrue(returnValue.equals("on"));
     Assert.assertFalse(s1.isEventListener());
     Assert.assertTrue(s1.isPolling());
-    Assert.assertEquals(100, s1.getDeviceReaderInterval());
+    assertWithinRange(100, readCommand.getPolledInterval(), 5);
     
-    Sensor s2 = new SwitchSensor("switchPoll777", 777, cache, new SwitchReadPolling("switchPoll777", 777, 777));
+    readCommand = new SwitchReadPolling("switchPoll777", 777, 777);
+    Sensor s2 = new SwitchSensor("switchPoll777", 777, cache, readCommand);
     cache.registerSensor(s2);
     s2.start();
-    
+
+    // Give it enough time to poll at least twice
+    Thread.sleep(777 * 3);
+
     returnValue = getSensorValueFromCache(777);
     Assert.assertTrue(returnValue.equals("on"));    
     Assert.assertFalse(s2.isEventListener());
     Assert.assertTrue(s2.isPolling());
-    Assert.assertEquals(777, s2.getDeviceReaderInterval());
+    assertWithinRange(777, readCommand.getPolledInterval(), 5);
   }
 
 
@@ -274,6 +289,10 @@ public class SensorTest
     return cache.queryStatus(sensorID);
   }
 
+  private void assertWithinRange(long expected, long actual, long delta)
+  {
+     Assert.assertTrue((actual >= (expected - delta)) && (actual <= (expected + delta)));
+  }
   
   // Nested Classes -------------------------------------------------------------------------------
 
@@ -283,6 +302,9 @@ public class SensorTest
 
     private String expectedName;
     private int expectedid;
+    
+    private long lastReadTimestamp = -1;
+    private long polledInterval = -1;
 
     SwitchRead(String expectedName, int expectedid)
     {
@@ -297,38 +319,36 @@ public class SensorTest
       Assert.assertTrue(s.getSensorID() == expectedid);
       Assert.assertTrue(s.getName().equals(expectedName));
 
+      long currentTime = System.currentTimeMillis();
+      if (lastReadTimestamp != -1) {
+         polledInterval = currentTime - lastReadTimestamp;
+      }
+      lastReadTimestamp = currentTime;
+
       return "on";
     }
+    
+    public long getPolledInterval()
+    {
+       return this.polledInterval;
+    }
+
   }
 
-  private static class SwitchReadPolling extends ReadCommand
+  private static class SwitchReadPolling extends SwitchRead
   {
-
-    private String expectedName;
-    private int expectedid;
     private int interval;
-
+    
     SwitchReadPolling(String expectedName, int expectedid, int interval)
     {
-      this.expectedName = expectedName;
-      this.expectedid = expectedid;
+      super(expectedName, expectedid);
       this.interval = interval;
     }
 
-    public String read(Sensor s)
-    {
-      Assert.assertTrue(s instanceof SwitchSensor);
-      Assert.assertTrue(s.getProperties().size() == 0);
-      Assert.assertTrue(s.getSensorID() == expectedid);
-      Assert.assertTrue(s.getName().equals(expectedName));
-
-      return "on";
-    }
-
     @Override
-   public int getPollingInterval() {
+    public int getPollingInterval() {
       return this.interval;
-   }
+    }
   }
 
   private static class RangeRead extends ReadCommand
@@ -337,6 +357,9 @@ public class SensorTest
     private int expectedid;
     private int max;
     private int min;
+
+    private long lastReadTimestamp = -1;
+    private long polledInterval = -1;
 
     RangeRead(String expectedName, int expectedid, int min, int max)
     {
@@ -361,8 +384,21 @@ public class SensorTest
       RangeSensor r = (RangeSensor)s;
       Assert.assertTrue(r.getMaxValue() == 1);
       Assert.assertTrue(r.getMinValue() == 0);
+      
+      long currentTime = System.currentTimeMillis();
+      if (lastReadTimestamp != -1) {
+         polledInterval = currentTime - lastReadTimestamp;
+      }
+      lastReadTimestamp = currentTime;
+
       return "0";
     }
+    
+    public long getPolledInterval()
+    {
+       return this.polledInterval;
+    }
+    
   }
 
 
