@@ -640,6 +640,8 @@ public class GroupActivity extends GenericActivity implements OnGestureListener 
                navigateToGroup(backward.getFromGroup(), backward.getFromScreen());
             }
             navigationHistory.remove(backward);
+         } else {
+           loadSettings();
          }
       } else if (navigate.isSetting()) {
          loadSettings();
