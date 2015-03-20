@@ -90,6 +90,8 @@ public class Constants
   public static final String FILE_FOLDER_PATH = "/data/data/org.openremote.android.console/files/";
   public static final int SECURED_HTTP_PORT = 8443;
   public static final int HTTP_CONNECTION_TIMEOUT = 30000;
+  public static final int PANEL_GET_TIMEOUT = 120000;
+  public static final int RESOURCE_GET_TIMEOUT = 60000;
   /**
    * Prefix for logging so OpenRemote related entries can be easily filtered.
    */
