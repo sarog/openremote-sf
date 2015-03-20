@@ -24,6 +24,7 @@ import org.openremote.android.console.model.AppSettingsModel;
 import org.openremote.android.console.net.IPAutoDiscoveryClient;
 import org.openremote.android.console.util.AsyncResourceLoader;
 import org.openremote.android.console.util.ImageUtil;
+
 import roboguice.inject.InjectView;
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -39,9 +40,13 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.View.OnClickListener;
+import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -59,6 +64,7 @@ public class Main extends GenericActivity {
     public static final String LOAD_RESOURCE = "loadResource";
     public static boolean isRefreshingController;
     public static Toast loadingToast;
+    private AsyncResourceLoader loader;
     
     @InjectView(R.id.loading_text)
     private TextView loadingText;
@@ -85,10 +91,19 @@ public class Main extends GenericActivity {
         ImageUtil.setContentViewQuietly(this, R.layout.welcome_view);
         isRefreshingController = false;
         
+        Button cancelButton = (Button)findViewById(R.id.cancel_button);
+        cancelButton.setClickable(true);
+        cancelButton.setOnClickListener(new OnClickListener() {
+          @Override
+          public void onClick(View v) {
+            loader.cancel(true);
+            doSettings();
+          }});
+        
         checkNetType();
         readDisplayMetrics();     
         if(!checkServerAndPanel()) {        
-           AsyncResourceLoader loader = getInjector().getInstance(AsyncResourceLoader.class);
+           loader = getInjector().getInstance(AsyncResourceLoader.class);
            loader.setLoadingText(loadingText);
            loader.setActivity(this);
            loader.execute();

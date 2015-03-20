@@ -95,11 +95,12 @@ public class HttpXmlControllerService implements ControllerService
    * Returns a default HttpClient.  Additional methods could return more specialized HttpClient
    * instances, such as one that has longer timeout values.
    */
-  protected HttpClient getHttpClient()
+  protected HttpClient getHttpClient(Integer timeout)
   {
+    timeout = timeout == null ? Constants.HTTP_CONNECTION_TIMEOUT : timeout;
     HttpParams params = new BasicHttpParams();
-    HttpConnectionParams.setConnectionTimeout(params, Constants.HTTP_CONNECTION_TIMEOUT);
-    HttpConnectionParams.setSoTimeout(params, Constants.HTTP_CONNECTION_TIMEOUT);
+    HttpConnectionParams.setConnectionTimeout(params, timeout);
+    HttpConnectionParams.setSoTimeout(params, timeout);
     return new DefaultHttpClient(params);
   }
 
@@ -233,7 +234,7 @@ public class HttpXmlControllerService implements ControllerService
 	  Log.e(LOG_CATEGORY, "getControllerUrl().toString(): "+getControllerUrl().toString());
 	  
     URL url = new URL(getControllerUrl().toString() + "/rest/servers");
-    HttpClient httpClient = getHttpClient();
+    HttpClient httpClient = getHttpClient(null);
     HttpGet request = getHttpGetRequest(httpClient, url);
 
   /*  HttpClient httpClient = new DefaultHttpClient(params);
@@ -302,7 +303,7 @@ public class HttpXmlControllerService implements ControllerService
     String encodedPanelName = URLEncoder.encode(panelName, Constants.UTF8_ENCODING);
 
     URL url = new URL(getControllerUrl().toString() + "/rest/panel/" + encodedPanelName);
-    HttpClient httpClient = getHttpClient();
+    HttpClient httpClient = getHttpClient(Constants.PANEL_GET_TIMEOUT);
     HttpGet request = getHttpGetRequest(httpClient, url);
 
     HttpResponse response = null;
@@ -350,7 +351,7 @@ public class HttpXmlControllerService implements ControllerService
     String encodedResourceName = URLEncoder.encode(resourceName, Constants.UTF8_ENCODING);
 
     URL url = new URL(getControllerUrl().toString() + "/resources/" + encodedResourceName);
-    HttpClient httpClient = getHttpClient();
+    HttpClient httpClient = getHttpClient(Constants.RESOURCE_GET_TIMEOUT);
     HttpGet request = getHttpGetRequest(httpClient, url);
 
     HttpResponse response = null;
@@ -389,7 +390,7 @@ public class HttpXmlControllerService implements ControllerService
 
     URL url = new URL(getControllerUrl().toString() + "/rest/control/" +
         Integer.toString(controlId) + "/" + encodedCommand);
-    HttpClient httpClient = getHttpClient();
+    HttpClient httpClient = getHttpClient(null);
     HttpPost request = getHttpPostRequest(httpClient, url);
 
     HttpResponse response = null;

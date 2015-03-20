@@ -15,6 +15,17 @@ android:background="@drawable/loading">
 	android:layout_centerHorizontal="true"
 	android:paddingTop="10px"/>
 	
+	<Button
+	    android:id="@+id/cancel_button"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:layout_alignParentBottom="true"
+	    android:layout_centerHorizontal="true"
+	    android:layout_marginBottom="80dp"
+	    android:text="CANCEL" >
+
+	</Button>
+	
 	<TextView android:id="@+id/loading_text"
 	android:textColor="@color/black"
 	android:text="@string/default_loading_text"
