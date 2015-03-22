@@ -548,7 +548,13 @@ public abstract class Sensor
         String eventProducerType = (eventProducer instanceof ReadCommand)?"ReadCommand":"StatusCommand";
         if (eventProducer instanceof ReadCommand)
         {
-          this.interval = ((ReadCommand)eventProducer).getPollingInterval();
+          int pollingInterval = ((ReadCommand)eventProducer).getPollingInterval();
+          if (pollingInterval > 0)
+          {
+            this.interval = ((ReadCommand)eventProducer).getPollingInterval();
+          } else {
+            this.interval = ReadCommand.POLLING_INTERVAL;
+          }
         } else
         {
           this.interval = ReadCommand.POLLING_INTERVAL;

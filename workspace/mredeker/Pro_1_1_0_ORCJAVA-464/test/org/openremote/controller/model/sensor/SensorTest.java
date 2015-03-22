@@ -272,6 +272,40 @@ public class SensorTest
     assertWithinRange(777, readCommand.getPolledInterval(), 5);
   }
 
+  /**
+   * Test read commands which override getPollingInterval with an invalid value.
+   * Tests negative and 0 as values, both of which should result in the default interval being used.
+   */
+  @Test public void testReadCommandWithInvalidPollingInterval() throws Exception
+  {
+    SwitchReadPolling readCommand = new SwitchReadPolling("switchPoll0", 100, 0);
+    Sensor s1 = new SwitchSensor("switchPoll0", 100, cache, readCommand);
+    cache.registerSensor(s1);
+    s1.start();
+    
+    // Give it enough time to poll at least twice
+    Thread.sleep(ReadCommand.POLLING_INTERVAL * 3);
+    
+    String returnValue = getSensorValueFromCache(100);
+    Assert.assertTrue(returnValue.equals("on"));
+    Assert.assertFalse(s1.isEventListener());
+    Assert.assertTrue(s1.isPolling());
+    assertWithinRange(ReadCommand.POLLING_INTERVAL, readCommand.getPolledInterval(), 5);
+    
+    readCommand = new SwitchReadPolling("switchPoll0", 777, -10);
+    Sensor s2 = new SwitchSensor("switchPoll0", 777, cache, readCommand);
+    cache.registerSensor(s2);
+    s2.start();
+
+    // Give it enough time to poll at least twice
+    Thread.sleep(ReadCommand.POLLING_INTERVAL * 3);
+
+    returnValue = getSensorValueFromCache(777);
+    Assert.assertTrue(returnValue.equals("on"));    
+    Assert.assertFalse(s2.isEventListener());
+    Assert.assertTrue(s2.isPolling());
+    assertWithinRange(ReadCommand.POLLING_INTERVAL, readCommand.getPolledInterval(), 5);
+  }
 
   // TODO : test contract on modifying sensor properties -- getProperties() method
 
