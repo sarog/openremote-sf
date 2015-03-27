@@ -15,6 +15,7 @@ public class ControllerObject {
     private String group;
     private boolean isControllerUp;
     private boolean availabilityCheckDone;
+    private boolean availabilityCheckInProgress;
     private List<String> failoverControllers = new ArrayList<String>();
     
     public ControllerObject(String url, String defaultPanel, String username, String userpass, double xScale, double yScale) {
@@ -87,12 +88,20 @@ public class ControllerObject {
         this.isControllerUp = isControllerUp;
     }
     
-    public void setAvailabilityCheckDone() {
-    	availabilityCheckDone = true;
+    public void setAvailabilityCheckDone(boolean availabilityCheckDone) {
+    	this.availabilityCheckDone = availabilityCheckDone;
     }
     
     public boolean isAvailabilityCheckDone() {
     	return availabilityCheckDone;
+    }
+
+    public void setAvailabilityCheckInProgress(boolean availabilityCheckInProgress) {
+      this.availabilityCheckInProgress = availabilityCheckInProgress;
+    }
+    
+    public boolean isAvailabilityCheckInProgress() {
+      return availabilityCheckInProgress;
     }
     
     public void addFailoverController(String url) {

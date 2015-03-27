@@ -268,8 +268,14 @@ public class ORConnection
    *                      there was an error in the HTTP protocol (ClientProtocolException),
    *                      or any other IO error occured (generic IOException)
    */
+   public static HttpResponse checkURLWithHTTPProtocol(ORHttpMethod httpMethod,
+           URL targetURL, boolean useHTTPAuth) throws IOException
+   {
+     return checkURLWithHTTPProtocol(httpMethod, targetURL, useHTTPAuth, Constants.HTTP_CONNECTION_TIMEOUT);
+   }
+   
   public static HttpResponse checkURLWithHTTPProtocol(ORHttpMethod httpMethod,
-                                                      URL targetURL, boolean useHTTPAuth)
+                                                      URL targetURL, boolean useHTTPAuth, int timeout)
       throws IOException
   {
     // TODO : could move this method to ORNetworkCheck class, no one else is using it.
@@ -303,8 +309,8 @@ public class ORConnection
 
     HttpParams params = new BasicHttpParams();
 
-    HttpConnectionParams.setConnectionTimeout(params, Constants.HTTP_CONNECTION_TIMEOUT);
-    HttpConnectionParams.setSoTimeout(params, Constants.HTTP_CONNECTION_TIMEOUT);
+    HttpConnectionParams.setConnectionTimeout(params, timeout);
+    HttpConnectionParams.setSoTimeout(params, timeout);
 
     HttpClient client = new DefaultHttpClient(params);
 

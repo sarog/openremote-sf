@@ -113,7 +113,7 @@ public class ControllerListAdapter extends ArrayAdapter<ControllerObject> {
 		  ok.setVisibility(View.GONE);
 		  nok.setVisibility(View.GONE);
 		  pb.setVisibility(View.VISIBLE);
-		  controller.setAvailabilityCheckDone();
+		  controller.setAvailabilityCheckInProgress(true);
 			availabilityChecker.execute();
 		}
 		
