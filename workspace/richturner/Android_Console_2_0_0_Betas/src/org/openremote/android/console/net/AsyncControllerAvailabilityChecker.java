@@ -67,7 +67,7 @@ public class AsyncControllerAvailabilityChecker extends AsyncTask<String, String
 	  
 	  // Check controller /rest/servers if response received then Controller is available
     try{
-      response = ORConnection.checkURLWithHTTPProtocol(ORHttpMethod.GET, new URL(controllerUrl + "/rest/servers"), false);
+      response = ORConnection.checkURLWithHTTPProtocol(ORHttpMethod.GET, new URL(controllerUrl + "/rest/servers"), false, 5000);
      
       if (response != null && (response.getStatusLine().getStatusCode() != Constants.HTTP_SUCCESS || response.getStatusLine().getStatusCode() != Constants.HTTP_UNAUTHORISED)) {
 	      Log.i(TAG, controllerUrl + " Response: "+ response.getStatusLine());
@@ -88,7 +88,8 @@ public class AsyncControllerAvailabilityChecker extends AsyncTask<String, String
 			ControllerObject controller = controllerRef.get();
 			if (controller != null) {
 				controller.setIsControllerUp(result);
-				controller.setAvailabilityCheckDone();
+				controller.setAvailabilityCheckInProgress(false);
+				controller.setAvailabilityCheckDone(true);
 			}
 		}
 		

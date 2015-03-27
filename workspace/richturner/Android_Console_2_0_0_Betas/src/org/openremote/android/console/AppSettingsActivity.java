@@ -23,6 +23,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+
 import org.openremote.android.console.model.AppSettingsModel;
 import org.openremote.android.console.model.ViewHelper;
 import org.openremote.android.console.net.ControllerService;
@@ -31,12 +32,16 @@ import org.openremote.android.console.net.ORControllerServerSwitcher;
 import org.openremote.android.console.net.SavedServersNetworkCheckTestAsyncTask;
 import org.openremote.android.console.util.FileUtil;
 import org.openremote.android.console.view.PanelSelectSpinnerView;
+
 import com.google.inject.Inject;
+
 import roboguice.util.RoboAsyncTask;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -81,7 +86,7 @@ public class AppSettingsActivity extends GenericActivity {
   
   private ControllerObject editController;
   
-  private LinearLayout serversLayout;
+  private SwipeRefreshLayout serversLayout;
   
   private ProgressDialog loadingPanelProgress;
   
@@ -106,10 +111,24 @@ public class AppSettingsActivity extends GenericActivity {
     
     controllerListView = (ListView) findViewById(R.id.controller_list_view);
     appSettingsView = (LinearLayout) findViewById(R.id.appSettingsView);
-    serversLayout = (LinearLayout) findViewById(R.id.custom_servers_layout);
+    serversLayout = (SwipeRefreshLayout) findViewById(R.id.custom_servers_layout);
     panelSelectSpinnerView = (PanelSelectSpinnerView) findViewById(R.id.panel_select_spinner_view);
     progressLayout = (LinearLayout) findViewById(R.id.choose_controller_progress);
 
+    serversLayout.setOnRefreshListener(new OnRefreshListener() {
+      
+      @Override
+      public void onRefresh() {
+        for (int i=0; i<serverListAdapter.getCount(); i++) {
+          ControllerObject controller = serverListAdapter.getItem(i);
+          if (!controller.isAvailabilityCheckInProgress()) {
+            controller.setAvailabilityCheckDone(false);
+          }
+        }
+        serverListAdapter.notifyDataSetChanged();
+      }
+    });
+    
     addListChangeListener();
     
     addButtonOnClickListeners();

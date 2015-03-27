@@ -186,10 +186,12 @@ public class Main extends GenericActivity {
     /**
      * Forward to settings view.
      */
-    public void doSettings() {
-        Intent i = new Intent(this, AppSettingsActivity.class);
-        startActivity(i);
-        finish();
+    private void doSettings() {
+      AppSettingsModel.setCurrentController(this, null);
+      AppSettingsModel.setCurrentPanelIdentity(this, null);
+      Intent i = new Intent(this, AppSettingsActivity.class);
+      startActivity(i);
+      finish();
     }
 
   
