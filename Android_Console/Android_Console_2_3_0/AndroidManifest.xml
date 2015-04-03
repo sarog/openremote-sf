@@ -2,6 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
       package="org.openremote.android.console"
       android:versionCode="2000010"
+      android:windowSoftInputMode="stateVisible|adjustResize"
       android:versionName="@string/app_version">
 
     <uses-permission android:name="android.permission.INTERNET" />
@@ -14,7 +15,7 @@
     <uses-sdk android:minSdkVersion="7" android:targetSdkVersion="10" />
     
     <application android:name="org.openremote.android.console.OpenRemoteApplication"
-                 android:icon="@drawable/ic_launcher_openremote" android:label="@string/app_name" android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen">
+                 android:icon="@drawable/orlogo" android:label="@string/app_name" android:theme="@android:style/Theme.Black.NoTitleBar">
         <activity android:name=".Main"
                   android:label="@string/app_name"
                   android:screenOrientation="sensor"
