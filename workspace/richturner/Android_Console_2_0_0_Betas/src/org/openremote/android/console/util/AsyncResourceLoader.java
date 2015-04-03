@@ -79,6 +79,7 @@ public class AsyncResourceLoader extends RoboAsyncTask<AsyncResourceLoaderResult
 
   private TextView loadingText;
   private Activity activity;
+  private boolean cancelled;
 
   @Inject
   public AsyncResourceLoader(ControllerService controllerService, Context context)
@@ -213,6 +214,11 @@ public class AsyncResourceLoader extends RoboAsyncTask<AsyncResourceLoaderResult
     return result;
   }
 
+  @Override
+  protected void onInterrupted(Exception e) {
+    Log.i(LOG_CATEGORY, "User cancelled panel loading");
+  };
+  
   protected void onException(Exception e) throws RuntimeException
   {
     final String logPrefix = "onException(): ";
@@ -273,6 +279,10 @@ public class AsyncResourceLoader extends RoboAsyncTask<AsyncResourceLoaderResult
   @Override
   protected void onSuccess(AsyncResourceLoaderResult result)
   {
+    if (isCancelled()) {
+      return;
+    }
+    
     Intent intent = new Intent();
 
     switch (result.getAction())
@@ -319,6 +329,14 @@ public class AsyncResourceLoader extends RoboAsyncTask<AsyncResourceLoaderResult
         }
       });
     }
+  }  
+  
+  public void setIsCancelled(boolean cancelled) {
+    this.cancelled = cancelled;
+  }
+  
+  public boolean isCancelled() {
+    return cancelled;
   }
 }
 

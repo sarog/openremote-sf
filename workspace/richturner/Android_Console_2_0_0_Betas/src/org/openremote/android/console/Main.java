@@ -83,6 +83,12 @@ public class Main extends GenericActivity {
           StrictMode.setThreadPolicy(policy);
         }
         
+        //Remove title bar
+        this.requestWindowFeature(Window.FEATURE_NO_TITLE);
+
+        //Remove notification bar
+        this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+                
         loadingToast = Toast.makeText(this, "Refreshing from Controller...", Integer.MAX_VALUE);
 //        if (!isRefreshingController) {
 //        } else {
