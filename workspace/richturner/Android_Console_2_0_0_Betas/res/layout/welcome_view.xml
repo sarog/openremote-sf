@@ -1,38 +1,80 @@
 <?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/welcome_view"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@color/white"
+    android:orientation="vertical" >
 
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-android:id="@+id/welcome_view"
-android:layout_width="fill_parent"
-android:layout_height="fill_parent"
-android:background="@drawable/loading">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_weight="1"
+        android:orientation="vertical" >
 
-	<TextView android:id="@+id/app_version"
-	android:text="@string/app_version"
-	android:textColor="@color/black"
-	android:layout_width="wrap_content"
-	android:layout_height="wrap_content"
-	android:layout_centerInParent="true"
-	android:layout_centerHorizontal="true"
-	android:paddingTop="10px"/>
-	
-	<Button
-	    android:id="@+id/cancel_button"
-	    android:layout_width="wrap_content"
-	    android:layout_height="wrap_content"
-	    android:layout_alignParentBottom="true"
-	    android:layout_centerHorizontal="true"
-	    android:layout_marginBottom="80dp"
-	    android:text="CANCEL" >
+        <ImageView
+            android:id="@+id/imageView1"
+            android:layout_width="fill_parent"
+            android:layout_height="match_parent"
+            android:adjustViewBounds="false"
+            android:scaleType="centerInside"
+            android:src="@drawable/splash" />
+    </LinearLayout>
 
-	</Button>
-	
-	<TextView android:id="@+id/loading_text"
-	android:textColor="@color/black"
-	android:text="@string/default_loading_text"
-	android:layout_width="wrap_content"
-	android:layout_height="wrap_content"
-	android:layout_alignParentBottom="true"
-	android:layout_centerHorizontal="true"
-	android:paddingBottom="10px"/>
-	
-</RelativeLayout>
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="vertical" >
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical" >
+
+            <TextView
+                android:id="@+id/app_version"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:layout_gravity="center_vertical"
+                android:layout_marginBottom="5dp"
+                android:gravity="center"
+                android:text="@string/app_version"
+                android:textColor="@color/black" />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical" >
+
+            <Button
+                android:id="@+id/cancel_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:maxHeight="3dp"
+                android:text="@string/cancel" />
+
+        </RelativeLayout>
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/loading_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="10dp"
+        android:text="@string/default_loading_text"
+        android:textColor="@color/black" />
+
+</LinearLayout>
