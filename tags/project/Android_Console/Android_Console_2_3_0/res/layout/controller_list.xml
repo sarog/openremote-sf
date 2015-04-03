@@ -26,7 +26,7 @@
 				    android:layout_width="match_parent"
 				    android:layout_height="wrap_content" >
 
-					<LinearLayout
+					<android.support.v4.widget.SwipeRefreshLayout
 					    android:id="@+id/custom_servers_layout"
 					    android:layout_width="fill_parent"
 					    android:layout_height="fill_parent"
@@ -46,7 +46,7 @@
 					        android:choiceMode="singleChoice">
 					    </ListView>
 
-					</LinearLayout>
+					</android.support.v4.widget.SwipeRefreshLayout>
 
 					<LinearLayout
 					    android:id="@id/controller_list_bottom_layout"
