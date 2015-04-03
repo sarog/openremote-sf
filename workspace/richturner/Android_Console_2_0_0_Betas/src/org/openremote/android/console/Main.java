@@ -96,13 +96,19 @@ public class Main extends GenericActivity {
         cancelButton.setOnClickListener(new OnClickListener() {
           @Override
           public void onClick(View v) {
+            loader.setIsCancelled(true); // cancel method doesn't happen straight away onSuccess can be called before onInterrupted (useless)
             loader.cancel(true);
             doSettings();
           }});
         
         checkNetType();
-        readDisplayMetrics();     
-        if(!checkServerAndPanel()) {        
+        readDisplayMetrics();   
+        
+        ControllerObject controller = AppSettingsModel.getCurrentController(this);
+        
+        if (controller == null || TextUtils.isEmpty(AppSettingsModel.getCurrentPanelIdentity(this))) {
+          doSettings();
+        } else {
            loader = getInjector().getInstance(AsyncResourceLoader.class);
            loader.setLoadingText(loadingText);
            loader.setActivity(this);
@@ -160,24 +166,7 @@ public class Main extends GenericActivity {
       Screen.WIDTH_SCALE =  xScale;
       Screen.HEIGHT_SCALE = yScale;
     }
-    
-    /**
-     * Check server and panel.
-     * If server or panel is empty, do settings and return true;
-     * else return false.
-     * 
-     * @return true, if successful
-     */
-    private boolean checkServerAndPanel () {
-    	ControllerObject controller = AppSettingsModel.getCurrentController(this);
-    	
-			if (controller == null || TextUtils.isEmpty(AppSettingsModel.getCurrentPanelIdentity(this))) {
-				doSettings();
-				return true;
-			}
-			return false;
-    }
-    
+      
     
     public void setActivityToFinish(Activity activity){
     	
