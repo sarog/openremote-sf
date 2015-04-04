@@ -88,4 +88,12 @@ public interface ControllerService
   public void sendWriteCommand(int controlId, String command)
       throws ControllerAuthenticationFailureException, ORConnectionException,
              Exception;
+  
+  /**
+   * Identifies the API version of this controller: -
+   * V1 = Pre named sensor/command API
+   * V2 = Named sensor/command API
+   * @return
+   */
+  public int getApiVersion();
 }

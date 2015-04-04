@@ -149,16 +149,47 @@ public class ControlView extends ComponentView implements ORConnectionDelegate {
    }
 
    /**
+    * Send command request to controller by command name
+    * 
+    * @param commandName the command name
+    * 
+    * @return true, if successful
+    */
+   public boolean sendCommandRequestByName(String commandName) {
+     Log.i("ControlView", "sendWriteCommand");
+     
+        new ORUnBlockConnection(this.context, ORHttpMethod.POST, true, AppSettingsModel.getSecuredServer(getContext())
+                + "/rest/commands?name=" + commandName, this);
+          return true;
+          
+ /*     try {
+    controllerService.sendWriteCommand(getComponent().getComponentId(), commandType);
+  } catch (ControllerAuthenticationFailureException e) {
+    // TODO Auto-generated catch block
+    e.printStackTrace();
+  } catch (ORConnectionException e) {
+    // TODO Auto-generated catch block
+    e.printStackTrace();
+  } catch (Exception e) {
+    // TODO Auto-generated catch block
+    e.printStackTrace();
+  }
+      //new ORUnBlockConnection(this.context, ORHttpMethod.POST, true, AppSettingsModel.getSecuredServer(getContext())
+           // + "/rest/control/" + getComponent().getComponentId() + "/" + commandType, this);
+      return true;*/
+   }
+   
+   /**
     * Cancel repeat send command.
     */
-   public void cancelTimer() {
+   protected void cancelTimer() {
       if (timer != null) {
          timer.cancel();
       }
       timer = null;
    }
 
-   public void setTimer(Timer timer) {
+   protected void setTimer(Timer timer) {
       this.timer = timer;
    }
 
@@ -194,7 +225,7 @@ public class ControlView extends ComponentView implements ORConnectionDelegate {
    @Override
    public void urlConnectionDidReceiveResponse(HttpResponse httpResponse) {
       int responseCode = httpResponse.getStatusLine().getStatusCode();
-      if (responseCode != 200) {
+      if (responseCode != 200 && responseCode != 204) {
          cancelTimer();
          if (responseCode == 401) {
             new LoginDialog(getContext());
