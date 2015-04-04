@@ -437,4 +437,22 @@ public class HttpXmlControllerService implements ControllerService
     }
   }
 
+  @Override
+  public int getApiVersion() {
+    try
+    {
+      URL url = new URL(getControllerUrl().toString() + "/rest/commands");
+      HttpClient httpClient = getHttpClient(Constants.HTTP_CONNECTION_TIMEOUT);
+      HttpPost request = getHttpPostRequest(httpClient, url);
+
+      HttpResponse response = null;
+      response = httpClient.execute(request);
+
+      return response.getStatusLine().getStatusCode() == 400 ? 2 : 1;
+    }
+    catch (Exception e)
+    {
+        return 1;
+    }
+  }
 }

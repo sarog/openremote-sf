@@ -44,6 +44,14 @@ public class ORButton extends Control {
    /** Navigate to. */
    private Navigate navigate;
    
+   private int version = 1;
+   private String pressCommandName;
+   private String longPressCommandName;
+   private String repeatCommandName;
+   private String releaseCommandName;
+   private Integer longPressDelay;
+   private Integer repeatInterval;
+         
    /**
     * Instantiates a new button by parse the button node.
     * 
@@ -71,7 +79,38 @@ public class ORButton extends Control {
                this.pressedImage = createImage(elementNode);
             } else if (NAVIGATE.equals(elementNode.getNodeName())) {
                this.navigate = new Navigate(elementNode);
-            }
+            } else if (CONFIG.equals(elementNode.getNodeName())) {
+              // New style button
+              NamedNodeMap btnConfig = elementNode.getAttributes();
+              version = Integer.valueOf(btnConfig.getNamedItem("version").getNodeValue());
+              
+              if (getVersion() == 2) {
+                Node pressCommandNode = btnConfig.getNamedItem("pressCommand");
+                Node longPressCommandNode = btnConfig.getNamedItem("longPressCommand");
+                Node repeatCommandNode = btnConfig.getNamedItem("repeatCommand");
+                Node releaseCommandNode = btnConfig.getNamedItem("releaseCommand");
+                Node repeatIntervalNode = btnConfig.getNamedItem("repeatInterval");
+                Node longPressDelayNode = btnConfig.getNamedItem("longPressDelay");
+                
+                if (pressCommandNode != null) {
+                  pressCommandName = pressCommandNode.getNodeValue();
+                }
+                
+                if (releaseCommandNode != null) {
+                  releaseCommandName = releaseCommandNode.getNodeValue();
+                }
+                
+                if (longPressCommandNode != null && longPressDelayNode != null) {
+                  longPressCommandName = longPressCommandNode.getNodeValue();
+                  longPressDelay = Integer.valueOf(longPressDelayNode.getNodeValue());
+                }
+                
+                if (repeatCommandNode != null && repeatIntervalNode != null) {
+                  repeatCommandName = repeatCommandNode.getNodeValue();
+                  repeatInterval = Integer.valueOf(repeatIntervalNode.getNodeValue());
+                }
+              }
+           }
          }
       }
    }
@@ -100,7 +139,35 @@ public class ORButton extends Control {
       return navigate;
    }
    
-   /**
+  public int getVersion() {
+    return version;
+  }
+
+  public String getPressCommandName() {
+    return pressCommandName;
+  }
+
+  public String getLongPressCommandName() {
+    return longPressCommandName;
+  }
+
+  public String getRepeatCommandName() {
+    return repeatCommandName;
+  }
+
+  public String getReleaseCommandName() {
+    return releaseCommandName;
+  }
+
+  public Integer getLongPressDelay() {
+    return longPressDelay;
+  }
+
+  public Integer getRepeatInterval() {
+    return repeatInterval;
+  }
+
+  /**
     * Creates the image by parse image node.
     * 
     * @param elementNode the element node
