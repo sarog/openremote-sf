@@ -161,8 +161,14 @@ public class Main extends GenericActivity {
     private void readDisplayMetrics() {
       DisplayMetrics dm = getApplicationContext().getResources().getDisplayMetrics();
       ControllerObject controller = AppSettingsModel.getCurrentController(this);
-      Screen.SCREEN_WIDTH = dm.widthPixels;
-      Screen.SCREEN_HEIGHT = dm.heightPixels;
+      if (dm.widthPixels > dm.heightPixels) {
+        Screen.SCREEN_WIDTH = dm.heightPixels;
+        Screen.SCREEN_HEIGHT = dm.widthPixels;
+      } else {
+        Screen.SCREEN_WIDTH = dm.widthPixels;
+        Screen.SCREEN_HEIGHT = dm.heightPixels;        
+      }
+
       double xScale = 1.0;
 	  double yScale = 1.0;
       if ( controller != null ) {
