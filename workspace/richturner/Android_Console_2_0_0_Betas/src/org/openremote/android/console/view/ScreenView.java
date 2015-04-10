@@ -108,7 +108,7 @@ public class ScreenView extends RelativeLayout {
     // int imageHeight = backgroundBitmap.getIntrinsicHeight();
 
     if (background.isFillScreen()) {
-      backgroundBitmap = ImageUtil.createScaledDrawableFromPath(getContext(), imagePath, screenWidth, screenHeight, false, false);
+      backgroundBitmap = ImageUtil.createScaledDrawableFromPath(getContext(), imagePath, screenWidth, screenHeight, false, true);
       //backgroundBitmap = ImageUtil.createClipedDrawableFromPath(getContext(), imagePath, screenWidth, screenHeight, screenWidth, screenHeight);
       // backgroundView.setScaleType(ScaleType.CENTER_CROP);
     } else {
