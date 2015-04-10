@@ -88,7 +88,8 @@ public class AppSettingsModel implements Serializable
   private static final String CUSTOM_SERVERS = "customServers";
   private static final String CURRENT_SERVER = "currentServer";
   private static final String AUTO_MODE = "autoMode";
-
+  private static final String CURRENT_API_VERSION = "currentApiVersion";
+  
   /**
    * Name of preference which stores the current panel ID this application is rendering (controller
    * may store several panel designs)
@@ -431,7 +432,30 @@ public class AppSettingsModel implements Serializable
     editor.commit();
   }
 
+  /**
+   * Gets the API version of the currently loaded controller
+   * @param context
+   * @return
+   */
+  public static int getCurrentControllerApiVersion(Context context) {
+    return context.getSharedPreferences(APP_SETTINGS, Context.MODE_PRIVATE).getInt(CURRENT_API_VERSION, 1);
+  }
+  
+  /**
+   * Stores the API version of the currently loaded controller
+   * @param context
+   * @param apiVersion
+   */
+  public static void setCurrentControllerApiVersion(Context context, int apiVersion)
+  {
+    SharedPreferences.Editor editor = context.getSharedPreferences(
+        APP_SETTINGS,
+        Context.MODE_PRIVATE
+    ).edit();
 
+    editor.putInt(CURRENT_API_VERSION, apiVersion);
+    editor.commit();
+  }
 
   // Constructors ---------------------------------------------------------------------------------
 
