@@ -20,14 +20,21 @@
 
 package org.openremote.android.console.view;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import org.apache.http.HttpResponse;
 import org.openremote.android.console.Constants;
+import org.openremote.android.console.LoginDialog;
 import org.openremote.android.console.R;
 import org.openremote.android.console.bindings.ORButton;
+import org.openremote.android.console.model.AppSettingsModel;
+import org.openremote.android.console.model.ControllerException;
 import org.openremote.android.console.model.ListenerConstant;
 import org.openremote.android.console.model.ORListenerManager;
+import org.openremote.android.console.model.ViewHelper;
 import org.openremote.android.console.util.ImageUtil;
 
 import android.content.Context;
@@ -52,6 +59,7 @@ public class ButtonView extends ControlView {
    private Button uiButton;
    private BitmapDrawable defaultImage;
    private BitmapDrawable pressedImage;
+   private Timer longPressTimer;
    
    /** The Constant REPEAT_CMD_INTERVAL. */
    public final static long REPEAT_CMD_INTERVAL = 300;
@@ -97,51 +105,130 @@ public class ButtonView extends ControlView {
       if (button.getPressedImage() != null) {
          pressedImage = ImageUtil.createScaledDrawableFromPath(context, Constants.FILE_FOLDER_PATH + button.getPressedImage().getSrc(), width, height);
       }
-      View.OnTouchListener touchListener = new OnTouchListener() {
-         public boolean onTouch(View v, MotionEvent event) {
-            if (event.getAction() == MotionEvent.ACTION_DOWN) {
-               cancelTimer();
-               if (pressedImage != null) {
-                  uiButton.setBackgroundDrawable(pressedImage);
-               } else if (defaultImage != null) {
-                  defaultImage.setAlpha(200);
-                  uiButton.setBackgroundDrawable(defaultImage);
-               } else {
-                 uiButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.button_pressed));
+      
+      if (button.getVersion() == 1 || AppSettingsModel.getCurrentControllerApiVersion(context) == 1) {      
+        View.OnTouchListener touchListener = new OnTouchListener() {
+           public boolean onTouch(View v, MotionEvent event) {
+              if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                 cancelTimer();
+                 if (pressedImage != null) {
+                    uiButton.setBackgroundDrawable(pressedImage);
+                 } else if (defaultImage != null) {
+                    defaultImage.setAlpha(200);
+                    uiButton.setBackgroundDrawable(defaultImage);
+                 } else {
+                   uiButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.button_pressed));
+                 }
+                 if (button.isHasControlCommand()) {
+                    sendPressCommand();
+                    if (button.isRepeat()) {
+                       Timer timer = new Timer();
+                       timer.schedule(new TimerTask() {
+                          public void run() {
+                             sendPressCommand();
+                          }
+                       }, REPEAT_CMD_INTERVAL, REPEAT_CMD_INTERVAL);
+                       setTimer(timer);
+                    }
+                 }
+              } else if (event.getAction() == MotionEvent.ACTION_UP) {
+                 cancelTimer();
+                 if (defaultImage != null) {
+                    defaultImage.setAlpha(255);
+                    uiButton.setBackgroundDrawable(defaultImage);
+                 } else {
+                	 uiButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.button));
+                 }
+                 if (button.getNavigate() != null) {
+                    uiButton.setPressed(false);
+                    ORListenerManager.getInstance().notifyOREventListener(ListenerConstant.ListenerNavigateTo, button.getNavigate());
+                 }
+              }
+              return false;
+           }
+        };
+        uiButton.setOnTouchListener(touchListener);
+      } else if (button.getVersion() == 2) {
+        View.OnTouchListener touchListener = new OnTouchListener() {
+          public boolean onTouch(View v, MotionEvent event) {
+             if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                cancelTimers();
+                if (pressedImage != null) {
+                   uiButton.setBackgroundDrawable(pressedImage);
+                } else if (defaultImage != null) {
+                   defaultImage.setAlpha(200);
+                   uiButton.setBackgroundDrawable(defaultImage);
+                } else {
+                  uiButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.button_pressed));
+                }
+                
+                if (button.getPressCommandName() != null && !button.getPressCommandName().equals(""))
+                {
+                  sendNamedCommand(button.getPressCommandName());
+                }
+                
+                // If repeat defined then setup timer
+                if (button.getRepeatCommandName() != null && !button.getRepeatCommandName().equals("")) {
+                  Timer timer = new Timer();
+                  timer.schedule(new TimerTask() {
+                     public void run() {
+                         sendNamedCommand(button.getRepeatCommandName());
+                     }
+                  }, button.getRepeatInterval(), button.getRepeatInterval());
+                  setTimer(timer);
                }
-               if (button.isHasControlCommand()) {
-                  sendCommand();
-                  if (button.isRepeat()) {
-                     Timer timer = new Timer();
-                     timer.schedule(new TimerTask() {
-                        public void run() {
-                           sendCommand();
-                        }
-                     }, REPEAT_CMD_INTERVAL, REPEAT_CMD_INTERVAL);
-                     setTimer(timer);
-                  }
-               }
-            } else if (event.getAction() == MotionEvent.ACTION_UP) {
-               cancelTimer();
-               if (defaultImage != null) {
-                  defaultImage.setAlpha(255);
-                  uiButton.setBackgroundDrawable(defaultImage);
-               } else {
-              	 uiButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.button));
-               }
-               if (button.getNavigate() != null) {
-                  uiButton.setPressed(false);
-                  ORListenerManager.getInstance().notifyOREventListener(ListenerConstant.ListenerNavigateTo, button.getNavigate());
-               }
-            }
-            return false;
-         }
-      };
-      uiButton.setOnTouchListener(touchListener);
+                
+                // If long press defined then setup timer
+                if (button.getLongPressCommandName() != null && !button.getLongPressCommandName().equals("")) {
+                  Timer timer = new Timer();
+                  timer. schedule(new TimerTask() {
+                     public void run() {
+                        sendNamedCommand(button.getLongPressCommandName());
+                     }
+                  }, button.getLongPressDelay());
+                  longPressTimer = timer;
+                }
+                
+             } else if (event.getAction() == MotionEvent.ACTION_UP) {
+                cancelTimers();
+                if (defaultImage != null) {
+                   defaultImage.setAlpha(255);
+                   uiButton.setBackgroundDrawable(defaultImage);
+                } else {
+                  uiButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.button));
+                }
+                
+                if (button.getReleaseCommandName() != null && !button.getReleaseCommandName().equals("")) {
+                  sendNamedCommand(button.getReleaseCommandName());
+                }
+                
+                if (button.getNavigate() != null) {
+                   uiButton.setPressed(false);
+                   ORListenerManager.getInstance().notifyOREventListener(ListenerConstant.ListenerNavigateTo, button.getNavigate());
+                }
+             }
+             return false;
+          }
+       };
+       uiButton.setOnTouchListener(touchListener);
+      }
+      
       addView(uiButton);
    }
+    
+   private void cancelTimers() {
+     cancelTimer();
+     if (longPressTimer != null) {
+       longPressTimer.cancel();
+       longPressTimer = null;
+     }
+   }
 
-   private void sendCommand() {
+   private void sendPressCommand() {
       sendCommandRequest("click");
+   }
+   
+   private void sendNamedCommand(String commandName) {
+     sendCommandRequestByName(commandName);
    }
 }
