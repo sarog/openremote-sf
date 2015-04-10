@@ -177,9 +177,7 @@ public class ImageUtil {
     try {
       // Determine required sample size of the image
       opts.inJustDecodeBounds = true;
-      Bitmap bitmap = BitmapFactory.decodeFile(pathName, opts);
-      bitmap.recycle();
-      bitmap = null;
+      BitmapFactory.decodeFile(pathName, opts);
       size = new Pair<Integer, Integer>(opts.outWidth, opts.outHeight);
     } catch (OutOfMemoryError e) {
       Log.e("Out of Memory error: ", pathName);

@@ -87,4 +87,6 @@ public class BusinessEntity implements Serializable {
    public static final String USERNAME = "username";
    public static final String PASSWORD = "password";
    public static final String IGNORE_SSL_ERRORS = "ignoreSslErrors";
+   
+   public static final String CONFIG = "config";
 }

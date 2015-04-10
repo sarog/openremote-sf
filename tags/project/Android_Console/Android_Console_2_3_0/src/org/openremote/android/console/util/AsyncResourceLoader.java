@@ -122,6 +122,10 @@ public class AsyncResourceLoader extends RoboAsyncTask<AsyncResourceLoaderResult
     AsyncResourceLoaderResult result = new AsyncResourceLoaderResult();
     String panelName = AppSettingsModel.getCurrentPanelIdentity(context);
 
+    // Get controller API version
+    int apiVersion = controllerService.getApiVersion();
+    AppSettingsModel.setCurrentControllerApiVersion(context, apiVersion);
+    
     try
     {
       Log.i(LOG_CATEGORY, logPrefix + "Getting panel: " + panelName);
