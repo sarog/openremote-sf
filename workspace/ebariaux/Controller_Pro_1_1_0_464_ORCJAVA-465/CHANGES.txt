@@ -1,3 +1,8 @@
+ORCJAVA-465
+===========
+
+  - Update HTTP protocol to extend ReadCommand instead of implementing EventListener (Marcus Redeker)
+
 ORCJAVA-464
 ===========
 
