@@ -1544,6 +1544,10 @@ public class Deployer
           {
             try
             {
+              if (deployer.modelBuilder == null)
+              {
+                log.debug("Controller soft restart caused by modelBuilder being null");
+              }
               deployer.softRestart();
             }
 
