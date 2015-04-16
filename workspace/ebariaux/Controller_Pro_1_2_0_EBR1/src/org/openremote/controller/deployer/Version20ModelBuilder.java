@@ -229,6 +229,8 @@ public class Version20ModelBuilder extends AbstractModelBuilder
       {
         @Override public Boolean run()
         {
+          log.debug("Checking if file " + file.getAbsolutePath() + " exists: " + file.exists()); 
+          
           return file.exists();
         }
       });
@@ -532,15 +534,21 @@ public class Version20ModelBuilder extends AbstractModelBuilder
         // it was there before, now it's gone...
         controllerDefinitionIsPresent = false;
 
+        log.debug("Controller definition considered changed because it was present before and it is not present anymore");
+
         return true;
       }
 
       long lastModified = getControllerXMLTimeStamp();
 
+      log.debug("Controller definition, last known modification time " + lastTimeStamp + ", last modification time " + lastModified);
+      
       if (lastModified > lastTimeStamp)
       {
         lastTimeStamp = lastModified;
 
+        log.debug("Controller definition considered changed because its modification timestamp has changed");
+        
         return true;
       }
     }
@@ -550,6 +558,8 @@ public class Version20ModelBuilder extends AbstractModelBuilder
       if (checkControllerDefinitionExists(config))
       {
         controllerDefinitionIsPresent = true;
+
+        log.debug("Controller definition considered changed because it was not present before and it is now present");
 
         return true;
       }
