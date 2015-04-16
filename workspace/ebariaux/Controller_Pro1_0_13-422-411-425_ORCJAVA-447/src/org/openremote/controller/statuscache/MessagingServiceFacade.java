@@ -66,9 +66,7 @@ public class MessagingServiceFacade extends EventFacade {
          log.warn("Missing credential, messaging service not called");
       }
       
-      // TODO: remove log of password, although it's hashed, still a security risk
-      // but we need it for our server side configuration for now
-      log.debug("Using credential " + username + "/" + password);
+      log.debug("Authenticated as " + username);
       
       ClientResource cr = null;
       
