@@ -332,8 +332,8 @@ public class HttpGetCommandBuilderTest
    */
   @Test public void testPollingInterval()
   {
-     EventListener cmd = (EventListener) getHttpCommand(HTTP_SERVER_URL + "/response/on", "1m");
-     Assert.assertEquals(1*60*1000, ((HttpGetCommand)cmd).getPollingInterval().intValue());
+     ReadCommand cmd = (ReadCommand) getHttpCommand(HTTP_SERVER_URL + "/response/on", "1m");
+     Assert.assertEquals(1*60*1000, ((HttpGetCommand)cmd).getPollingInterval());
   }
 
   /**
@@ -341,7 +341,7 @@ public class HttpGetCommandBuilderTest
    */
   @Test public void tesSwitchOnStatus() throws Exception
   {
-     EventListener cmd = (EventListener) getHttpCommand(HTTP_SERVER_URL + "/response/on", "1m");
+     ReadCommand cmd = (ReadCommand) getHttpCommand(HTTP_SERVER_URL + "/response/on", "1m");
      Sensor s1 = new SwitchSensor("switch", 1, cache, cmd);
      s1.start();
      String returnValue = getSensorValueFromCache(1);
@@ -353,7 +353,7 @@ public class HttpGetCommandBuilderTest
    */
   @Test public void testSwitchOffStatus() throws Exception
   {
-     EventListener cmd = (EventListener) getHttpCommand(HTTP_SERVER_URL + "/response/off", "1m");
+     ReadCommand cmd = (ReadCommand) getHttpCommand(HTTP_SERVER_URL + "/response/off", "2m");
      Sensor s1 = new SwitchSensor("switch", 2, cache, cmd);
      s1.start();
      String returnValue = getSensorValueFromCache(2);
@@ -365,7 +365,7 @@ public class HttpGetCommandBuilderTest
    */
   @Test public void testReadRangeStatus() throws Exception
   {
-     EventListener cmd = (EventListener) getHttpCommand(HTTP_SERVER_URL + "/response/50", "1m");
+     ReadCommand cmd = (ReadCommand) getHttpCommand(HTTP_SERVER_URL + "/response/50", "3m");
      Sensor s2 = new RangeSensor("range1", 3, cache, cmd, 0, 100);
      s2.start();
      String returnValue = getSensorValueFromCache(3);
@@ -377,7 +377,7 @@ public class HttpGetCommandBuilderTest
    */
   @Test public void testReadRangeStatusOutOfLowerBounds() throws Exception
   {
-     EventListener cmd = (EventListener) getHttpCommand(HTTP_SERVER_URL + "/response/10", "1m");
+     ReadCommand cmd = (ReadCommand) getHttpCommand(HTTP_SERVER_URL + "/response/10", "4m");
      Sensor s2 = new RangeSensor("range2", 4, cache, cmd, 50, 100);
      s2.start();
      String returnValue = getSensorValueFromCache(4);
@@ -389,7 +389,7 @@ public class HttpGetCommandBuilderTest
    */
   @Test public void testReadRangeStatusOutOfUpperBounds() throws Exception
   {
-     EventListener cmd = (EventListener) getHttpCommand(HTTP_SERVER_URL + "/response/200", "1m");
+     ReadCommand cmd = (ReadCommand) getHttpCommand(HTTP_SERVER_URL + "/response/200", "10s");
      Sensor s2 = new RangeSensor("range3", 5, cache, cmd, 50, 100);
      s2.start();
      String returnValue = getSensorValueFromCache(5);
@@ -404,7 +404,7 @@ public class HttpGetCommandBuilderTest
   {
     StateSensor.DistinctStates states = new StateSensor.DistinctStates();
     states.addStateMapping("this_is_on", "111");
-    EventListener cmd = (EventListener) getHttpCommand(HTTP_SERVER_URL + "/response/this_is_on", "1m");
+    ReadCommand cmd = (ReadCommand) getHttpCommand(HTTP_SERVER_URL + "/response/this_is_on", "12s");
     Sensor s2 = new StateSensor("state1", 6, cache, cmd, states);
     s2.start();
     String returnValue = getSensorValueFromCache(6);
@@ -419,7 +419,7 @@ public class HttpGetCommandBuilderTest
   {
     StateSensor.DistinctStates states = new StateSensor.DistinctStates();
     states.addStateMapping("this_is_on", "111");
-    EventListener cmd = (EventListener) getHttpCommand(HTTP_SERVER_URL + "/response/no_match", "1m");
+    ReadCommand cmd = (ReadCommand) getHttpCommand(HTTP_SERVER_URL + "/response/no_match", "1m");
     Sensor s2 = new StateSensor("state2", 7, cache, cmd, states);
     s2.start();
     String returnValue = getSensorValueFromCache(7);
@@ -431,7 +431,7 @@ public class HttpGetCommandBuilderTest
    */
   @Test public void testReadLevelStatus() throws Exception
   {
-     EventListener cmd = (EventListener) getHttpCommand(HTTP_SERVER_URL + "/response/20", "1m");
+     ReadCommand cmd = (ReadCommand) getHttpCommand(HTTP_SERVER_URL + "/response/20", "1m");
      Sensor s2 = new LevelSensor("level1", 8, cache, cmd);
      s2.start();
      String returnValue = getSensorValueFromCache(8);
@@ -443,7 +443,7 @@ public class HttpGetCommandBuilderTest
    */
   @Test public void testReadLevelStatusOutOfLowerBounds() throws Exception
   {
-     EventListener cmd = (EventListener) getHttpCommand(HTTP_SERVER_URL + "/response/-10", "1m");
+     ReadCommand cmd = (ReadCommand) getHttpCommand(HTTP_SERVER_URL + "/response/-10", "1m");
      Sensor s2 = new LevelSensor("level2", 9, cache, cmd);
      s2.start();
      String returnValue = getSensorValueFromCache(9);
@@ -455,7 +455,7 @@ public class HttpGetCommandBuilderTest
    */
   @Test public void testReadLevelStatusOutOfUpperBounds() throws Exception
   {
-     EventListener cmd = (EventListener) getHttpCommand(HTTP_SERVER_URL + "/response/120", "1m");
+     ReadCommand cmd = (ReadCommand) getHttpCommand(HTTP_SERVER_URL + "/response/120", "1m");
      Sensor s2 = new LevelSensor("level3", 10, cache, cmd);
      s2.start();
      String returnValue = getSensorValueFromCache(10);

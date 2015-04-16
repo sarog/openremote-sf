@@ -4,6 +4,10 @@ Controller Pro 1.2.0
 New Features:
   - Add ability to reset RRD4J graph time axis (Richard Turner, ORCJAVA-452)
   - Improvements to the Russound protocol implementation (Torbjorn Osterdahl, ORCJAVA-461)
+  - Add possibility of ReadCommand implementations to define
+	  their polling interval (Marcus Redeker, ORCJAVA-464)
+  - Update HTTP protocol to extend ReadCommand instead of
+	  implementing EventListener (Marcus Redeker, ORCJAVA-465)
 
 Controller Pro 1.1.1
 ====================

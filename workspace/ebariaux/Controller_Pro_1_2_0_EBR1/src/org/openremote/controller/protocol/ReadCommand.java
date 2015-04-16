@@ -41,5 +41,15 @@ public abstract class ReadCommand implements EventProducer
    */
   public abstract String read(Sensor sensor);
 
+  /**
+   * Used by {@link Sensor.DeviceReader} to determine the interval used before the next call to read() method.
+   * This method can be overridden by subclasses (protocol specific ReadCommand implementations) to specify individual polling intervals.
+   * The value must be strictly positive, if a negative or zero value is provided, the default is used instead.
+   * 
+   * @return a polling interval in milliseconds (default is 500ms) 
+   */
+  public int getPollingInterval() {
+    return POLLING_INTERVAL;
+  }
 
 }
