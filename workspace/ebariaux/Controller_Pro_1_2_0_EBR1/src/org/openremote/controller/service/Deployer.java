@@ -781,7 +781,7 @@ public class Deployer
    * @return  user's login name or an empty string if login name was not found or there
    *          was an error reading it
    */
-  protected String getUserName()
+  public String getUserName()
   {
     // TODO :
     //        moved temporarily into public Deployer API to satisfy requirements to Beehive
@@ -847,7 +847,7 @@ public class Deployer
    * @throws PasswordManager.PasswordNotFoundException
    *            if the password for the user was not found in the keystore
    */
-  protected String getPassword(String username) throws PasswordException
+  public String getPassword(String username) throws PasswordException
   {
     // TODO :
     //        moved temporarily into public Deployer API to satisfy requirements to Beehive
@@ -2138,4 +2138,3 @@ public class Deployer
   }
 
 }
-
