@@ -67,7 +67,7 @@ public class VeraCommandBuilder implements CommandBuilder {
       if (!StringUtils.isEmpty(address)) {
          this.client = new VeraClient(address);
          try {
-            startVeraClient();
+            //startVeraClient();
          } catch (Exception e) {
             logger.error("Could not start VeraClient: ", e);
          }
