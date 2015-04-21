@@ -138,6 +138,16 @@ public class ORWebView extends ComponentView implements SensoryDelegate
         webView.loadData(composeHtmlErrorPage(errorMessage), "text/html", "utf-8");
       }
     }
+    
+    @SuppressLint("NewApi")
+    @Override
+    public void onPageFinished(WebView view, String url)
+    {
+      webView.setBackgroundColor(0x00000000);
+        if (Build.VERSION.SDK_INT >= 11) {
+          webView.setLayerType(WebView.LAYER_TYPE_SOFTWARE, null);
+        }
+    }
   }
 
   /**
@@ -184,6 +194,7 @@ public class ORWebView extends ComponentView implements SensoryDelegate
       ViewGroup.LayoutParams layoutParams = new ViewGroup.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
       webView.setLayoutParams(layoutParams);
       webView.getSettings().setJavaScriptEnabled(true);
+      webView.getSettings().setDomStorageEnabled(true);
       webView.setInitialScale(100);
 
       webView.setBackgroundColor(0x00000000);
@@ -191,19 +202,6 @@ public class ORWebView extends ComponentView implements SensoryDelegate
         webView.setLayerType(WebView.LAYER_TYPE_SOFTWARE, null);
       }
 
-      webView.setWebViewClient(new WebViewClient()
-      {
-          @SuppressLint("NewApi")
-          @Override
-          public void onPageFinished(WebView view, String url)
-          {
-            webView.setBackgroundColor(0x00000000);
-              if (Build.VERSION.SDK_INT >= 11) {
-                webView.setLayerType(WebView.LAYER_TYPE_SOFTWARE, null);
-              }
-          }
-      });
-      
       URL url = web.getSrc();
       if (url != null)
       {
