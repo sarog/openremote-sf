@@ -130,7 +130,7 @@ public class ImageUtil {
     	    
     	    if (bitmaps == null) {
     	      bitmaps = new ArrayList<Bitmap>();
-    	      bitmapCache.put(pathName, bitmaps);
+    	      bitmapCache.put(pathName.toLowerCase(), bitmaps);
     	    }
     	    bitmaps.add(bitmap);
     	  }
