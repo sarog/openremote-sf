@@ -42,22 +42,23 @@ import org.openremote.controller.statuscache.LifeCycleEvent;
 import org.openremote.controller.statuscache.SwitchFacade;
 import org.openremote.controller.statuscache.LevelFacade;
 import org.openremote.controller.statuscache.RangeFacade;
-import org.drools.KnowledgeBase;
-import org.drools.KnowledgeBaseConfiguration;
-import org.drools.KnowledgeBaseFactory;
-import org.drools.conf.AssertBehaviorOption;
-import org.drools.runtime.StatefulKnowledgeSession;
-import org.drools.runtime.Globals;
-import org.drools.runtime.rule.FactHandle;
-import org.drools.definition.KnowledgePackage;
-import org.drools.builder.KnowledgeBuilder;
-import org.drools.builder.KnowledgeBuilderFactory;
-import org.drools.builder.DecisionTableConfiguration;
-import org.drools.builder.DecisionTableInputType;
-import org.drools.builder.ResourceType;
-import org.drools.builder.KnowledgeBuilderError;
-import org.drools.io.Resource;
-import org.drools.io.ResourceFactory;
+
+import org.kie.internal.KnowledgeBase;
+import org.kie.internal.KnowledgeBaseFactory;
+import org.kie.internal.definition.KnowledgePackage;
+import org.kie.internal.runtime.StatefulKnowledgeSession;
+import org.kie.internal.builder.KnowledgeBuilder;
+import org.kie.internal.builder.KnowledgeBuilderFactory;
+import org.kie.internal.builder.DecisionTableConfiguration;
+import org.kie.internal.builder.DecisionTableInputType;
+import org.kie.internal.builder.KnowledgeBuilderError;
+import org.kie.internal.io.ResourceFactory;
+import org.kie.api.KieBaseConfiguration;
+import org.kie.api.io.ResourceType;
+import org.kie.api.io.Resource;
+import org.kie.api.conf.EqualityBehaviorOption;
+import org.kie.api.runtime.rule.FactHandle;
+
 
 /**
  * TODO
@@ -245,8 +246,8 @@ public class RuleEngine extends EventProcessor
     // Note, knowledgebuilder is not thread-safe...
 
 
-    KnowledgeBaseConfiguration kbConfiguration = KnowledgeBaseFactory.newKnowledgeBaseConfiguration();
-    kbConfiguration.setOption(AssertBehaviorOption.EQUALITY);
+    KieBaseConfiguration kbConfiguration = KnowledgeBaseFactory.newKnowledgeBaseConfiguration();
+    kbConfiguration.setOption(EqualityBehaviorOption.EQUALITY);
 
     kb = KnowledgeBaseFactory.newKnowledgeBase(kbConfiguration);
 
