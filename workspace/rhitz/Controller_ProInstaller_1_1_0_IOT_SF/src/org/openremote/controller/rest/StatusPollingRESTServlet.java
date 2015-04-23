@@ -24,8 +24,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.openremote.controller.Constants;
@@ -58,13 +56,16 @@ public class StatusPollingRESTServlet extends RESTAPI {
    
    @Override
    protected void handleRequest(HttpServletRequest request, HttpServletResponse response) {
+      if (request.getPathInfo() == null || request.getPathInfo().equals("/")) {
+          sendResponse(request, response, ControlCommandException.INVALID_POLLING_URL, "Invalid polling url:" + request.getRequestURL());
+          return;
+      }
 
-      String url = request.getRequestURL().toString();
-      String regexp = "rest\\/polling\\/(.*?)\\/(.*)";
+      String regexp = "\\/(.*?)\\/(.*)";
       Pattern pattern = Pattern.compile(regexp);
-      Matcher matcher = pattern.matcher(url);
-      String unParsedSensorIDs = null;
-      
+      Matcher matcher = pattern.matcher(request.getPathInfo());
+      String unParsedSensorIDs;
+
       if (matcher.find()) {
          String deviceID = matcher.group(1);
          if (deviceID == null || "".equals(deviceID)) {
@@ -90,7 +91,7 @@ public class StatusPollingRESTServlet extends RESTAPI {
             sendResponse(request, response, e.getErrorCode(), e.getMessage());
          }
       } else {
-         sendResponse(request, response, ControlCommandException.INVALID_POLLING_URL, "Invalid polling url:"+url);
+          sendResponse(request, response, ControlCommandException.INVALID_POLLING_URL, "Invalid polling url:" + request.getRequestURL());
       }
    }
    
