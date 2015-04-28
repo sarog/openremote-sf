@@ -8,6 +8,7 @@ New Features:
 	  their polling interval (Marcus Redeker, ORCJAVA-464)
   - Update HTTP protocol to extend ReadCommand instead of
 	  implementing EventListener (Marcus Redeker, ORCJAVA-465)
+  - More lenient CORS headers (Christian Bauer, ORCJAVA-472)
 
 Controller Pro 1.1.0
 ====================
