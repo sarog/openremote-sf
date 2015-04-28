@@ -86,7 +86,7 @@ public abstract class RESTAPI extends HttpServlet
      // Add HTML5 CORS headers
      response.addHeader("Access-Control-Allow-Origin", "*");
      response.addHeader("Access-Control-Allow-Methods", "GET, POST");
-     response.addHeader("Access-Control-Allow-Headers", "origin, authorization, accept");
+     response.addHeader("Access-Control-Allow-Headers", "origin, authorization, accept, X-HTTP-Method-Override");
      response.addHeader("Access-Control-Max-Age", "99999");
      
      if (Constants.MIME_APPLICATION_JSON.equalsIgnoreCase(acceptHeader))
