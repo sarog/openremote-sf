@@ -47,7 +47,8 @@
             <value>classpath:amx_ni.properties</value>
             <value>classpath:denonAVRSerial.properties</value>
             <value>classpath:enocean.properties</value>
-          </list>
+            <value>classpath:zwave.properties</value>
+        </list>
       </property>
   </bean>
 
@@ -110,6 +111,13 @@
   </bean>
   
   <bean id="lutronHomeWorksGateway" class="org.openremote.controller.protocol.lutron.LutronHomeWorksGateway"/>
+
+  <bean id="zwaveConfig" class="org.openremote.controller.ZWaveConfiguration">
+    <property name="comPort" value="${zwave.comPort}" />
+    <property name="commLayer" value="${zwave.commLayer}" />
+    <property name="padHost" value="${zwave.pad.host}" />
+    <property name="padPort" value="${zwave.pad.port}" />
+  </bean>
 
   <bean id="marantzAVRConfig" class="org.openremote.controller.MarantzAVRConfig">
     <property name="address" value="${marantz_avr.address}" />
