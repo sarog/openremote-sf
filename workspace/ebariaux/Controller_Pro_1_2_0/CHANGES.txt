@@ -2,6 +2,8 @@ Controller Pro 1.2.0
 ====================
 
 New Features:
+  - Implement Z-Wave command classes that are needed for configuring
+	  Z-Wave nodes (Rainer Hitz, ORCJAVA-440)
   - Add ability to reset RRD4J graph time axis (Richard Turner, ORCJAVA-452)
   - Improvements to the Russound protocol implementation (Torbjorn Osterdahl, ORCJAVA-461)
   - Add possibility of ReadCommand implementations to define
