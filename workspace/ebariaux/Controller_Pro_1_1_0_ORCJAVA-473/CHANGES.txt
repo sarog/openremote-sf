@@ -1,3 +1,8 @@
+ORCJAVA-473
+===========
+
+  - Report when EnOcean rocker switch is released
+
 Controller Pro 1.1.0
 ====================
 
