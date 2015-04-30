@@ -26,9 +26,13 @@ import org.openremote.controller.command.ExecutableCommand;
 import org.openremote.controller.model.sensor.Sensor;
 import org.openremote.controller.protocol.EventListener;
 import org.openremote.controller.utils.Logger;
-import org.owfs.jowfsclient.Enums.*;
-import org.owfs.jowfsclient.OwfsClient;
-import org.owfs.jowfsclient.OwfsClientFactory;
+import org.owfs.jowfsclient.Enums.OwBusReturn;
+import org.owfs.jowfsclient.Enums.OwDeviceDisplayFormat;
+import org.owfs.jowfsclient.Enums.OwPersistence;
+import org.owfs.jowfsclient.Enums.OwTemperatureScale;
+import org.owfs.jowfsclient.OwfsConnection;
+import org.owfs.jowfsclient.OwfsConnectionConfig;
+import org.owfs.jowfsclient.OwfsConnectionFactory;
 import org.owfs.jowfsclient.OwfsException;
 
 /**
@@ -110,27 +114,30 @@ public class OneWireCommand implements ExecutableCommand, EventListener, Runnabl
   private String read()
   {
     logger.debug("1-Wire sensor " + deviceAddress + "/" + filename + " value is going to be read.");
-    OwfsClient client = OwfsClientFactory.newOwfsClient(hostname, port, true);
+    
+    OwfsConnectionConfig config = new OwfsConnectionConfig(hostname, port);
+    config.setDeviceDisplayFormat(OwDeviceDisplayFormat.F_DOT_I);
+    config.setBusReturn(OwBusReturn.ON);
+    config.setPersistence(OwPersistence.ON);
 
-    client.setDeviceDisplayFormat(OwDeviceDisplayFormat.OWNET_DDF_F_DOT_I);
-    client.setBusReturn(OwBusReturn.OWNET_BUSRETURN_ON);
-    client.setPersistence(OwPersistence.OWNET_PERSISTENCE_ON);
     switch (tempScale) {
       case Celsius:
-        client.setTemperatureScale(OwTemperatureScale.OWNET_TS_CELSIUS);  
+         config.setTemperatureScale(OwTemperatureScale.CELSIUS);
         break;
       case Fahrenheit:
-         client.setTemperatureScale(OwTemperatureScale.OWNET_TS_FAHRENHEIT);  
+         config.setTemperatureScale(OwTemperatureScale.FAHRENHEIT);
          break;
       case Kelvin:
-         client.setTemperatureScale(OwTemperatureScale.OWNET_TS_KELVIN);  
+         config.setTemperatureScale(OwTemperatureScale.KELVIN);
          break;
       case Rankine:
-         client.setTemperatureScale(OwTemperatureScale.OWNET_TS_RANKINE);  
+         config.setTemperatureScale(OwTemperatureScale.RANKINE);
          break;
    }
     
     String value = null;
+
+    OwfsConnection client = OwfsConnectionFactory.newOwfsClient(config);
 
     logger.debug("Client created, before call");
 
@@ -167,11 +174,12 @@ public class OneWireCommand implements ExecutableCommand, EventListener, Runnabl
 
     logger.debug("1-Wire sensor " + deviceAddress + "/" + filename + " value is going to be changed to: '" + data);
 
-    OwfsClient client = OwfsClientFactory.newOwfsClient(hostname, port, true);
+    OwfsConnectionConfig config = new OwfsConnectionConfig(hostname, port);
+    config.setDeviceDisplayFormat(OwDeviceDisplayFormat.F_DOT_I);
+    config.setBusReturn(OwBusReturn.ON);
+    config.setPersistence(OwPersistence.ON);
+    OwfsConnection client = OwfsConnectionFactory.newOwfsClient(config);
 
-    client.setDeviceDisplayFormat(OwDeviceDisplayFormat.OWNET_DDF_F_DOT_I);
-    client.setBusReturn(OwBusReturn.OWNET_BUSRETURN_ON);
-    client.setPersistence(OwPersistence.OWNET_PERSISTENCE_ON);
     try
     {
       client.write(deviceAddress+"/"+filename, data);
