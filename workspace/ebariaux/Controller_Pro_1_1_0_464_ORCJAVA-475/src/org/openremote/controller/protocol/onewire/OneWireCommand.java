@@ -46,8 +46,7 @@ import org.owfs.jowfsclient.OwfsException;
  * deviceAddress   address of the 1-wire device, such as /1F.E9E803000000/main/28.25E9E3010000
  * filename        or sensor attribute - is filename in owfs that holds values, such as
  *                 "temperature", "temperature9", "humidity" or similar
- * pollingIntercal time interval in seconds between two calls to owserver; any request between
- *                 these two calls will use cached value. In fact, it is cache timeout value.
+ * pollingIntercal time interval in seconds between two calls to owserver.
  *
  * @author <a href="mailto:jmisura@gmail.com">Jaroslav Misura</a>
  * @author Marcus
@@ -98,12 +97,8 @@ public class OneWireCommand extends ReadCommand implements ExecutableCommand
   }
 
   /**
-   * Access value from 1-wire sensor. This method uses caching to avoid overloading 1-wire network with
-   * too many accesses. After value is read it is stored together with timestamp. This value is returned in all
-   * succeeding calls of read() until current time > timestamp + refresh timeout. If read fails (read from 1-wire
-   * returns null or exception is thrown by jowfs library) last available value is returned. In this case, timestamp
-   * is not updated, which means that next read() call will retry to get value from 1-wire.
-   * <p>
+   * Access value from 1-wire sensor.
+   *
    * Values from 1-wire sensors are just passed as string the way they are into sensor.update(). The sensor
    * has to map the result to it's internal data type.
    *
