@@ -24,7 +24,7 @@ import java.io.IOException;
 
 import org.openremote.controller.command.ExecutableCommand;
 import org.openremote.controller.model.sensor.Sensor;
-import org.openremote.controller.protocol.EventListener;
+import org.openremote.controller.protocol.ReadCommand;
 import org.openremote.controller.utils.Logger;
 import org.owfs.jowfsclient.Enums.OwBusReturn;
 import org.owfs.jowfsclient.Enums.OwDeviceDisplayFormat;
@@ -46,13 +46,14 @@ import org.owfs.jowfsclient.OwfsException;
  * deviceAddress   address of the 1-wire device, such as /1F.E9E803000000/main/28.25E9E3010000
  * filename        or sensor attribute - is filename in owfs that holds values, such as
  *                 "temperature", "temperature9", "humidity" or similar
- * refreshTime     time interval in seconds between two calls to owserver; any request between
+ * pollingIntercal time interval in seconds between two calls to owserver; any request between
  *                 these two calls will use cached value. In fact, it is cache timeout value.
  *
  * @author <a href="mailto:jmisura@gmail.com">Jaroslav Misura</a>
  * @author Marcus
+ * @author <a href="matilto:eric@openremote.org>Eric Bariaux</a>
  */
-public class OneWireCommand implements ExecutableCommand, EventListener, Runnable
+public class OneWireCommand extends ReadCommand implements ExecutableCommand
 {
 
   // Class Members --------------------------------------------------------------------------------
@@ -69,15 +70,6 @@ public class OneWireCommand implements ExecutableCommand, EventListener, Runnabl
   private int pollingInterval;
   private TemperatureScale tempScale;
   private String data;
-
-  /** The thread that is used to peridically update the sensor */
-  private Thread pollingThread;
-  
-  /** The sensor which is updated */
-  private Sensor sensor;
-  
-  /** Boolean to indicate if polling thread should run */
-  boolean doPoll = false;
 
   // Constructors ---------------------------------------------------------------------------------
 
@@ -97,7 +89,13 @@ public class OneWireCommand implements ExecutableCommand, EventListener, Runnabl
   }
 
 
-  // Implements StatusCommand ---------------------------------------------------------------------
+  // Implements ReadCommand ---------------------------------------------------------------------
+
+  
+  @Override
+  public int getPollingInterval() {
+    return pollingInterval;
+  }
 
   /**
    * Access value from 1-wire sensor. This method uses caching to avoid overloading 1-wire network with
@@ -111,7 +109,8 @@ public class OneWireCommand implements ExecutableCommand, EventListener, Runnabl
    *
    * @return string value independent from sensor type
    */
-  private String read()
+  @Override
+  public String read(Sensor sensor)
   {
     logger.debug("1-Wire sensor " + deviceAddress + "/" + filename + " value is going to be read.");
     
@@ -133,7 +132,7 @@ public class OneWireCommand implements ExecutableCommand, EventListener, Runnabl
       case Rankine:
          config.setTemperatureScale(OwTemperatureScale.RANKINE);
          break;
-   }
+    }
     
     String value = null;
 
@@ -193,43 +192,5 @@ public class OneWireCommand implements ExecutableCommand, EventListener, Runnabl
       logger.error("OneWire IO error, unable to write to OWSERVER.", e);
     }
   }
-
-
-  @Override
-  public void setSensor(Sensor sensor)
-  {
-    logger.debug("*** setSensor called as part of EventListener init *** sensor is: " + sensor);
-    this.sensor = sensor;
-    this.doPoll = true;
-    pollingThread = new Thread(this);
-    pollingThread.setName("Polling thread for sensor: " + sensor.getName());
-    pollingThread.start();
-  }
-
-
-  @Override
-  public void stop(Sensor sensor)
-  {
-    this.doPoll = false;
-  }
-
-
-  @Override
-  public void run()
-  {
-    logger.debug("Sensor thread started for sensor: " + sensor);
-    while (doPoll) {
-       String readValue = this.read();
-       sensor.update(readValue);
-       try {
-          Thread.sleep(pollingInterval); // We wait for the given pollingInterval before requesting URL again
-       } catch (InterruptedException e) {
-          doPoll = false;
-          pollingThread.interrupt();
-       }
-    }
-    logger.debug("*** Out of run method: " + sensor);
-  }
-
 
 }
