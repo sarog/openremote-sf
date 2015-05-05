@@ -11,6 +11,7 @@ New Features:
   - Update HTTP protocol to extend ReadCommand instead of
 	  implementing EventListener (Marcus Redeker, ORCJAVA-465)
   - More lenient CORS headers (Christian Bauer, ORCJAVA-472)
+  - Report when EnOcean rocker switch is released (ORCJAVA-473)
 
 Controller Pro 1.1.1
 ====================
