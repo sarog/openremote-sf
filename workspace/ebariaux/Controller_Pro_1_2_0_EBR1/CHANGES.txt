@@ -13,6 +13,7 @@ New Features:
   - More lenient CORS headers (Christian Bauer, ORCJAVA-472)
   - Report when EnOcean rocker switch is released (ORCJAVA-473)
   - Improve 1-wire implementation (Eric Bariaux, ORCJAVA-475)
+  - Update version of Restlet library used (ORCJAVA-476)
 
 Controller Pro 1.1.1
 ====================
