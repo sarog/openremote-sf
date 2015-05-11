@@ -1,3 +1,8 @@
+ORCJAVA-476
+===========
+
+  - Update version of Restlet library used
+
 Controller Pro 1.1.0
 ====================
 
