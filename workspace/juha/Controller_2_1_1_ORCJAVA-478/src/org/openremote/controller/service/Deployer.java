@@ -256,8 +256,9 @@ public class Deployer
   private DiscoveredDevicesAnnouncement discoveredDevicesAnnouncement;
   
   /**
-   * Reference to the service which checks Beehive regularly for any new actions that this controller should perform<br>
-   * For example unlink from Beehive, download new design, start proxy, update controller, .... 
+   * Reference to the service which checks Beehive regularly for any new actions that this
+   * controller should perform<br> For example unlink from Beehive, download new design,
+   * start proxy, update controller, ....
    */
   private BeehiveCommandCheckService beehiveCommandCheckService;
   
@@ -284,7 +285,8 @@ public class Deployer
    *                                      been configured for this deployer
    */
   public Deployer(String serviceName, StatusCache deviceStateCache,
-                  ControllerConfiguration controllerConfig, BeehiveCommandCheckService beehiveCommandCheckService,
+                  ControllerConfiguration controllerConfig,
+                  BeehiveCommandCheckService beehiveCommandCheckService,
                   Map<String, ModelBuilder> builders) throws InitializationException
   {
     if (deviceStateCache == null || controllerConfig == null)
@@ -710,13 +712,15 @@ public class Deployer
 
 
   /**
-   * Method is called by the commandBuilder of a protocol if the commandBuilders discovers devices for his
-   * protocol that should be announced to Beehive.
+   * Method is called by the commandBuilder of a protocol if the commandBuilders discovers devices
+   * for his protocol that should be announced to Beehive.
    * 
    * @param list - the list of devices to announce
    */
-  public void announceDiscoveredDevices(List<DiscoveredDeviceDTO> list) {
-     synchronized (discoveredDevicesToAnnounce) {
+  public void announceDiscoveredDevices(List<DiscoveredDeviceDTO> list)
+  {
+     synchronized (discoveredDevicesToAnnounce)
+     {
         discoveredDevicesToAnnounce.addAll(list);
      }
   }
