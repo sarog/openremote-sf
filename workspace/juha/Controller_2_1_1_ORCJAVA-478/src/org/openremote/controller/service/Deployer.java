@@ -32,6 +32,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
@@ -39,8 +40,10 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
+
 import java.security.AccessController;
 import java.security.PrivilegedAction;
+
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.zip.ZipEntry;
@@ -48,8 +51,20 @@ import java.util.zip.ZipInputStream;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.FileUtils;
+
 import org.jdom.Attribute;
 import org.jdom.Element;
+
+import org.restlet.data.ChallengeScheme;
+import org.restlet.ext.json.JsonRepresentation;
+import org.restlet.representation.Representation;
+import org.restlet.resource.ClientResource;
+
+import org.springframework.security.providers.encoding.Md5PasswordEncoder;
+
+import flexjson.JSONDeserializer;
+import flexjson.JSONSerializer;
+
 import org.openremote.controller.Constants;
 import org.openremote.controller.ControllerConfiguration;
 import org.openremote.controller.OpenRemoteRuntime;
@@ -66,21 +81,21 @@ import org.openremote.controller.model.sensor.Sensor;
 import org.openremote.controller.statuscache.StatusCache;
 import org.openremote.controller.utils.Logger;
 import org.openremote.controller.utils.NetworkUtil;
-import org.openremote.devicediscovery.domain.DiscoveredDeviceAttrDTO;
-import org.openremote.devicediscovery.domain.DiscoveredDeviceDTO;
+
 import org.openremote.model.DeviceDiscovery;
+
 import org.openremote.rest.GenericResourceResultWithErrorMessage;
+
 import org.openremote.security.KeyManager;
 import org.openremote.security.PasswordManager;
-import org.openremote.useraccount.domain.ControllerDTO;
-import org.restlet.data.ChallengeScheme;
-import org.restlet.ext.json.JsonRepresentation;
-import org.restlet.representation.Representation;
-import org.restlet.resource.ClientResource;
-import org.springframework.security.providers.encoding.Md5PasswordEncoder;
 
-import flexjson.JSONDeserializer;
-import flexjson.JSONSerializer;
+import org.openremote.useraccount.domain.ControllerDTO;
+
+
+// TODO : use is deprecated, to be removed
+import org.openremote.devicediscovery.domain.DiscoveredDeviceAttrDTO;
+import org.openremote.devicediscovery.domain.DiscoveredDeviceDTO;
+
 
 /**
  * Deployer service centralizes access to the controller's runtime state information. It maintains
