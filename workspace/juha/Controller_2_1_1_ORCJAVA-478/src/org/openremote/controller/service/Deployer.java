@@ -41,11 +41,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -244,8 +240,8 @@ public class Deployer
   /**
    * This list holds all discovered devices which are not announced to beehive yet 
    */
-  protected Set<DiscoveredDeviceDTO> discoveredDevicesToAnnounce =
-      new CopyOnWriteArraySet<DiscoveredDeviceDTO>();
+  protected Set<DeviceDiscovery> discoveredDevicesToAnnounce =
+      new CopyOnWriteArraySet<DeviceDiscovery>();
 
   /**
    * Reference to the thread handling the controller announcement notifications
@@ -717,11 +713,38 @@ public class Deployer
    * Method is called by the commandBuilder of a protocol if the commandBuilders discovers devices
    * for his protocol that should be announced to Beehive.
    * 
-   * @param list - the list of devices to announce
+   * @param devices
+   *            the list of devices to announce
+   *
+   * @deprecated
+   *            Use {@link #announceDeviceDiscovery(java.util.Set)} instead
    */
-  public void announceDiscoveredDevices(List<DiscoveredDeviceDTO> list)
+  @Deprecated public void announceDiscoveredDevices(List<DiscoveredDeviceDTO> devices)
   {
-    discoveredDevicesToAnnounce.addAll(list);
+    Set<DeviceDiscovery> discoveredDevices = new HashSet<DeviceDiscovery>(devices.size());
+
+    for (DiscoveredDeviceDTO device : devices)
+    {
+      String name = device.getName();
+      String protocol = device.getProtocol();
+      String model = device.getModel();
+
+      String type = device.getType();
+
+      List<DiscoveredDeviceAttrDTO> attributes = device.getDeviceAttrs();
+      Map<String, String> attrs = new HashMap<String, String>(attributes.size());
+
+      for (DiscoveredDeviceAttrDTO attr : attributes)
+      {
+        attrs.put(attr.getName(), attr.getValue());
+      }
+
+      DeviceDiscovery discovery = new DeviceDiscovery(name, protocol, model, type, attrs);
+
+      discoveredDevices.add(discovery);
+    }
+
+    discoveredDevicesToAnnounce.addAll(discoveredDevices);
   }
 
   //
@@ -738,49 +761,9 @@ public class Deployer
   //
   public void announceDeviceDiscovery(Set<DeviceDiscovery> discoveredDevices)
   {
-    // This is a helper class that translates the new discovery model to older version
-    class ModelMigration extends DeviceDiscovery
-    {
-      ModelMigration(DeviceDiscovery dd)
-      {
-        super(dd);
-      }
-
-      DiscoveredDeviceDTO createDTO()
-      {
-        DiscoveredDeviceDTO dto = new DiscoveredDeviceDTO();
-        dto.setModel(super.model);
-        dto.setName(super.deviceName);
-        dto.setProtocol(super.protocol);
-        dto.setType(super.type);
-        dto.setUsed(false);
-
-        List<DiscoveredDeviceAttrDTO> attributeList = new ArrayList<DiscoveredDeviceAttrDTO>(1);
-
-        for (String key : super.deviceAttributes.keySet())
-        {
-          DiscoveredDeviceAttrDTO attr = new DiscoveredDeviceAttrDTO();
-          attr.setName(key);
-          attr.setValue(deviceAttributes.get(key));
-
-          attributeList.add(attr);
-        }
-
-        dto.setDeviceAttrs(attributeList);
-
-        return dto;
-      }
-    }
-
-    List<DiscoveredDeviceDTO> list = new ArrayList<DiscoveredDeviceDTO>(3);
-
-    for (DeviceDiscovery dd : discoveredDevices)
-    {
-      list.add(new ModelMigration(dd).createDTO());
-    }
-
-    announceDiscoveredDevices(list);
+    discoveredDevicesToAnnounce.addAll(discoveredDevices);
   }
+
 
   /**
    * Method is called by the ConfigManageController which is invoked by index.html
