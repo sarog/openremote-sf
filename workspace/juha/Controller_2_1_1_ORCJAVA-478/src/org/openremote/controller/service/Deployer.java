@@ -46,6 +46,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -243,7 +244,8 @@ public class Deployer
   /**
    * This list holds all discovered devices which are not announced to beehive yet 
    */
-  protected List<DiscoveredDeviceDTO> discoveredDevicesToAnnounce = new ArrayList<DiscoveredDeviceDTO>();
+  protected Set<DiscoveredDeviceDTO> discoveredDevicesToAnnounce =
+      new CopyOnWriteArraySet<DiscoveredDeviceDTO>();
 
   /**
    * Reference to the thread handling the controller announcement notifications
@@ -719,10 +721,7 @@ public class Deployer
    */
   public void announceDiscoveredDevices(List<DiscoveredDeviceDTO> list)
   {
-     synchronized (discoveredDevicesToAnnounce)
-     {
-        discoveredDevicesToAnnounce.addAll(list);
-     }
+    discoveredDevicesToAnnounce.addAll(list);
   }
 
   //
