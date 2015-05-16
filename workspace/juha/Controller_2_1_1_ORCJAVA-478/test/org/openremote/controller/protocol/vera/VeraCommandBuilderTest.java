@@ -23,6 +23,7 @@ import java.net.URI;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -53,6 +54,7 @@ import org.openremote.controller.service.Deployer;
 import org.openremote.controller.statuscache.StatusCache;
 import org.openremote.controller.suite.AllTests;
 import org.openremote.devicediscovery.domain.DiscoveredDeviceDTO;
+import org.openremote.model.DeviceDiscovery;
 
 /**
  * Tests the implementation of Vera protocol class.
@@ -60,6 +62,7 @@ import org.openremote.devicediscovery.domain.DiscoveredDeviceDTO;
  * Also the device discovery is tested.
  * 
  * @author <a href="mailto:marcus@openremote.org">Marcus Redeker</a>
+ * @author Juha Lindfors
  * 
  */
 public class VeraCommandBuilderTest {
@@ -105,16 +108,16 @@ public class VeraCommandBuilderTest {
    }
 
 
-   // Tests ----------------------------------------------------------------------------
+  // Tests ----------------------------------------------------------------------------
 
-   /**
-    * Tests if the command builder gave the detected devices to the deployer for device announcement 
-    */
-   @Test
-   public void testDeviceDiscovery() throws MalformedURLException {
-      List<DiscoveredDeviceDTO> devices = ((TestDeployer)deployer).getDiscoveredDevicesToAnnounce();
-      Assert.assertEquals(4, devices.size());
-   }
+  /**
+   * Tests if the command builder gave the detected devices to the deployer for device announcement
+   */
+  @Test public void testDeviceDiscovery() throws MalformedURLException
+  {
+    Set<DeviceDiscovery> devices = ((TestDeployer)deployer).getDiscoveredDevicesToAnnounce();
+    Assert.assertEquals(4, devices.size());
+  }
    
    /**
     * Tests turn dimmer on 
