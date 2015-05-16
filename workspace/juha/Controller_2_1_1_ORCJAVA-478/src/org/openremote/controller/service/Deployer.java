@@ -253,7 +253,9 @@ public class Deployer
   private ControllerDTO controllerDTO;
 
   /**
-   * This list holds all discovered devices which are not announced to beehive yet 
+   * This list holds all discovered devices which are not announced to beehive yet
+   *
+   * TODO : the only reason this is not private is to satisfy a unit test
    */
   protected Set<DeviceDiscovery> discoveredDevicesToAnnounce =
       new CopyOnWriteArraySet<DeviceDiscovery>();
