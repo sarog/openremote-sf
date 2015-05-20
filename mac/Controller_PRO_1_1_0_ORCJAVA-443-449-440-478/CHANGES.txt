@@ -1,3 +1,12 @@
+ORCJAVA-478
+===========
+
+ - Update Device Discovery to Object Model API
+   (Juha Lindfors)
+
+   Work-In-Progress
+
+
 ORCJAVA-440
 ===========
 
