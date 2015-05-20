@@ -1,6 +1,7 @@
 /*
  * OpenRemote, the Home of the Digital Home.
  * Copyright 2008-2014, OpenRemote Inc.
+ * Copyright 2008-2015, Juha Lindfors. All rights reserved.
  *
  * See the contributors.txt file in the distribution for a
  * full listing of individual contributors.
@@ -31,6 +32,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
@@ -38,19 +40,31 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
+
 import java.security.AccessController;
 import java.security.PrivilegedAction;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+
+import java.util.*;
+import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.FileUtils;
+
 import org.jdom.Attribute;
 import org.jdom.Element;
+
+import org.restlet.data.ChallengeScheme;
+import org.restlet.ext.json.JsonRepresentation;
+import org.restlet.representation.Representation;
+import org.restlet.resource.ClientResource;
+
+import org.springframework.security.providers.encoding.Md5PasswordEncoder;
+
+import flexjson.JSONDeserializer;
+import flexjson.JSONSerializer;
+
 import org.openremote.controller.Constants;
 import org.openremote.controller.ControllerConfiguration;
 import org.openremote.controller.OpenRemoteRuntime;
@@ -67,22 +81,25 @@ import org.openremote.controller.model.XMLMapping;
 import org.openremote.controller.model.sensor.Sensor;
 import org.openremote.controller.statuscache.StatusCache;
 import org.openremote.controller.utils.Logger;
-import org.openremote.devicediscovery.domain.DiscoveredDeviceDTO;
+
+import org.openremote.model.DeviceDiscovery;
+
 import org.openremote.rest.GenericResourceResultWithErrorMessage;
+
 import org.openremote.security.KeyManager;
 import org.openremote.security.PasswordManager;
+
 import org.openremote.useraccount.domain.ControllerDTO;
+
 import org.restlet.Client;
 import org.restlet.Context;
-import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Protocol;
-import org.restlet.ext.json.JsonRepresentation;
-import org.restlet.representation.Representation;
-import org.restlet.resource.ClientResource;
-import org.springframework.security.providers.encoding.Md5PasswordEncoder;
 
-import flexjson.JSONDeserializer;
-import flexjson.JSONSerializer;
+
+// TODO : use is deprecated, to be removed
+import org.openremote.devicediscovery.domain.DiscoveredDeviceAttrDTO;
+import org.openremote.devicediscovery.domain.DiscoveredDeviceDTO;
+
 
 /**
  * Deployer service centralizes access to the controller's runtime state information. It maintains
@@ -106,7 +123,7 @@ import flexjson.JSONSerializer;
  * @see #softRestart
  * @see #getSensor
  *
- * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
+ * @author Juha Lindfors
  */
 public class Deployer
 {
@@ -241,9 +258,12 @@ public class Deployer
   private ControllerDTO controllerDTO;
 
   /**
-   * This list holds all discovered devices which are not announced to beehive yet 
+   * This list holds all discovered devices which are not announced to beehive yet
+   *
+   * TODO : the only reason this is not private is to satisfy a unit test
    */
-  private List<DiscoveredDeviceDTO> discoveredDevicesToAnnounce = new ArrayList<DiscoveredDeviceDTO>();
+  protected Set<DeviceDiscovery> discoveredDevicesToAnnounce =
+      new CopyOnWriteArraySet<DeviceDiscovery>();
 
   /**
    * Reference to the thread handling the controller announcement notifications
@@ -256,8 +276,9 @@ public class Deployer
   private DiscoveredDevicesAnnouncement discoveredDevicesAnnouncement;
   
   /**
-   * Reference to the service which checks Beehive regularly for any new actions that this controller should perform<br>
-   * For example unlink from Beehive, download new design, start proxy, update controller, ....
+   * Reference to the service which checks Beehive regularly for any new actions that this
+   * controller should perform<br> For example unlink from Beehive, download new design,
+   * start proxy, update controller, ....
    */
   private BeehiveCommandCheckService beehiveCommandCheckService;
 
@@ -285,6 +306,7 @@ public class Deployer
    */
   public Deployer(String serviceName, StatusCache deviceStateCache,
                   ControllerConfiguration controllerConfig,
+                  BeehiveCommandCheckService beehiveCommandCheckService,
                   Map<String, ModelBuilder> builders) throws InitializationException
   {
     if (deviceStateCache == null || controllerConfig == null)
@@ -705,16 +727,60 @@ public class Deployer
 
 
   /**
-   * Method is called by the commandBuilder of a protocol if the commandBuilders discovers devices for his
-   * protocol that should be announced to Beehive.
+   * Method is called by the commandBuilder of a protocol if the commandBuilders discovers devices
+   * for his protocol that should be announced to Beehive.
    * 
-   * @param list - the list of devices to announce
+   * @param devices
+   *            the list of devices to announce
+   *
+   * @deprecated
+   *            Use {@link #announceDeviceDiscovery(java.util.Set)} instead
    */
-  public void announceDiscoveredDevices(List<DiscoveredDeviceDTO> list) {
-     synchronized (discoveredDevicesToAnnounce) {
-        discoveredDevicesToAnnounce.addAll(list);
-     }
+  @Deprecated public void announceDiscoveredDevices(List<DiscoveredDeviceDTO> devices)
+  {
+    Set<DeviceDiscovery> discoveredDevices = new HashSet<DeviceDiscovery>(devices.size());
+
+    for (DiscoveredDeviceDTO device : devices)
+    {
+      String name = device.getName();
+      String protocol = device.getProtocol();
+      String model = device.getModel();
+
+      String type = device.getType();
+
+      List<DiscoveredDeviceAttrDTO> attributes = device.getDeviceAttrs();
+      Map<String, String> attrs = new HashMap<String, String>(attributes.size());
+
+      for (DiscoveredDeviceAttrDTO attr : attributes)
+      {
+        attrs.put(attr.getName(), attr.getValue());
+      }
+
+      DeviceDiscovery discovery = new DeviceDiscovery(name, protocol, model, type, attrs);
+
+      discoveredDevices.add(discovery);
+    }
+
+    discoveredDevicesToAnnounce.addAll(discoveredDevices);
   }
+
+  //
+  // TODO :
+  //
+  //   Alternative API for device discoveries. This is a temporary utility method that accepts
+  //   a new version of the DeviceDiscovery instance. Internally it is still converted to the
+  //   previous model instance.
+  //
+  //   Slight differences in API design:
+  //     - Use of sets instead of lists (order is not relevant)
+  //     - New DeviceDiscovery does not use an additional tuple class for attributes but
+  //       an internal map instead
+  //
+  public void announceDeviceDiscovery(Set<DeviceDiscovery> discoveredDevices)
+  {
+    discoveredDevicesToAnnounce.addAll(discoveredDevices);
+  }
+
 
   /**
    * Method is called by the ConfigManageController which is invoked by index.html
@@ -2007,9 +2073,8 @@ public class Deployer
 
   
   /**
-   * Handles the announcement of discovered devices.<br>
-   * When discovered devices are available and the controller is linked to an account,<br>
-   * those devices are sent to Beehive.
+   * Handles the announcement of discovered devices. When discovered devices are available and
+   * the controller is linked to an account, those devices are sent to Beehive.
    */
   private class DiscoveredDevicesAnnouncement extends Thread
   {
