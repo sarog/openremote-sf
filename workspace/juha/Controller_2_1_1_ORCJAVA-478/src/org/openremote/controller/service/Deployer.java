@@ -1916,9 +1916,8 @@ public class Deployer
 
   
   /**
-   * Handles the announcement of discovered devices.<br>
-   * When discovered devices are available and the controller is linked to an account,<br>
-   * those devices are sent to Beehive.
+   * Handles the announcement of discovered devices. When discovered devices are available and
+   * the controller is linked to an account, those devices are sent to Beehive.
    */
   private class DiscoveredDevicesAnnouncement extends Thread
   {
