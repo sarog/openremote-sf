@@ -1,4 +1,15 @@
 
+ORCJAVA-478
+===========
+
+ - Update Device Discovery to Object Model API
+   (Juha Lindfors)
+
+   Work-In-Progress
+
+
+
+
 Controller 2.1.1 (2015-02-12 Twin Galaxies)
 ===========================================
 
