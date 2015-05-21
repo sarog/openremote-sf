@@ -1,6 +1,6 @@
 /*
- * OpenRemote, the Home of the Digital Home.
  * Copyright 2008-2013, OpenRemote Inc.
+ * Copyright 2013-2015, Juha Lindfors. All rights reserved.
  *
  * See the contributors.txt file in the distribution for a
  * full listing of individual contributors.
@@ -37,7 +37,7 @@ public class TestDeployer extends Deployer
                        ControllerConfiguration controllerConfig, Map<String, ModelBuilder> builders)
        throws InitializationException
    {
-      super(serviceName, deviceStateCache, controllerConfig, null, builders);
+      super(serviceName, deviceStateCache, controllerConfig, builders);
    }
 
    public List<DiscoveredDeviceDTO> getDiscoveredDevicesToAnnounce()
