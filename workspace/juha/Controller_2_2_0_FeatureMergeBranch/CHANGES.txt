@@ -1,11 +1,11 @@
-
 Controller 2.2.0 (2015-XX-XX XXXXXXXXXXXXX)
 ===========================================
 
 
 Internal:
 
-  - Fix issues with the test suite (Juha Lindfors, ORCJAVA-425)
+  - Fix issues with the test suite (Juha Lindfors, ORCJAVA-425,
+    ORCJAVA-479)
 
 
 
