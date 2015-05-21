@@ -1,3 +1,9 @@
+ORCJAVA-479
+===========
+
+  - Fix a deployer API compabitility issue in Vera
+    TestDeployer in test suite (Juha Lindfors)
+
 
 ORCJAVA-425
 ===========
