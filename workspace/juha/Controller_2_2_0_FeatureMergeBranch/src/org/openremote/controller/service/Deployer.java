@@ -280,7 +280,7 @@ public class Deployer
    *                                      been configured for this deployer
    */
   public Deployer(String serviceName, StatusCache deviceStateCache,
-                  ControllerConfiguration controllerConfig, BeehiveCommandCheckService beehiveCommandCheckService,
+                  ControllerConfiguration controllerConfig,
                   Map<String, ModelBuilder> builders) throws InitializationException
   {
     if (deviceStateCache == null || controllerConfig == null)
@@ -288,8 +288,9 @@ public class Deployer
       throw new IllegalArgumentException("Null parameters are not allowed.");
     }
     
-    this.beehiveCommandCheckService = beehiveCommandCheckService;
+    this.beehiveCommandCheckService = new BeehiveCommandCheckService(controllerConfig);
     this.beehiveCommandCheckService.setDeployer(this);
+    
     this.deviceStateCache = deviceStateCache;
     this.controllerConfig = controllerConfig;
     this.builders = createTypeSafeBuilderMap(builders);
