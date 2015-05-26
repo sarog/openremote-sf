@@ -53,7 +53,18 @@ public class RuleListener extends DefaultAgendaEventListener {
    public void beforeActivationFired(BeforeActivationFiredEvent ruleEvent){
       final Rule rule = ruleEvent.getActivation().getRule();
       String ruleName = rule.getName();
+      
+      if(ruleName.startsWith("--")){
+         return;
+      }
+
+      if(ruleName.startsWith("-")){
+         log.debug("Rule: "+ruleName+": SKIPPED LOGGER");
+         return;
+      }
+      
       String rulePackage = rule.getPackageName();
+      ruleName = "\""+ruleName+"\" // (package "+rulePackage+")";
       
       Activation activationEvent = ruleEvent.getActivation();
       List<String> declarationIDs = activationEvent.getDeclarationIDs();
@@ -63,23 +74,30 @@ public class RuleListener extends DefaultAgendaEventListener {
       String declarationLog = "";
       for(String declarationID : declarationIDs)
       {
-         Object declarationValue = activationEvent.getDeclarationValue(declarationID);
-         String declarationValueString = this.declarationValueToString(declarationValue);
-         declarationLog = String.format("%s/t/tDeclaration:%s Value: %s/n", declarationLog, declarationID, declarationValueString);
+         Object declarationValue = null;
+         String declarationValueString = "";
+         declarationValue = activationEvent.getDeclarationValue(declarationID);
+         declarationValueString = this.declarationValueToString(declarationValue);
+         if(declarationValue instanceof Sensor || declarationValue instanceof Event){
+            declarationLog = String.format("%s\t\tDeclaration: \"%s\"\n\t\tValue:\n\t\t\t%s\n", declarationLog, declarationID, declarationValueString);
+         }else{
+            declarationLog = String.format("%s\t\tDeclaration: \"%s: %s\"\n", declarationLog, declarationID, declarationValueString);
+         }
       }
       
       String objectLog = "";
       for(Object antecedent : antecedents)
       {
-         String theClass = antecedent.getClass().getSimpleName();
-         String theValue = this.antecedentValueToString(antecedent);
-         objectLog = String.format("%sClass: %s Fields %s/n", objectLog, theClass, theValue);
+         String theClass = "";
+         String theValue = "";
+         theClass = antecedent.getClass().getSimpleName();
+         theValue = this.antecedentValueToString(antecedent);
+         objectLog = String.format("%s\t\tClass: \"%s\"\n\t\tFields: \n\t\t\t%s\n", objectLog, theClass, theValue);
       }
       
-      log.trace(String.format("Rule Activation Imminent: /n" +
-      		                  "/tRule: %s/n" +
-      		                  "/tDeclarations /n%s" +
-      		                  "/tLHS objects(antecedents) /n%s", ruleName, declarationLog, objectLog));
+      log.debug(String.format("rule %s\n" +
+      		                  "\tDeclarations \n%s" +
+      		                  "\tLHS objects(antecedents)\n%s", ruleName, declarationLog, objectLog));
       
    }
    
@@ -97,20 +115,21 @@ public class RuleListener extends DefaultAgendaEventListener {
    private String antecedentValueToString(Object antecedent)
    {
       String theValue = null;
+      if(antecedent!=null) theValue = antecedent.toString();
       if(antecedent instanceof Sensor) //may be unnecessary if we never have raw sensor objects in WM
       {
          Sensor theSensor = (Sensor) antecedent;
          String sensorName = theSensor.getName();
-         theValue = String.format("Sensor: %s/n", sensorName);
+         theValue = String.format("Sensor: %s\n", sensorName);
     
-         theValue = String.format("%s/t/tSensor Properties/n", theValue);
+         theValue = String.format("%s\t\tSensor Properties\n", theValue);
          Map<String,String> sensorValues = theSensor.getProperties();
          
          for (Map.Entry<String, String> entry : sensorValues.entrySet())
          {
             String entryName = entry.getKey();
             String entryValue = entry.getValue();
-            theValue = String.format("%sName: %s  Value: %s/n", theValue, entryName, entryValue);           
+            theValue = String.format("%sName: \t\"%s\"\n\t\t\tValue: \t\"%s\"", theValue, entryName, entryValue);           
          }   
       }
       if(antecedent instanceof Event)
@@ -118,9 +137,9 @@ public class RuleListener extends DefaultAgendaEventListener {
          Event theEvent = (Event) antecedent;
          String sourceName = theEvent.getSource();
          String eventValue = theEvent.getValue().toString(); //assumes all values can directly cast to String      
-         theValue = String.format("Name: %s/tValue: %s/n", sourceName, eventValue);
+         theValue = String.format("Event Name: \t\"%s\"\n\t\t\tEvent Value: \t\"%s\"", sourceName, eventValue);
       }
-      
+
       return theValue;
    }
    
@@ -134,7 +153,8 @@ public class RuleListener extends DefaultAgendaEventListener {
    private String declarationValueToString(Object declarationValue)
    {
       String convertedDeclarationValue = null;
-      
+      if(declarationValue!=null) convertedDeclarationValue = declarationValue.toString();
+
       if(declarationValue instanceof Sensor) //may be unnecessary if we never have raw sensor objects in WM
       {
          convertedDeclarationValue = ((Sensor) declarationValue).getName();
@@ -142,8 +162,8 @@ public class RuleListener extends DefaultAgendaEventListener {
       if(declarationValue instanceof Event)
       {
          String sensorName = ((Event) declarationValue).getSource();
-         String sensorValue = (String) ((Event) declarationValue).getValue();
-         convertedDeclarationValue = String.format("Sensor Name: %s Sensor Value: %s", sensorName, sensorValue);
+         String sensorValue = ((Event) declarationValue).getValue().toString();
+         convertedDeclarationValue = String.format("Sensor Name: \"%s\"\n\t\t\tSensor Value: \"%s\"", sensorName, sensorValue);
       }
       
       return convertedDeclarationValue;
