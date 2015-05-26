@@ -17,7 +17,8 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
- * */
+ *
+ */
 
 package org.openremote.controller.statuscache.rules;
 
@@ -43,28 +44,33 @@ import org.junit.Test;
 import org.openremote.controller.RuleListener;
 import org.openremote.controller.model.event.CustomState;
 
-public class RuleListenerTest {
+public class RuleListenerTest
+{
    private StatefulKnowledgeSession ksession;
+
    public static String TEST_SENSOR_NAME = "SENSOR_NAME";
    
    @Before
-   public void setUp() throws Exception {
+   public void setUp() throws Exception
+   {
       KnowledgeBuilder kbuilder = KnowledgeBuilderFactory.newKnowledgeBuilder();
 
       kbuilder.add( ResourceFactory.newClassPathResource("org/openremote/controller/statuscache/rules/TestRuleFiring.drl"), ResourceType.DRL);
-      if (kbuilder.hasErrors() ) {
-          System.out.println( kbuilder.getErrors() );
+      if (kbuilder.hasErrors())
+      {
+          System.out.println(kbuilder.getErrors());
       }
-      assertFalse( kbuilder.hasErrors());
+      assertFalse(kbuilder.hasErrors());
 
       KnowledgeBase kbase = KnowledgeBaseFactory.newKnowledgeBase();
-      kbase.addKnowledgePackages( kbuilder.getKnowledgePackages() );
+      kbase.addKnowledgePackages(kbuilder.getKnowledgePackages());
       
       ksession = kbase.newStatefulKnowledgeSession();
    }
 
    @After
-   public void tearDown() throws Exception {
+   public void tearDown() throws Exception
+   {
       ksession.dispose();
    }
 
@@ -76,8 +82,8 @@ public class RuleListenerTest {
     *    The listener is properly detecting and logging information about the rule (name, declarations, LHS, etc.).
     */
    @Test
-   public void testBeforeActivationFired() {
-
+   public void testBeforeActivationFired()
+   {
       CustomState newState = new CustomState(1, TEST_SENSOR_NAME, "ON" );
 
       ksession.insert(newState);
@@ -101,15 +107,15 @@ public class RuleListenerTest {
       handler.assertLastLog(Level.FINE, lastLog);
    }
 
-   private static class TestLogHandler extends Handler
-   {
+  private static class TestLogHandler extends Handler
+  {
      private Level lastLevel;
      private String lastMessage;
 
-    public TestLogHandler(){
+     public TestLogHandler(){
        this.setLevel(Level.ALL);
        this.setFormatter(new SimpleFormatter());
-    }
+     }
      
      @Override public void publish(LogRecord record)
      {
@@ -126,9 +132,9 @@ public class RuleListenerTest {
      {
 
      }
+
      void assertLastLog(Level level, String msg)
      {
-
        Assert.assertTrue(
            "Expected log message '" + msg + "', got '" + lastMessage + "'.",
            msg.equals(lastMessage)
@@ -138,7 +144,6 @@ public class RuleListenerTest {
            "Expected level " + level + ", got " + lastLevel,
            level.equals(lastLevel)
        );
-
      }
    }
 }

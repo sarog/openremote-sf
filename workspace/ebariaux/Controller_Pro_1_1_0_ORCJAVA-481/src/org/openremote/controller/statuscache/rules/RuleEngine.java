@@ -158,18 +158,21 @@ public class RuleEngine extends EventProcessor
 
     try
     {
-      long _factCount;
+      long factNewCount;
       if (!knowledgeSession.getObjects().contains(evt))
       {
-        boolean _debug = true;
+        boolean debug = true;
         if (eventSources.keySet().contains(evt.getSourceID()))
         {
-           try{
+           try
+           {
              knowledgeSession.retract(eventSources.get(evt.getSourceID()));
-           }finally{
+           }
+           finally
+           {
              eventSources.remove(evt.getSourceID());
            }
-          _debug = false;
+          debug = false;
         }
 
         FactHandle handle = knowledgeSession.insert(evt);
@@ -177,25 +180,28 @@ public class RuleEngine extends EventProcessor
         eventSources.put(evt.getSourceID(), handle);
 
         log.trace("Inserted event {0}", evt);
-        if(_debug){
+        if(debug)
+        {
            log.debug("Inserted new event source \"{0}\"", evt.getSource());
         }
-        _factCount = knowledgeSession.getFactCount();
-        log.trace("Fact count: " + _factCount);
-        if(_factCount != factCount){
-           log.debug("Fact count changed from {0} to {1} on \"{2}\"", factCount, _factCount, evt.getSource());
+        factNewCount = knowledgeSession.getFactCount();
+        log.trace("Fact count: " + factNewCount);
+        if(factNewCount != factCount)
+        {
+           log.debug("Fact count changed from {0} to {1} on \"{2}\"", factCount, factNewCount, evt.getSource());
         }
-        factCount = _factCount;
+        factCount = factNewCount;
       }
       
       knowledgeSession.fireAllRules();
       
-      _factCount = knowledgeSession.getFactCount();
-      if(_factCount >= 1000) // look for runaway insertion of facts
-      if(_factCount != factCount){
-         log.debug("Fact count changed from {0} to {1} on fireAllRules() after \"{2}\"", factCount, _factCount, evt.getSource());
+      factNewCount = knowledgeSession.getFactCount();
+      if(factNewCount >= 1000) // look for runaway insertion of facts
+      if(factNewCount != factCount)
+      {
+         log.debug("Fact count changed from {0} to {1} on fireAllRules() after \"{2}\"", factCount, factNewCount, evt.getSource());
       }
-      factCount = _factCount;
+      factCount = factNewCount;
     }
 
     catch (Throwable t)
