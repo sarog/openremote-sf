@@ -12,6 +12,7 @@ New Features:
 	  implementing EventListener (Marcus Redeker, ORCJAVA-465)
   - More lenient CORS headers (Christian Bauer, ORCJAVA-472)
   - Improve 1-wire implementation (Eric Bariaux, ORCJAVA-475)
+  - Add log messages to Rules Engine (Isaac Martin, Michal Rutka, ORCJAVA-481)
 
 Controller Pro 1.1.0
 ====================
