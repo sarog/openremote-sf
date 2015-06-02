@@ -1,5 +1,4 @@
 /*
- * OpenRemote, the Home of the Digital Home.
  * Copyright 2008-2013, OpenRemote Inc.
  * Copyright 2015, Juha Lindfors. All rights reserved.
  *
@@ -36,10 +35,10 @@ public class TestDeployer extends Deployer
 
   public TestDeployer(String serviceName, StatusCache deviceStateCache,
                        ControllerConfiguration controllerConfig, Map<String, ModelBuilder> builders)
-    throws InitializationException
-  {
-    super(serviceName, deviceStateCache, controllerConfig, null, builders);
-  }
+       throws InitializationException
+   {
+      super(serviceName, deviceStateCache, controllerConfig, builders);
+   }
 
   public Set<DeviceDiscovery> getDiscoveredDevicesToAnnounce()
   {

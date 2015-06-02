@@ -1,4 +1,3 @@
-
 ORCJAVA-478
 ===========
 
@@ -7,6 +6,20 @@ ORCJAVA-478
 
    Work-In-Progress
 
+
+ORCJAVA-479
+===========
+
+  - Fix a deployer API compabitility issue in Vera
+    TestDeployer in test suite (Juha Lindfors)
+
+
+ORCJAVA-425
+===========
+
+  - Fix broken changes introduced to test suite in 
+    mredeker/Controller_2_0_1_Beehive_Proxy branch, as 
+    part of ORCJAVA-424  (Juha Lindfors)
 
 
 
