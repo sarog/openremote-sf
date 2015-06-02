@@ -1,6 +1,6 @@
 /*
- * OpenRemote, the Home of the Digital Home.
  * Copyright 2008-2011, OpenRemote Inc.
+ * Copyright 2008-2015, Juha Lindfors. All rights reserved.
  *
  * See the contributors.txt file in the distribution for a
  * full listing of individual contributors.
@@ -36,6 +36,8 @@ import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 import org.junit.Assert;
 import org.junit.BeforeClass;
+import org.openremote.controller.ConfigurationTest;
+import org.openremote.controller.ControllerConfigurationTest;
 import org.openremote.controller.bootstrap.StartupTests;
 import org.openremote.controller.deployer.Version20ModelBuilderTest;
 import org.openremote.controller.net.MulticastAutoDiscoveryTest;
@@ -53,7 +55,7 @@ import org.jdom.input.DOMBuilder;
  * Collects *all* unit tests. Also, the implementation contains utility methods in common across
  * various test suites.
  *
- * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
+ * Juha Lindfors
  */
 @RunWith(Suite.class) @SuiteClasses(
 {
@@ -79,7 +81,9 @@ import org.jdom.input.DOMBuilder;
    BusTests.class,
    DSCIT100Tests.class,
    Version20ModelBuilderTest.class,
-   StartupTests.class
+   StartupTests.class,
+   ConfigurationTest.class,
+   ControllerConfigurationTest.class
 })
 
 

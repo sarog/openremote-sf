@@ -1,11 +1,14 @@
-Controller 2.2.0 (2015-XX-XX XXXXXXXXXXXXX)
-===========================================
+Controller 2.2.0 (2015-XX-XX Agave)
+===================================
 
 
 Internal:
 
   - Fix issues with the test suite (Juha Lindfors, ORCJAVA-425,
     ORCJAVA-479)
+  - Reapply ORCJAVA-411: Support for remote access proxy with
+    complete changeset including earlier missing revisions
+    R9661-R9666, R9679, R9702-R9716
 
 
 
