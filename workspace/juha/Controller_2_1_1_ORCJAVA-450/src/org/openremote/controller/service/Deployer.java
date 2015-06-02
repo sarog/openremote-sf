@@ -1,7 +1,7 @@
 /*
- * OpenRemote, the Home of the Digital Home.
+ * Copyright 2008-2015, Juha Lindfors. All rights reserved.
  * Copyright 2008-2014, OpenRemote Inc.
- *
+ * 
  * See the contributors.txt file in the distribution for a
  * full listing of individual contributors.
  *
@@ -103,7 +103,7 @@ import flexjson.JSONSerializer;
  * @see #softRestart
  * @see #getSensor
  *
- * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
+ * @author Juha Lindfors
  */
 public class Deployer
 {
@@ -280,7 +280,7 @@ public class Deployer
    *                                      been configured for this deployer
    */
   public Deployer(String serviceName, StatusCache deviceStateCache,
-                  ControllerConfiguration controllerConfig, BeehiveCommandCheckService beehiveCommandCheckService,
+                  ControllerConfiguration controllerConfig,
                   Map<String, ModelBuilder> builders) throws InitializationException
   {
     if (deviceStateCache == null || controllerConfig == null)
@@ -288,8 +288,9 @@ public class Deployer
       throw new IllegalArgumentException("Null parameters are not allowed.");
     }
     
-    this.beehiveCommandCheckService = beehiveCommandCheckService;
+    this.beehiveCommandCheckService = new BeehiveCommandCheckService(controllerConfig);
     this.beehiveCommandCheckService.setDeployer(this);
+    
     this.deviceStateCache = deviceStateCache;
     this.controllerConfig = controllerConfig;
     this.builders = createTypeSafeBuilderMap(builders);
