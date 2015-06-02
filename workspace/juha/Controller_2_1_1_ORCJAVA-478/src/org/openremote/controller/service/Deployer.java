@@ -1,8 +1,7 @@
 /*
- * OpenRemote, the Home of the Digital Home.
- * Copyright 2008-2014, OpenRemote Inc.
  * Copyright 2008-2015, Juha Lindfors. All rights reserved.
- *
+ * Copyright 2008-2014, OpenRemote Inc.
+ * 
  * See the contributors.txt file in the distribution for a
  * full listing of individual contributors.
  *
@@ -301,7 +300,6 @@ public class Deployer
    */
   public Deployer(String serviceName, StatusCache deviceStateCache,
                   ControllerConfiguration controllerConfig,
-                  BeehiveCommandCheckService beehiveCommandCheckService,
                   Map<String, ModelBuilder> builders) throws InitializationException
   {
     if (deviceStateCache == null || controllerConfig == null)
@@ -309,8 +307,9 @@ public class Deployer
       throw new IllegalArgumentException("Null parameters are not allowed.");
     }
     
-    this.beehiveCommandCheckService = beehiveCommandCheckService;
+    this.beehiveCommandCheckService = new BeehiveCommandCheckService(controllerConfig);
     this.beehiveCommandCheckService.setDeployer(this);
+    
     this.deviceStateCache = deviceStateCache;
     this.controllerConfig = controllerConfig;
     this.builders = createTypeSafeBuilderMap(builders);
