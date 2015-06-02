@@ -1,9 +1,5 @@
 /*
- * OpenRemote, the Home of the Digital Home.
- * Copyright 2008-2011, OpenRemote Inc.
- *
- * See the contributors.txt file in the distribution for a
- * full listing of individual contributors.
+ * Copyright 2008-2015, Juha Lindfors. All rights reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -55,7 +51,7 @@ import org.jdom.Element;
  * to manage in single location rather than spread across many test classes.
  *
  *
- * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
+ * @author Juha Lindfors
  */
 public class DeployerTest
 {
@@ -252,7 +248,7 @@ public class DeployerTest
     Map<String, ModelBuilder> modelBuilders = new HashMap<String, ModelBuilder>();
     modelBuilders.put(ModelBuilder.SchemaVersion.VERSION_2_0.toString(), builder);
 
-    return new Deployer(deployerName, cache, config, new BeehiveCommandCheckService(config), modelBuilders);
+    return new Deployer(deployerName, cache, config, modelBuilders);
   }
 
 
@@ -295,7 +291,7 @@ public class DeployerTest
         )
     );
 
-    new Deployer(deployerName, cache, config, null, map);
+    new Deployer(deployerName, cache, config, map);
   }
 
   /**
@@ -307,7 +303,7 @@ public class DeployerTest
   {
     try
     {
-      new Deployer(null, null, null, null, null);
+      new Deployer(null, null, null, null);
 
       Assert.fail("should not get here...");
     }
@@ -327,7 +323,7 @@ public class DeployerTest
   {
     try
     {
-      new Deployer(null, new StatusCache(), null, null, null);
+      new Deployer(null, new StatusCache(), null, null);
 
       Assert.fail("should not get here...");
     }
@@ -347,7 +343,7 @@ public class DeployerTest
   {
     try
     {
-      new Deployer(null, null, new ControllerConfiguration(), null, null);
+      new Deployer(null, null, new ControllerConfiguration(), null);
 
       Assert.fail("should not get here...");
     }
@@ -365,7 +361,7 @@ public class DeployerTest
    */
   public void constructionNullArgs4() throws Exception
   {
-      new Deployer(null, new StatusCache(), new ControllerConfiguration(), null, null);
+      new Deployer(null, new StatusCache(), new ControllerConfiguration(), null);
   }
 
 
