@@ -6,7 +6,7 @@ Internal:
   - Fix issues with the test suite (Juha Lindfors, ORCJAVA-425,
     ORCJAVA-479)
   - Support for remote access proxy (Juha Lindfors, ORCJAVA-411
-    reapplied, ORCJAVA-450)
+    reapplied, ORCJAVA-450, ORCJAVA-454)
   
 
 
