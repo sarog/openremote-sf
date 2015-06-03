@@ -7,6 +7,30 @@ ORCJAVA-478
    Work-In-Progress
 
 
+ORCJAVA-454
+===========
+
+  - Clean up and consume input streams from HTTP connections
+    in error cases to return connections to HTTP keep-alive
+    pool (Juha Lindfors)
+
+
+ORCJAVA-450
+===========
+
+  - Fix an issue with ORCJAVA-411 that used HTTP GET instead
+    of HTTP POST for controller MAC address announcement -- 
+    used when retrieving controller ID from a remote service
+    (Juha Lindfors)
+
+
+ORCJAVA-411
+===========
+
+ - Reapply ORCJAVA-411: Support for remote access proxy
+   (complete changeset)
+
+
 ORCJAVA-479
 ===========
 
