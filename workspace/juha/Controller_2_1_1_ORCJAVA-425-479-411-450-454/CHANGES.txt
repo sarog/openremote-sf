@@ -1,3 +1,12 @@
+
+ORCJAVA-454
+===========
+
+  - Clean up and consume input streams from HTTP connections
+    in error cases to return connections to HTTP keep-alive
+    pool (Juha Lindfors)
+
+
 ORCJAVA-450
 ===========
 
