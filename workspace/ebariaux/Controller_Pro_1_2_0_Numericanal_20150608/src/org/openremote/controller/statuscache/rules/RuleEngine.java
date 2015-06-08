@@ -20,44 +20,44 @@
  */
 package org.openremote.controller.statuscache.rules;
 
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.io.File;
 import java.io.FilenameFilter;
-import java.util.Map;
-import java.util.Set;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Collection;
+import java.util.Map;
+import java.util.Set;
 
-import org.openremote.controller.utils.Logger;
-import org.openremote.controller.Constants;
-import org.openremote.controller.ControllerConfiguration;
-import org.openremote.controller.service.ServiceContext;
-import org.openremote.controller.exception.InitializationException;
-import org.openremote.controller.protocol.Event;
-import org.openremote.controller.statuscache.EventContext;
-import org.openremote.controller.statuscache.EventProcessor;
-import org.openremote.controller.statuscache.LifeCycleEvent;
-import org.openremote.controller.statuscache.SwitchFacade;
-import org.openremote.controller.statuscache.LevelFacade;
-import org.openremote.controller.statuscache.RangeFacade;
 import org.drools.KnowledgeBase;
 import org.drools.KnowledgeBaseConfiguration;
 import org.drools.KnowledgeBaseFactory;
-import org.drools.conf.AssertBehaviorOption;
-import org.drools.runtime.StatefulKnowledgeSession;
-import org.drools.runtime.Globals;
-import org.drools.runtime.rule.FactHandle;
-import org.drools.definition.KnowledgePackage;
-import org.drools.builder.KnowledgeBuilder;
-import org.drools.builder.KnowledgeBuilderFactory;
 import org.drools.builder.DecisionTableConfiguration;
 import org.drools.builder.DecisionTableInputType;
-import org.drools.builder.ResourceType;
+import org.drools.builder.KnowledgeBuilder;
 import org.drools.builder.KnowledgeBuilderError;
+import org.drools.builder.KnowledgeBuilderFactory;
+import org.drools.builder.ResourceType;
+import org.drools.conf.AssertBehaviorOption;
+import org.drools.definition.KnowledgePackage;
 import org.drools.io.Resource;
 import org.drools.io.ResourceFactory;
+import org.drools.runtime.StatefulKnowledgeSession;
+import org.drools.runtime.rule.FactHandle;
+import org.openremote.controller.Constants;
+import org.openremote.controller.ControllerConfiguration;
+import org.openremote.controller.RuleListener;
+import org.openremote.controller.exception.InitializationException;
+import org.openremote.controller.protocol.Event;
+import org.openremote.controller.service.ServiceContext;
+import org.openremote.controller.statuscache.EventContext;
+import org.openremote.controller.statuscache.EventProcessor;
+import org.openremote.controller.statuscache.LevelFacade;
+import org.openremote.controller.statuscache.LifeCycleEvent;
+import org.openremote.controller.statuscache.RangeFacade;
+import org.openremote.controller.statuscache.SwitchFacade;
+import org.openremote.controller.utils.Logger;
 
 /**
  * TODO
@@ -114,6 +114,7 @@ public class RuleEngine extends EventProcessor
   private KnowledgeBase kb;
   private StatefulKnowledgeSession knowledgeSession;
   private Map<Integer, FactHandle> eventSources = new HashMap<Integer, FactHandle>();
+  private long factCount;
 
   private SwitchFacade switchFacade;
   private LevelFacade levelFacade;
@@ -157,8 +158,10 @@ public class RuleEngine extends EventProcessor
 
     try
     {
+      long factNewCount;
       if (!knowledgeSession.getObjects().contains(evt))
       {
+        boolean debug = true;
         if (eventSources.keySet().contains(evt.getSourceID()))
         {
           try
@@ -170,24 +173,43 @@ public class RuleEngine extends EventProcessor
             // Doing this in the finally to make sure we don't keep a reference to a fact when we should not (ORCJAVA-407)
             eventSources.remove(evt.getSourceID());
           }
+          debug = false;
         }
 
         FactHandle handle = knowledgeSession.insert(evt);
 
         eventSources.put(evt.getSourceID(), handle);
-      }
 
-      log.trace("Inserted event {0}", evt);
-      log.trace("Fact count: " + knowledgeSession.getFactCount());
+        log.trace("Inserted event {0}", evt);
+        if(debug)
+        {
+           log.debug("Inserted new event source \"{0}\"", evt.getSource());
+        }
+        factNewCount = knowledgeSession.getFactCount();
+        log.trace("Fact count: " + factNewCount);
+        if(factNewCount != factCount)
+        {
+           log.debug("Fact count changed from {0} to {1} on \"{2}\"", factCount, factNewCount, evt.getSource());
+        }
+        factCount = factNewCount;
+      }
       
       knowledgeSession.fireAllRules();
+      
+      factNewCount = knowledgeSession.getFactCount();
+      if(factNewCount >= 1000) // look for runaway insertion of facts
+      if(factNewCount != factCount)
+      {
+         log.debug("Fact count changed from {0} to {1} on fireAllRules() after \"{2}\"", factCount, factNewCount, evt.getSource());
+      }
+      factCount = factNewCount;
     }
 
     catch (Throwable t)
     {
       log.error(
-          "Error in executing rule : {0} -- Event {1} not processed!",
-          t, t.getMessage(), ctx.getEvent()
+          "Error in executing rule : {0}\n\tEvent {1} not processed!",
+          t, evt.getSource()+":"+t.getMessage(), ctx.getEvent()
       );
 
       if (t.getCause() != null)
@@ -304,9 +326,22 @@ public class RuleEngine extends EventProcessor
     {
       knowledgeSession.setGlobal("levels", levelFacade);
     }
-
+    
     catch (Throwable t)
     {}
+
+    try
+    {
+       RuleListener ruleListener = new RuleListener();
+       knowledgeSession.addEventListener(ruleListener);
+    }
+
+    catch (Throwable t)
+    {
+       log.debug("Exception in addEventListener");
+    }
+    
+    log.debug("Rule engine started");
 
     knowledgeSession.fireAllRules();
   }
@@ -317,11 +352,14 @@ public class RuleEngine extends EventProcessor
    */
   @Override public void stop()
   {
+    log.debug("Stopping RuleEngine");
     if (knowledgeSession != null)
     {
       knowledgeSession.dispose();
+      log.debug("Knowledge session disposed");
     }
-    
+    eventSources.clear();
+
     // We're disposing of the knowledge base, don't keep references to any facts (ORCJAVA-407)
     eventSources.clear();
     
@@ -525,6 +563,8 @@ public class RuleEngine extends EventProcessor
           {
             initLog.error(error.getMessage());
           }
+        }else{
+           initLog.info("Added rule definition ''{0}'' to knowledge.", definitions.get(resource).getName());
         }
       }
 

@@ -63,6 +63,8 @@ public class RrdGraphUrlCommand implements ExecutableCommand, EventListener {
    private String end = null;
    private String ip = null;
    private String port = null;
+   private String initialStart = null;
+   private String initialEnd = null;
 
    /** The sensor which is updated */
    private Sensor sensor;
@@ -76,7 +78,9 @@ public class RrdGraphUrlCommand implements ExecutableCommand, EventListener {
       this.width = width;
       this.height = height;
       this.start = start;
+      this.initialStart = start;
       this.end = end;
+      this.initialEnd = end;
       this.ip = ip;
       this.port = port;
    }
@@ -89,6 +93,16 @@ public class RrdGraphUrlCommand implements ExecutableCommand, EventListener {
          GregorianCalendar startOld = new GregorianCalendar();
          GregorianCalendar endOld = new GregorianCalendar();
          Date now = new Date();
+
+         if (command.equalsIgnoreCase("resetStartEnd")) {
+            tmp.start = tmp.initialStart;
+            tmp.end = tmp.initialEnd;
+         } else if (command.equalsIgnoreCase("resetStart")) {
+            tmp.start = tmp.initialStart;
+         } else if (command.equalsIgnoreCase("resetEnd")) {
+            tmp.end = tmp.initialEnd;
+         }
+         
          if (tmp.start.startsWith("+")) {
             startOld.setTime(new Date(now.getTime() + Strings.convertPollingIntervalString(tmp.start.substring(1))));
          } else if (tmp.start.startsWith("-")) {
