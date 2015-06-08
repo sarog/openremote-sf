@@ -22,6 +22,7 @@ package org.openremote.controller.suite;
 
 import org.openremote.controller.statuscache.StatusCacheTest;
 import org.openremote.controller.statuscache.rules.RuleEngineTest;
+import org.openremote.controller.statuscache.rules.RuleListenerTest;
 import org.junit.runners.Suite;
 import org.junit.runner.RunWith;
 
@@ -34,7 +35,8 @@ import org.junit.runner.RunWith;
 @Suite.SuiteClasses(
 {
    StatusCacheTest.class,
-   RuleEngineTest.class
+   RuleEngineTest.class,
+   RuleListenerTest.class
 }
 )
 

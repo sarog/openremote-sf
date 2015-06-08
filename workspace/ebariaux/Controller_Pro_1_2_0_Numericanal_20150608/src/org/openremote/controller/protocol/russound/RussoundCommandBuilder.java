@@ -16,6 +16,7 @@
  */
 package org.openremote.controller.protocol.russound;
 
+import java.text.MessageFormat;
 import java.util.List;
 
 import org.jdom.Element;
@@ -35,6 +36,8 @@ public class RussoundCommandBuilder implements CommandBuilder {
    // Constants ------------------------------------------------------------------------------------
    public final static String RUSSOUND_PROTOCOL_LOG_CATEGORY = Constants.CONTROLLER_PROTOCOL_LOG_CATEGORY + "russound";
 
+   private final static MessageFormat COULD_NOT_CREATE_CLIENT = new MessageFormat("Could not start Russound Command Client. Ip: {0} Port: {1,number,integer} KeypadId: {2} SerialDevice: {3} PollingInterval: {4}"); 
+   
    private final static String STR_ATTRIBUTE_NAME_CONTROLLER = "controller";
    private final static String STR_ATTRIBUTE_NAME_ZONE = "zone";
    private final static String STR_ATTRIBUTE_NAME_COMMAND = "command";
@@ -72,10 +75,15 @@ public class RussoundCommandBuilder implements CommandBuilder {
    @Override
    public Command build(Element element) {
       if (commClient == null) {
+         Object[] params = {russoundIp, russoundPort, keypadId, serialDevice, pollingInterval};
          try {
-            commClient = new RussoundClient(russoundIp, russoundPort, keypadId, serialDevice, pollingInterval);
+            if ((russoundIp != null && russoundPort != 0) || serialDevice != null) {
+               commClient = new RussoundClient(russoundIp, russoundPort, keypadId, serialDevice, pollingInterval);
+            } else {
+               throw new NoSuchCommandException(COULD_NOT_CREATE_CLIENT.format(params));
+            }
          } catch (Exception e) {
-            throw new NoSuchCommandException("Could not start Russound ip connection", e);
+            throw new NoSuchCommandException(COULD_NOT_CREATE_CLIENT.format(params), e);
          }
       }
       logger.debug("Building Russound command");
