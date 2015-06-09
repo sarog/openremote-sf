@@ -20,7 +20,9 @@
  */
 package org.openremote.controller.protocol.enocean.profile;
 
+import org.openremote.controller.component.RangeSensor;
 import org.openremote.controller.model.sensor.Sensor;
+import org.openremote.controller.model.sensor.StateSensor;
 import org.openremote.controller.model.sensor.SwitchSensor;
 import org.openremote.controller.protocol.enocean.*;
 import org.openremote.controller.protocol.enocean.datatype.*;
@@ -193,6 +195,16 @@ public class EepF60201 implements EepTransceive
     STATUS_ROCKER_A("STATUS_ROCKER_A", 0x00, null, ENERGY_BOW_PRESS_VALUE),
 
     /**
+     * Read if upper left button has been pressed.
+     */
+    STATUS_ROCKER_AO("STATUS_ROCKER_AO", 0x00, null),
+
+    /**
+     * Read if lower left button has been pressed.
+     */
+    STATUS_ROCKER_AI("STATUS_ROCKER_AI", 0x00, null),
+
+    /**
      * Press bottom right button.
      */
     PRESS_ROCKER_BI("PRESS_ROCKER_BI", T21 | N_MESSAGE, null, ENERGY_BOW_PRESS_VALUE, ROCKER_BI_VALUE),
@@ -225,7 +237,17 @@ public class EepF60201 implements EepTransceive
     /**
      * Read ON/OFF status of right rocker.
      */
-    STATUS_ROCKER_B("STATUS_ROCKER_B", 0x00, null, ENERGY_BOW_PRESS_VALUE);
+    STATUS_ROCKER_B("STATUS_ROCKER_B", 0x00, null, ENERGY_BOW_PRESS_VALUE),
+
+    /**
+     * Read if upper right button has been pressed.
+     */
+    STATUS_ROCKER_BO("STATUS_ROCKER_BO", 0x00, null),
+
+    /**
+     * Read if lower right button has been pressed.
+     */
+    STATUS_ROCKER_BI("STATUS_ROCKER_BI", 0x00, null);
 
 
     // Members ------------------------------------------------------------------------------------
@@ -303,6 +325,11 @@ public class EepF60201 implements EepTransceive
 
   private boolean statusRockerA = false;
   private boolean statusRockerB = false;
+
+  private boolean statusRockerAO = false;
+  private boolean statusRockerAI = false;
+  private boolean statusRockerBO = false;
+  private boolean statusRockerBI = false;
 
   /**
    * EnOcean equipment profile (EEP) type.
@@ -389,8 +416,12 @@ public class EepF60201 implements EepTransceive
    */
   @Override public void send(RadioInterface radioInterface) throws ConfigurationException, ConnectionException
   {
-    if(command == CommandType.STATUS_ROCKER_A ||
-       command == CommandType.STATUS_ROCKER_B)
+    if(command == CommandType.STATUS_ROCKER_A  ||
+       command == CommandType.STATUS_ROCKER_B  ||
+       command == CommandType.STATUS_ROCKER_AO ||
+       command == CommandType.STATUS_ROCKER_AI ||
+       command == CommandType.STATUS_ROCKER_BO ||
+       command == CommandType.STATUS_ROCKER_BI)
     {
       // TODO : log
       return;
@@ -436,6 +467,12 @@ public class EepF60201 implements EepTransceive
     boolean oldStatusRockerA = statusRockerA;
     boolean oldStatusRockerB = statusRockerB;
 
+    boolean oldStatusRockerAO = statusRockerAO;
+    boolean oldStatusRockerAI = statusRockerAI;
+    boolean oldStatusRockerBO = statusRockerBO;
+    boolean oldStatusRockerBI = statusRockerBI;
+
+
     updateEnergyBowStatus(telegram.getPayload());
 
     if(isEnergyBowPressed())
@@ -445,26 +482,68 @@ public class EepF60201 implements EepTransceive
       if(rockerStatus.ordinalValue() == ROCKER_AI)
       {
         statusRockerA = true;
+        statusRockerAI = true;
       }
 
       else if(rockerStatus.ordinalValue() == ROCKER_AO)
       {
         statusRockerA = false;
+        statusRockerAO = true;
       }
 
       else if(rockerStatus.ordinalValue() == ROCKER_BI)
       {
         statusRockerB = true;
+        statusRockerBI = true;
       }
 
       else if(rockerStatus.ordinalValue() == ROCKER_BO)
       {
         statusRockerB = false;
+        statusRockerBO = true;
       }
     }
+    else
+    {
+      statusRockerAO = false;
+      statusRockerAI = false;
+      statusRockerBO = false;
+      statusRockerBI = false;
+    }
 
-    return (statusRockerA != oldStatusRockerA) ||
-           (statusRockerB != oldStatusRockerB);
+    boolean isUpdate = false;
+
+    if (command == CommandType.STATUS_ROCKER_A)
+    {
+      isUpdate = statusRockerA != oldStatusRockerA;
+    }
+
+    else if (command == CommandType.STATUS_ROCKER_B)
+    {
+      isUpdate = statusRockerB != oldStatusRockerB;
+    }
+
+    else if (command == CommandType.STATUS_ROCKER_AO)
+    {
+      isUpdate = statusRockerAO != oldStatusRockerAO;
+    }
+
+    else if (command == CommandType.STATUS_ROCKER_AI)
+    {
+      isUpdate = statusRockerAI != oldStatusRockerAI;
+    }
+
+    else if (command == CommandType.STATUS_ROCKER_BO)
+    {
+      isUpdate = statusRockerBO != oldStatusRockerBO;
+    }
+
+    else if (command == CommandType.STATUS_ROCKER_BI)
+    {
+      isUpdate = statusRockerBI != oldStatusRockerBI;
+    }
+
+    return isUpdate;
   }
 
   @Override public void updateSensor(Sensor sensor) throws ConfigurationException
@@ -476,7 +555,48 @@ public class EepF60201 implements EepTransceive
 
     else
     {
-      this.rockerStatus.updateSensor(sensor);
+      if (command == CommandType.STATUS_ROCKER_A)
+      {
+        sensor.update(getBoolValue() ? "ROCKER_AI" : "ROCKER_AO");
+      }
+
+      else if (command == CommandType.STATUS_ROCKER_B)
+      {
+        sensor.update(getBoolValue() ? "ROCKER_BI" : "ROCKER_BO");
+      }
+
+      else
+      {
+         if (sensor instanceof StateSensor)
+         {
+           if (command == CommandType.STATUS_ROCKER_AO)
+           {
+             sensor.update(getBoolValue() ? "ROCKER_AO_PRESS" : "ROCKER_AO_RELEASE");
+           }
+           else if (command == CommandType.STATUS_ROCKER_AI)
+           {
+             sensor.update(getBoolValue() ? "ROCKER_AI_PRESS" : "ROCKER_AI_RELEASE");
+           }
+           else if (command == CommandType.STATUS_ROCKER_BO)
+           {
+             sensor.update(getBoolValue() ? "ROCKER_BO_PRESS" : "ROCKER_BO_RELEASE");
+           }
+           else if (command == CommandType.STATUS_ROCKER_BI)
+           {
+             sensor.update(getBoolValue() ? "ROCKER_BI_PRESS" : "ROCKER_BI_RELEASE");
+           }
+         }
+         else if (sensor instanceof RangeSensor)
+         {
+           if (command == CommandType.STATUS_ROCKER_AO ||
+               command == CommandType.STATUS_ROCKER_AI ||
+               command == CommandType.STATUS_ROCKER_BO ||
+               command == CommandType.STATUS_ROCKER_BI )
+           {
+             sensor.update(getBoolValue() ? "1" : "0");
+           }
+         }
+      }
     }
   }
 
@@ -490,6 +610,26 @@ public class EepF60201 implements EepTransceive
     else if(command == CommandType.STATUS_ROCKER_B)
     {
       return statusRockerB;
+    }
+
+    else if(command == CommandType.STATUS_ROCKER_AO)
+    {
+      return statusRockerAO;
+    }
+
+    else if(command == CommandType.STATUS_ROCKER_AI)
+    {
+      return statusRockerAI;
+    }
+
+    else if(command == CommandType.STATUS_ROCKER_BO)
+    {
+      return statusRockerBO;
+    }
+
+    else if(command == CommandType.STATUS_ROCKER_BI)
+    {
+      return statusRockerBI;
     }
 
     else

@@ -23,10 +23,7 @@ package org.openremote.controller.protocol.enocean;
 import org.openremote.controller.command.Command;
 import org.openremote.controller.model.sensor.Sensor;
 import org.openremote.controller.protocol.enocean.packet.radio.EspRadioTelegram;
-import org.openremote.controller.protocol.enocean.profile.Eep;
-import org.openremote.controller.protocol.enocean.profile.EepReceive;
-import org.openremote.controller.protocol.enocean.profile.EepTransceive;
-import org.openremote.controller.protocol.enocean.profile.EepTransmit;
+import org.openremote.controller.protocol.enocean.profile.*;
 import org.openremote.controller.utils.Logger;
 
 import java.util.HashSet;
@@ -192,7 +189,17 @@ abstract public class EnOceanCommand implements Command
    */
   protected synchronized void update(EepReceive eep, EspRadioTelegram radioTelegram)
   {
-    eep.update(radioTelegram);
+    boolean isUpdate = eep.update(radioTelegram);
+
+    // TODO : Remove the following EEP:F6-02-01 check because all EEP implementations should
+    //        properly indicate if there was an update. The EEP:F6:02:01 check is
+    //        currently necessary because there are no unit tests that check if the
+    //        return value of the update() method is correct --> add tests
+
+    if (!isUpdate && eep instanceof EepF60201)
+    {
+      return;
+    }
 
     for(Sensor sensor : sensors)
     {
