@@ -56,6 +56,7 @@ import org.openremote.controller.statuscache.EventProcessor;
 import org.openremote.controller.statuscache.LevelFacade;
 import org.openremote.controller.statuscache.LifeCycleEvent;
 import org.openremote.controller.statuscache.RangeFacade;
+import org.openremote.controller.statuscache.MessagingServiceFacade;
 import org.openremote.controller.statuscache.SwitchFacade;
 import org.openremote.controller.utils.Logger;
 
@@ -119,7 +120,7 @@ public class RuleEngine extends EventProcessor
   private SwitchFacade switchFacade;
   private LevelFacade levelFacade;
   private RangeFacade rangeFacade;
-
+  private MessagingServiceFacade messagingFacade;
 
 
   // Implements EventProcessor --------------------------------------------------------------------
@@ -149,6 +150,8 @@ public class RuleEngine extends EventProcessor
     levelFacade.pushLogger(log);
     rangeFacade.pushEventContext(ctx);
     rangeFacade.pushLogger(log);
+    messagingFacade.pushEventContext(ctx);
+    messagingFacade.pushLogger(log);
 
 //    SwitchFacade switchFacade = new SwitchFacade();
 //
@@ -296,7 +299,7 @@ public class RuleEngine extends EventProcessor
     switchFacade = new SwitchFacade();
     rangeFacade = new RangeFacade();
     levelFacade = new LevelFacade();
-
+    messagingFacade = new MessagingServiceFacade();
     
     try
     {
@@ -327,6 +330,14 @@ public class RuleEngine extends EventProcessor
       knowledgeSession.setGlobal("levels", levelFacade);
     }
     
+    catch (Throwable t)
+    {}
+
+    try
+    {
+      knowledgeSession.setGlobal("messaging", messagingFacade);
+    }
+
     catch (Throwable t)
     {}
 
