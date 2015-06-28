@@ -262,7 +262,12 @@ public class LutronHomeWorksGateway /*implements ApplicationListener */{
             }
           }
         }
-        LutronCommand cmd = queue.blockingPoll();
+        LutronCommand cmd = null;
+        try {
+             cmd = queue.blockingPoll();
+        } catch (InterruptedException e) {
+           break;
+        }
         if (cmd != null) {
           log.info("Sending >" + cmd.toString() + "< on print writer " + pr);
           pr.println(cmd.toString() + "\n");

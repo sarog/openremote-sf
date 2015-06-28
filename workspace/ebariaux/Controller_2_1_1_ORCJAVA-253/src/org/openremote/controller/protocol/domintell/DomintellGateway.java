@@ -250,7 +250,12 @@ public class DomintellGateway {
               }
             }
           }
-          DomintellCommandPacket cmd = queue.blockingPoll();
+          DomintellCommandPacket cmd = null;
+          try {
+               cmd = queue.blockingPoll();
+          } catch (InterruptedException e) {
+             break;
+          }
           if (cmd != null) {
             log.info("Sending >" + cmd.toString() + "< on socket");
             byte[] buf = cmd.toString().getBytes();
@@ -262,6 +267,7 @@ public class DomintellGateway {
             }
           }
         }
+        log.debug("Writer thread stopping");
       }
 
    }
