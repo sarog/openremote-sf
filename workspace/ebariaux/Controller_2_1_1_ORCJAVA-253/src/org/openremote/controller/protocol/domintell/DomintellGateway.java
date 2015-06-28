@@ -338,6 +338,12 @@ public class DomintellGateway {
               }
               // Get out of our read loop, this will terminate the thread
               break;
+            } else if (packetText.equals("INFO:Session timeout:INFO")) {
+               synchronized (loginState) {
+                  loginState.loggedIn = false;
+                }
+                // Get out of our read loop, this will terminate the thread
+               break;
             } else if (dateTimePattern.matcher(packetText).matches()) {
                log.debug("Domintell system reported date/time: " + packetText);
             } else {
