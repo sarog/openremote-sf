@@ -188,8 +188,14 @@ Controller 2.1.0 (2013-XX-XX Twin Galaxies)
 
 New Features:
 
-  - Added DSC-IT 100 Security System integration (IP to serial), Greg Rapp
-  - Lagarto server (panStamps) integration, Daniel Berenguer
+  - EnOcean Implementation (Rainer Hitz, ORCJAVA-348)
+  - Mi Casa Verde Vera Integration (Marcus Redeker, ORCJAVA-330, ORCJAVA-331)
+  - Round robind database (RRD) integration for storing sensor
+    data (Marcus Redeker, ORCJAVA-343)
+  - WebConsole upgraded to version 2.1.1, fixes issues with stuck
+    loading screen (Richard Turner, ORCJAVA-345)
+  - Added DSC-IT 100 Security System integration - IP to serial (Greg Rapp)
+  - Lagarto server (panStamps) integration (Daniel Berenguer)
   - Support 'custom' sensor types with virtual commands (ORCJAVA-217)
   - HTTP protocol: methods GET, POST, PUT and DELETE are now supported.
     For HTTP/JSON return documents, a JSON Path expression is supported.
