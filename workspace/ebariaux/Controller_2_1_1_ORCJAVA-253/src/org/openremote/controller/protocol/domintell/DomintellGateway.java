@@ -37,7 +37,6 @@ import org.openremote.controller.protocol.domintell.model.DomintellModule;
 import org.openremote.controller.protocol.domintell.model.InputModule;
 import org.openremote.controller.protocol.domintell.model.RelayModule;
 import org.openremote.controller.protocol.domintell.model.TemperatureModule;
-import org.openremote.controller.protocol.lutron.LutronHomeWorksDeviceException;
 import org.openremote.controller.protocol.lutron.MessageQueueWithPriorityAndTTL;
 
 public class DomintellGateway {
