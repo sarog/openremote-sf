@@ -28,6 +28,8 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.util.HashMap;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
@@ -48,6 +50,11 @@ public class DomintellGateway {
     */
    private final static Logger log = Logger.getLogger(DomintellCommandBuilder.DOMINTELL_LOG_CATEGORY);
 
+   /**
+    * Interval in ms between 2 pings to the Domintell system (using HELLO command)
+    */
+   private static final int PING_INTERVAL = 59000;
+
    private static HashMap<String, DomintellModule> moduleCache = new HashMap<String, DomintellModule>();
    
    private static HashMap<String, Class<? extends DomintellModule>> moduleClasses = new HashMap<String, Class<? extends DomintellModule>>();
@@ -60,6 +67,11 @@ public class DomintellGateway {
 
    private LoginState loginState = new LoginState();
 
+   // A timer to ping the DETH02, ensuring session stays opened.
+   private Timer pingTimer = new Timer();
+   // Tasks that does the pinging using the HELLO command
+   private TimerTask pingTask = null;
+   
    private DomintellConnectionThread connectionThread;
    
    static {
@@ -98,7 +110,27 @@ public class DomintellGateway {
       // Ask to start gateway, if it's already done, this will do nothing
       startGateway();
       queue.add(new DomintellCommandPacket(command));
+      
+      // As we sent a command, we don't need an explicit ping (HELLO command)
+      resetPingTask();
     }
+   
+   private void resetPingTask() {
+      synchronized (pingTimer) {
+        if (pingTask != null) {
+           pingTask.cancel();
+           pingTimer.purge();
+        }
+        pingTask = new TimerTask() {
+          @Override
+          public void run() {
+             queue.add(new DomintellCommandPacket("HELLO"));
+          }
+           
+        };
+        pingTimer.schedule(pingTask, PING_INTERVAL, PING_INTERVAL);
+      }
+   }
 
    /**
     * Gets the Domintell Module from the cache, creating it if not already
@@ -242,6 +274,11 @@ public class DomintellGateway {
                   }
                    loginState.needsLogin = false;
                   log.info("Sent log in info");
+                } else {
+                   // We're logged in, send a PING command to make sure we get a current view of system status
+                   queue.add(new DomintellCommandPacket("PING"));
+                   // and start the ping task
+                   resetPingTask();
                 }
                 // We've been awakened and we're logged in, we'll just go out of the loop and proceed with normal execution
               } catch (InterruptedException e) {
@@ -249,6 +286,7 @@ public class DomintellGateway {
               }
             }
           }
+
           DomintellCommandPacket cmd = null;
           try {
                cmd = queue.blockingPoll();
@@ -263,6 +301,12 @@ public class DomintellGateway {
                socket.send(p);
             } catch (IOException e) {
                log.warn("Could not send packet >" + cmd.toString() + "<");
+            }
+            // Domintell specifies 25ms delay between messages
+            try {
+               Thread.sleep(25);
+            } catch (InterruptedException e) {
+               break;
             }
           }
         }
@@ -343,6 +387,10 @@ public class DomintellGateway {
                 }
                 // Get out of our read loop, this will terminate the thread
                break;
+            } else if (packetText.equals("INFO:World:INFO")) {
+               log.debug("Domintell system replied to HELLO");
+            } else if (packetText.equals("PONG")) {
+               log.debug("Domintell system replied to PING");
             } else if (dateTimePattern.matcher(packetText).matches()) {
                log.debug("Domintell system reported date/time: " + packetText);
             } else {
