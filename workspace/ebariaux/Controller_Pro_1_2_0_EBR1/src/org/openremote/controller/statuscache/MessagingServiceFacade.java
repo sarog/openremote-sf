@@ -93,26 +93,138 @@ public class MessagingServiceFacade extends EventFacade {
       }
    }
    
+   public void email(String fromEmail, String fromName, String toEmail, String subject, String message) {
+      log.debug("Sending '" + message + "' to " + toEmail);
+      
+      Deployer deployer = ServiceContext.getDeployer();
+      
+      String username = deployer.getUserName();
+      
+      String password = null;
+      try {
+         password = deployer.getPassword(username);
+      } catch (PasswordException e) {
+         log.warn("Failed to get password for user", e);
+      }
+
+      if (username == null || password == null) {
+         log.warn("Missing credential, messaging service not called");
+      }
+      
+      log.debug("Authenticated as " + username);
+      
+      ClientResource cr = null;
+      
+      try {
+         // For now, have direct communication with the REST service.
+         // In a future version, this should go through a central communication service between controller and Beehive.
+         // This service should then also ensure communication with backend is performed in the background.
+
+         // TODO: this URL must come from some configuration file
+          
+         // TODO: account oid must come from controller configuration (account controller is linked to)
+
+         cr = new ClientResource("http://54.195.247.29/openremote-messaging-0.1.0/v1/accounts/123/EMailMessages");
+         cr.setChallengeResponse(ChallengeScheme.HTTP_BASIC, username, password);
+         Representation rep = new JsonRepresentation(new JSONSerializer().exclude("*.class").deepSerialize(new EMailMessage(toEmail, subject, message, fromEmail, fromName)));
+         cr.post(rep);
+         
+         // TODO: retrieve return value and log if error
+         
+       } finally {
+         if (cr != null) {
+           cr.release();
+         }
+       }
+   }
+   
    // For now, have our own version of the "payload" class.
    // This is a good candidate to share in an object model with the backend service.
-   private class SMSMessage {
-      private List<String> recipients;
-      private String message;
 
-      public SMSMessage(String recipient, String message) {
-         super();
-         this.recipients = new ArrayList<String>();
-         this.recipients.add(recipient);
-         this.message = message;
-      }
+   // For now, have our own version of the "payload" class.
+   // This is a good candidate to share in an object model with the backend
+   // service.
 
-      public List<String> getRecipients() {
-         return recipients;
-      }
-      
-      public String getMessage() {
-         return message;
-      }
-      
+   private class BaseMessage
+   {
+     protected List<String> recipients;
+     protected String message;
+
+     @SuppressWarnings("unused")
+     public List<String> getRecipients()
+     {
+       return recipients;
+     }
+
+     @SuppressWarnings("unused")
+     public String getMessage()
+     {
+       return message;
+     }
+
+   }
+
+   private class SMSMessage extends BaseMessage
+   {
+     public SMSMessage(String recipient, String message)
+     {
+       this.recipients = new ArrayList<String>();
+       this.recipients.add(recipient);
+       this.message = message;
+     }
+   }
+
+   private class EMailMessage extends BaseMessage
+   {
+     private String subject;
+     private From from;
+
+     public EMailMessage(String recipient, String subject, String message, String fromEmail, String fromName)
+     {
+       this.recipients = new ArrayList<String>();
+       this.recipients.add(recipient);
+       this.subject = subject;
+       this.message = message;
+       this.from = new From(fromEmail, fromName);
+     }
+
+     @SuppressWarnings("unused")
+     public String getSubject()
+     {
+       return subject;
+     }
+
+     @SuppressWarnings("unused")
+     public From getFrom()
+     {
+       return from;
+     }
+
+   }
+   
+   private class From
+   {
+     String email;
+     String name;
+
+     public From(String email, String name)
+     {
+       super();
+       this.email = email;
+       this.name = name;
+     }
+
+     @SuppressWarnings("unused")
+     public String getEmail()
+     {
+       return email;
+     }
+
+     @SuppressWarnings("unused")
+     public String getName()
+     {
+       return name;
+     }
+
    }
 }
