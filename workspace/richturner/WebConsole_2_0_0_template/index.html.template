@@ -58,14 +58,14 @@
 			var buildVersionStr = "@VERSION@";
 			var controllerURL = "@CONTROLLERURL@"
 			var panelName = "@PANELNAME@";
-			var consoleWidth = "768";
-			var consoleHeight = "1024";
-			var orientation = "landscape";
+			var consoleWidth = "320";
+			var consoleHeight = "480";
+			var orientation = "portrait";
 			var fullscreen = "false";
-			var showConsoleFrame = "false";
-			var showToolbar = "false";
-			var showWelcome = "false";
-			var disableFailsafe = "true";
+			var showConsoleFrame = "true";
+			var showToolbar = "true";
+			var showWelcome = "true";
+			var disableFailsafe = "false";
 		</script>
 	    <script language="javascript" src="webconsole/webconsole.nocache.js"></script>
 	</head>
