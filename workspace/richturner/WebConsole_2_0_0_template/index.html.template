@@ -56,16 +56,16 @@
 		<script language="javascript">
 			window.alert = function() {};
 			var buildVersionStr = "@VERSION@";
-			var controllerURL = "@CONTROLLERURL@"
-			var panelName = "@PANELNAME@";
-			var consoleWidth = "320";
-			var consoleHeight = "480";
-			var orientation = "portrait";
-			var fullscreen = "false";
-			var showConsoleFrame = "true";
-			var showToolbar = "true";
-			var showWelcome = "true";
-			var disableFailsafe = "false";
+			//var controllerURL = "@CONTROLLERURL@"
+			//var panelName = "@PANELNAME@";
+			//var consoleWidth = "320";
+			//var consoleHeight = "480";
+			//var orientation = "portrait";
+			//var fullscreen = "false";
+			//var showConsoleFrame = "true";
+			//var showToolbar = "true";
+			//var showWelcome = "true";
+			//var disableFailsafe = "false";
 		</script>
 	    <script language="javascript" src="webconsole/webconsole.nocache.js"></script>
 	</head>
