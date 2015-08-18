@@ -462,7 +462,9 @@ import com.google.web.bindery.autobean.shared.AutoBean;
 
       if (param != null && (param.equalsIgnoreCase("true") || param.equalsIgnoreCase("false"))) {
         showWelcome = Boolean.parseBoolean(param);
-      } else {
+      }
+
+      if (showWelcome) {
 		    // Check local storage
 		    int version = getBuildVersion();
 	      
