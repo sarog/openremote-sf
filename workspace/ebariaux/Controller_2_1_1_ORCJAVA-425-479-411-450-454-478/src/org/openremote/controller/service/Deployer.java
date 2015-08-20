@@ -31,7 +31,6 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
-
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
@@ -39,10 +38,8 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
-
 import java.security.AccessController;
 import java.security.PrivilegedAction;
-
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.zip.ZipEntry;
@@ -50,18 +47,18 @@ import java.util.zip.ZipInputStream;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.FileUtils;
-
 import org.jdom.Attribute;
 import org.jdom.Element;
-
 import org.restlet.data.ChallengeScheme;
+import org.restlet.data.MediaType;
 import org.restlet.ext.json.JsonRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ClientResource;
+import org.restlet.resource.ResourceException;
+import org.restlet.util.Series;
 import org.restlet.Client;
 import org.restlet.Context;
 import org.restlet.data.Protocol;
-
 import org.springframework.security.providers.encoding.Md5PasswordEncoder;
 
 import flexjson.JSONDeserializer;
@@ -83,14 +80,10 @@ import org.openremote.controller.model.XMLMapping;
 import org.openremote.controller.model.sensor.Sensor;
 import org.openremote.controller.statuscache.StatusCache;
 import org.openremote.controller.utils.Logger;
-
 import org.openremote.model.DeviceDiscovery;
-
 import org.openremote.rest.GenericResourceResultWithErrorMessage;
-
 import org.openremote.security.KeyManager;
 import org.openremote.security.PasswordManager;
-
 import org.openremote.useraccount.domain.ControllerDTO;
 
 
@@ -261,6 +254,8 @@ public class Deployer
    */
   protected Set<DeviceDiscovery> discoveredDevicesToAnnounce =
       new CopyOnWriteArraySet<DeviceDiscovery>();
+  
+  private Set<String> discoveredDevicesIdentifiersToRemove = new CopyOnWriteArraySet<String>();
 
   /**
    * Reference to the thread handling the controller announcement notifications
@@ -779,7 +774,17 @@ public class Deployer
   {
     discoveredDevicesToAnnounce.addAll(discoveredDevices);
   }
+  
+  public void removeDeviceDiscoveryIdentifiers(Set<String> identifiers)
+  {
+     discoveredDevicesIdentifiersToRemove.addAll(identifiers);
+  }
 
+  
+  // TODO: must add some logic to ensure consistency is maintained between the 2 sets
+  // if we add a device that's currently flagged to be removed -> remove from removed list
+  // if we remote a device that's currently flagged for addition -> remove from announce list
+  
 
   /**
    * Method is called by the ConfigManageController which is invoked by index.html
@@ -2108,69 +2113,53 @@ public class Deployer
       }
 
       log.info("Starting device discovery service...");
-
-      while (true)
-      {
+      
+      while (true) {
         log.debug("checking for discovered devices...");
 
-        if (!discoveredDevicesToAnnounce.isEmpty())
-        {
-          synchronized (discoveredDevicesToAnnounce)
-          {
-            ClientResource cr = null;
+        if (!discoveredDevicesToAnnounce.isEmpty()) {
+          synchronized (discoveredDevicesToAnnounce) {
 
-            try
-            {
-              cr = new ClientResource(
-                  controllerConfig.getBeehiveDeviceDiscoveryServiceRESTRootUrl() + "discoveredDevices"
-              );
+            for (DeviceDiscovery dd : discoveredDevicesToAnnounce) {
+               
+               // TODO: refactor communication code in dedicated method
+               
+               Representation rep = new JsonRepresentation(dd.toJSONString());
+               rep.setMediaType(MediaType.valueOf("application/vnd.openremote.device-discovery+json"));
+               
+               ClientResource cr = null;
+               try {
+                 cr = new ClientResource(controllerConfig.getBeehiveDeviceDiscoveryServiceRESTRootUrl() + "devicediscovery/" + dd.getDeviceIdentifier());
+              
+                 // TODO: only retrieve username/password once at top of loop
+                 String username = getUserName();
+                 if (username == null || username.equals("")) {
+                   log.error("Unable to retrieve username for device discovery API call. Skipped...");
+                 } else {
+                   cr.setChallengeResponse(ChallengeScheme.HTTP_BASIC, username, getPassword(username));
+                 }
+                
+                 System.out.println("Representation to post is " + rep.getText());
 
-              String username = getUserName();
-
-              if (username == null || username.equals(""))
-              {
-                log.error("Unable to retrieve username for device discovery API call. Skipped...");
-              }
-
-              else
-              {
-                cr.setChallengeResponse(ChallengeScheme.HTTP_BASIC, username, getPassword(username));
-
-                Representation rep = new JsonRepresentation(
-                    new JSONSerializer().exclude("*.class").deepSerialize(discoveredDevicesToAnnounce)
-                );
-
-                Representation result = cr.post(rep);
-
-                GenericResourceResultWithErrorMessage res = new JSONDeserializer<GenericResourceResultWithErrorMessage>()
-                    .use(null, GenericResourceResultWithErrorMessage.class)
-                    .use("result", ArrayList.class)
-                    .use("result.values", Long.class)
-                    .deserialize(result.getText());
-
-                if (res.getErrorMessage() != null)
-                {
-                   throw new RuntimeException(res.getErrorMessage());
-                }
-
-                discoveredDevicesToAnnounce.clear();
-              }
-            }
-
-            catch (Exception e)
-            {
-              log.error("Could not announce discovered devices", e);
-            }
-
-            finally
-            {
-              if (cr != null)
-              {
-                cr.release();
-              }
-            }
+                 try {
+                   Representation result = cr.post(rep);
+                   System.out.println("Posted " + result);
+                   discoveredDevicesToAnnounce.remove(dd);
+                 } catch (ResourceException e) {
+                   e.printStackTrace();
+                 }
+               } catch (Exception e) {
+                 log.error("Could not announce discovered devices", e); // TODO: this is only one device, not all of them
+               } finally {
+                 if (cr != null) {
+                   cr.release();
+                 }
+               }
+             }
           }
         }
+        
+        // TODO: handle device delete
 
         try
         {
