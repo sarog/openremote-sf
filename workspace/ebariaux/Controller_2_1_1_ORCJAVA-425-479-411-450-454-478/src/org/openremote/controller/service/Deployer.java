@@ -2118,7 +2118,7 @@ public class Deployer
       while (true) {
         log.debug("checking for discovered devices...");
 
-        if (!discoveredDevicesToAnnounce.isEmpty()) {
+        if (!discoveredDevicesToAnnounce.isEmpty() || !discoveredDevicesIdentifiersToRemove.isEmpty()) {
           ChallengeResponse challengeResponse = null;
           String username = getUserName();
           if (username == null || username.equals("")) {
@@ -2132,44 +2132,26 @@ public class Deployer
           }
            
           synchronized (discoveredDevicesToAnnounce) {
-
-            for (DeviceDiscovery dd : discoveredDevicesToAnnounce) {
-               
-               // TODO: refactor communication code in dedicated method
-               
-               Representation rep = new JsonRepresentation(dd.toJSONString());
-               rep.setMediaType(MediaType.valueOf("application/vnd.openremote.device-discovery+json"));
-               
-               ClientResource cr = null;
+            for (DeviceDiscovery dd : discoveredDevicesToAnnounce) {               
+              try {
+                postDeviceDiscovery(dd, challengeResponse);
+                discoveredDevicesToAnnounce.remove(dd);
+              } catch (Exception e) {
+                log.error("Could not announce discovered device", e);
+              }
+            }
+            
+            for (String ddIdentifier : discoveredDevicesIdentifiersToRemove) {
                try {
-                 cr = new ClientResource(controllerConfig.getBeehiveDeviceDiscoveryServiceRESTRootUrl() + "devicediscovery/" + dd.getDeviceIdentifier());
-              
-                 if (challengeResponse != null) {
-                    cr.setChallengeResponse(challengeResponse);
-                 }
-                
-                 System.out.println("Representation to post is " + rep.getText());
-
-                 try {
-                   Representation result = cr.post(rep);
-                   System.out.println("Posted " + result);
-                   discoveredDevicesToAnnounce.remove(dd);
-                 } catch (ResourceException e) {
-                   e.printStackTrace();
-                 }
-               } catch (Exception e) {
-                 log.error("Could not announce discovered devices", e); // TODO: this is only one device, not all of them
-               } finally {
-                 if (cr != null) {
-                   cr.release();
-                 }
-               }
-             }
+                  deleteDeviceDiscovery(ddIdentifier, challengeResponse);
+                  discoveredDevicesIdentifiersToRemove.remove(ddIdentifier);
+                } catch (Exception e) {
+                  log.error("Could not remove discovered device", e);
+                }
+            }
           }
         }
         
-        // TODO: handle device delete
-
         try
         {
           Thread.sleep(1000 * 60);
@@ -2183,7 +2165,50 @@ public class Deployer
         }
       }
     }
+    
+    private void postDeviceDiscovery(DeviceDiscovery dd, ChallengeResponse challengeResponse) throws IOException
+    {
+      Representation rep = new JsonRepresentation(dd.toJSONString());
+      rep.setMediaType(MediaType.valueOf("application/vnd.openremote.device-discovery+json"));
+       
+      ClientResource cr = null;
+      try {
+        cr = new ClientResource(controllerConfig.getBeehiveDeviceDiscoveryServiceRESTRootUrl() + "devicediscovery/" + dd.getDeviceIdentifier());
+      
+        if (challengeResponse != null) {
+          cr.setChallengeResponse(challengeResponse);
+        }
+        
+        System.out.println("Representation to post is " + rep.getText());
 
+        Representation result = cr.post(rep);
+        System.out.println("Posted " + result);
+      } finally {
+        if (cr != null) {
+          cr.release();
+        }
+      }
+    }
+    
+    private void deleteDeviceDiscovery(String ddIdentifier, ChallengeResponse challengeResponse) throws IOException
+    {
+      ClientResource cr = null;
+      try {
+        cr = new ClientResource(controllerConfig.getBeehiveDeviceDiscoveryServiceRESTRootUrl() + "devicediscovery/" + ddIdentifier);
+      
+        if (challengeResponse != null) {
+          cr.setChallengeResponse(challengeResponse);
+        }
+        
+        Representation result = cr.delete();
+        System.out.println("Deleted " + result);
+      } finally {
+        if (cr != null) {
+          cr.release();
+        }
+      }
+    }
+    
   }
 
   public void unlinkController()
