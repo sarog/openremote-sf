@@ -49,6 +49,7 @@ import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.FileUtils;
 import org.jdom.Attribute;
 import org.jdom.Element;
+import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.MediaType;
 import org.restlet.ext.json.JsonRepresentation;
@@ -2118,6 +2119,18 @@ public class Deployer
         log.debug("checking for discovered devices...");
 
         if (!discoveredDevicesToAnnounce.isEmpty()) {
+          ChallengeResponse challengeResponse = null;
+          String username = getUserName();
+          if (username == null || username.equals("")) {
+            log.error("Unable to retrieve username for device discovery API call. Will not authenticate calls...");
+          } else {
+            try {
+              challengeResponse = new ChallengeResponse(ChallengeScheme.HTTP_BASIC, username, getPassword(username));
+            } catch (PasswordException e) {
+              log.error("Unable to retrieve password for device discovery API call. Will not authenticate calls...");
+            }
+          }
+           
           synchronized (discoveredDevicesToAnnounce) {
 
             for (DeviceDiscovery dd : discoveredDevicesToAnnounce) {
@@ -2131,12 +2144,8 @@ public class Deployer
                try {
                  cr = new ClientResource(controllerConfig.getBeehiveDeviceDiscoveryServiceRESTRootUrl() + "devicediscovery/" + dd.getDeviceIdentifier());
               
-                 // TODO: only retrieve username/password once at top of loop
-                 String username = getUserName();
-                 if (username == null || username.equals("")) {
-                   log.error("Unable to retrieve username for device discovery API call. Skipped...");
-                 } else {
-                   cr.setChallengeResponse(ChallengeScheme.HTTP_BASIC, username, getPassword(username));
+                 if (challengeResponse != null) {
+                    cr.setChallengeResponse(challengeResponse);
                  }
                 
                  System.out.println("Representation to post is " + rep.getText());
