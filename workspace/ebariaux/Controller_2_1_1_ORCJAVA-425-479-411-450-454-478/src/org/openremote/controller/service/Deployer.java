@@ -773,19 +773,33 @@ public class Deployer
   //
   public void announceDeviceDiscovery(Set<DeviceDiscovery> discoveredDevices)
   {
-    discoveredDevicesToAnnounce.addAll(discoveredDevices);
+    synchronized (discoveredDevicesToAnnounce) {
+      discoveredDevicesToAnnounce.addAll(discoveredDevices);
+      
+      // If device was scheduled to be removed, don't remove it, as it's being added
+      // TODO: this does not prevent all issues, add might result in 409 if device was added before
+      for (DeviceDiscovery dd : discoveredDevices) {
+        if (discoveredDevicesIdentifiersToRemove.contains(dd.getDeviceIdentifier())) {
+          discoveredDevicesIdentifiersToRemove.remove(dd.getDeviceIdentifier());
+        }
+      }
+    }
   }
   
   public void removeDeviceDiscoveryIdentifiers(Set<String> identifiers)
   {
-     discoveredDevicesIdentifiersToRemove.addAll(identifiers);
+    synchronized (discoveredDevicesToAnnounce) {
+      discoveredDevicesIdentifiersToRemove.addAll(identifiers);
+      
+      // If device was scheduled to be announced, don't add it, as it's being removed
+      // TODO: this does not prevent all issues, delete might result in 404 if device was never announced
+      for (DeviceDiscovery dd : discoveredDevicesToAnnounce) {
+        if (identifiers.contains(dd.getDeviceIdentifier())) {
+          discoveredDevicesToAnnounce.remove(dd);
+        }
+      }
+    }
   }
-
-  
-  // TODO: must add some logic to ensure consistency is maintained between the 2 sets
-  // if we add a device that's currently flagged to be removed -> remove from removed list
-  // if we remote a device that's currently flagged for addition -> remove from announce list
-  
 
   /**
    * Method is called by the ConfigManageController which is invoked by index.html
