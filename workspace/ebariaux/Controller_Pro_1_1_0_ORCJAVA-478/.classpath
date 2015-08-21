@@ -55,5 +55,6 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/ORCommons"/>
 	<classpathentry kind="lib" path="lib/jzmq/zmq.jar"/>
 	<classpathentry kind="lib" path="lib/drools-5.1.1/drools-compiler-5.1.1_patched.jar"/>
+	<classpathentry kind="lib" path="lib/object-model-0.2.0/openremote-object-model-0.2.0_WIP.jar"/>
 	<classpathentry kind="output" path="web/WEB-INF/classes"/>
 </classpath>

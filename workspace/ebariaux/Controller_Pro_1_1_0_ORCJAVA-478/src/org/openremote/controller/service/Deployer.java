@@ -32,7 +32,6 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
-
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
@@ -40,10 +39,8 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
-
 import java.security.AccessController;
 import java.security.PrivilegedAction;
-
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.zip.ZipEntry;
@@ -51,15 +48,19 @@ import java.util.zip.ZipInputStream;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.FileUtils;
-
 import org.jdom.Attribute;
 import org.jdom.Element;
-
+import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ChallengeScheme;
+import org.restlet.data.MediaType;
 import org.restlet.ext.json.JsonRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ClientResource;
-
+import org.restlet.resource.ResourceException;
+import org.restlet.util.Series;
+import org.restlet.Client;
+import org.restlet.Context;
+import org.restlet.data.Protocol;
 import org.springframework.security.providers.encoding.Md5PasswordEncoder;
 
 import flexjson.JSONDeserializer;
@@ -81,14 +82,10 @@ import org.openremote.controller.model.XMLMapping;
 import org.openremote.controller.model.sensor.Sensor;
 import org.openremote.controller.statuscache.StatusCache;
 import org.openremote.controller.utils.Logger;
-
 import org.openremote.model.DeviceDiscovery;
-
 import org.openremote.rest.GenericResourceResultWithErrorMessage;
-
 import org.openremote.security.KeyManager;
 import org.openremote.security.PasswordManager;
-
 import org.openremote.useraccount.domain.ControllerDTO;
 import org.restlet.Client;
 import org.restlet.Context;
@@ -268,6 +265,8 @@ public class Deployer
    */
   protected Set<DeviceDiscovery> discoveredDevicesToAnnounce =
       new CopyOnWriteArraySet<DeviceDiscovery>();
+  
+  private Set<String> discoveredDevicesIdentifiersToRemove = new CopyOnWriteArraySet<String>();
 
   /**
    * Reference to the thread handling the controller announcement notifications
@@ -781,9 +780,33 @@ public class Deployer
   //
   public void announceDeviceDiscovery(Set<DeviceDiscovery> discoveredDevices)
   {
-    discoveredDevicesToAnnounce.addAll(discoveredDevices);
+    synchronized (discoveredDevicesToAnnounce) {
+      discoveredDevicesToAnnounce.addAll(discoveredDevices);
+      
+      // If device was scheduled to be removed, don't remove it, as it's being added
+      // TODO: this does not prevent all issues, add might result in 409 if device was added before
+      for (DeviceDiscovery dd : discoveredDevices) {
+        if (discoveredDevicesIdentifiersToRemove.contains(dd.getDeviceIdentifier())) {
+          discoveredDevicesIdentifiersToRemove.remove(dd.getDeviceIdentifier());
+        }
+      }
+    }
   }
-
+  
+  public void removeDeviceDiscoveryIdentifiers(Set<String> identifiers)
+  {
+    synchronized (discoveredDevicesToAnnounce) {
+      discoveredDevicesIdentifiersToRemove.addAll(identifiers);
+      
+      // If device was scheduled to be announced, don't add it, as it's being removed
+      // TODO: this does not prevent all issues, delete might result in 404 if device was never announced
+      for (DeviceDiscovery dd : discoveredDevicesToAnnounce) {
+        if (identifiers.contains(dd.getDeviceIdentifier())) {
+          discoveredDevicesToAnnounce.remove(dd);
+        }
+      }
+    }
+  }
 
   /**
    * Method is called by the ConfigManageController which is invoked by index.html
@@ -2114,61 +2137,44 @@ public class Deployer
       }
 
       log.info("Starting device discovery service...");
-
-      while (true)
-      {
+      
+      while (true) {
         log.debug("checking for discovered devices...");
 
-        if (!discoveredDevicesToAnnounce.isEmpty())
-        {
-          synchronized (discoveredDevicesToAnnounce)
-          {
-            ClientResource cr = new ClientResource(
-                controllerConfig.getBeehiveDeviceDiscoveryServiceRESTRootUrl() + "discoveredDevices"
-            );
-
-            try
-            {
-              String username = getUserName();
-
-              if (username == null || username.equals(""))
-              {
-                log.error("Unable to retrieve username for device discovery API call. Skipped...");
-              }
-
-              else
-              {
-                cr.setChallengeResponse(ChallengeScheme.HTTP_BASIC, username, getPassword(username));
-
-                Representation rep = new JsonRepresentation(
-                    new JSONSerializer().exclude("*.class").deepSerialize(discoveredDevicesToAnnounce)
-                );
-
-                Representation result = cr.post(rep);
-                cr.release();
-
-                GenericResourceResultWithErrorMessage res = new JSONDeserializer<GenericResourceResultWithErrorMessage>()
-                    .use(null, GenericResourceResultWithErrorMessage.class)
-                    .use("result", ArrayList.class)
-                    .use("result.values", Long.class)
-                    .deserialize(result.getText());
-
-                if (res.getErrorMessage() != null)
-                {
-                   throw new RuntimeException(res.getErrorMessage());
-                }
-
-                discoveredDevicesToAnnounce.clear();
+        if (!discoveredDevicesToAnnounce.isEmpty() || !discoveredDevicesIdentifiersToRemove.isEmpty()) {
+          ChallengeResponse challengeResponse = null;
+          String username = getUserName();
+          if (username == null || username.equals("")) {
+            log.error("Unable to retrieve username for device discovery API call. Will not authenticate calls...");
+          } else {
+            try {
+              challengeResponse = new ChallengeResponse(ChallengeScheme.HTTP_BASIC, username, getPassword(username));
+            } catch (PasswordException e) {
+              log.error("Unable to retrieve password for device discovery API call. Will not authenticate calls...");
+            }
+          }
+           
+          synchronized (discoveredDevicesToAnnounce) {
+            for (DeviceDiscovery dd : discoveredDevicesToAnnounce) {               
+              try {
+                postDeviceDiscovery(dd, challengeResponse);
+                discoveredDevicesToAnnounce.remove(dd);
+              } catch (Exception e) {
+                log.error("Could not announce discovered device", e);
               }
             }
-
-            catch (Exception e)
-            {
-              log.error("Could not announce discovered devices", e);
+            
+            for (String ddIdentifier : discoveredDevicesIdentifiersToRemove) {
+               try {
+                  deleteDeviceDiscovery(ddIdentifier, challengeResponse);
+                  discoveredDevicesIdentifiersToRemove.remove(ddIdentifier);
+                } catch (Exception e) {
+                  log.error("Could not remove discovered device", e);
+                }
             }
           }
         }
-
+        
         try
         {
           Thread.sleep(1000 * 60);
@@ -2182,7 +2188,50 @@ public class Deployer
         }
       }
     }
+    
+    private void postDeviceDiscovery(DeviceDiscovery dd, ChallengeResponse challengeResponse) throws IOException
+    {
+      Representation rep = new JsonRepresentation(dd.toJSONString());
+      rep.setMediaType(MediaType.valueOf("application/vnd.openremote.device-discovery+json"));
+       
+      ClientResource cr = null;
+      try {
+        cr = new ClientResource(controllerConfig.getBeehiveDeviceDiscoveryServiceRESTRootUrl() + "devicediscovery/" + dd.getDeviceIdentifier());
+      
+        if (challengeResponse != null) {
+          cr.setChallengeResponse(challengeResponse);
+        }
+        
+        System.out.println("Representation to post is " + rep.getText());
 
+        Representation result = cr.post(rep);
+        System.out.println("Posted " + result);
+      } finally {
+        if (cr != null) {
+          cr.release();
+        }
+      }
+    }
+    
+    private void deleteDeviceDiscovery(String ddIdentifier, ChallengeResponse challengeResponse) throws IOException
+    {
+      ClientResource cr = null;
+      try {
+        cr = new ClientResource(controllerConfig.getBeehiveDeviceDiscoveryServiceRESTRootUrl() + "devicediscovery/" + ddIdentifier);
+      
+        if (challengeResponse != null) {
+          cr.setChallengeResponse(challengeResponse);
+        }
+        
+        Representation result = cr.delete();
+        System.out.println("Deleted " + result);
+      } finally {
+        if (cr != null) {
+          cr.release();
+        }
+      }
+    }
+    
   }
 
   public void unlinkController()
