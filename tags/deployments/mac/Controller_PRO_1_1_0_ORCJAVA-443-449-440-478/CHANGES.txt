@@ -11,6 +11,14 @@ ORCJAVA-449
   - Replace RXTX library with nrjavaserial library
     (Rainer Hitz)
 
+ORCJAVA-478
+===========
+
+ - Update Device Discovery to Object Model API
+   (Juha Lindfors, Eric Bariaux)
+
+   Work-In-Progress
+
 Controller Pro 1.1.0
 ====================
 

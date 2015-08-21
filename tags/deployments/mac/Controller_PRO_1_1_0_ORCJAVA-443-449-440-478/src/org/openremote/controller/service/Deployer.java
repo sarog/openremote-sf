@@ -1,6 +1,7 @@
 /*
  * OpenRemote, the Home of the Digital Home.
  * Copyright 2008-2014, OpenRemote Inc.
+ * Copyright 2008-2015, Juha Lindfors. All rights reserved.
  *
  * See the contributors.txt file in the distribution for a
  * full listing of individual contributors.
@@ -40,10 +41,8 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -51,6 +50,22 @@ import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.FileUtils;
 import org.jdom.Attribute;
 import org.jdom.Element;
+import org.restlet.data.ChallengeResponse;
+import org.restlet.data.ChallengeScheme;
+import org.restlet.data.MediaType;
+import org.restlet.ext.json.JsonRepresentation;
+import org.restlet.representation.Representation;
+import org.restlet.resource.ClientResource;
+import org.restlet.resource.ResourceException;
+import org.restlet.util.Series;
+import org.restlet.Client;
+import org.restlet.Context;
+import org.restlet.data.Protocol;
+import org.springframework.security.providers.encoding.Md5PasswordEncoder;
+
+import flexjson.JSONDeserializer;
+import flexjson.JSONSerializer;
+
 import org.openremote.controller.Constants;
 import org.openremote.controller.ControllerConfiguration;
 import org.openremote.controller.OpenRemoteRuntime;
@@ -67,7 +82,7 @@ import org.openremote.controller.model.XMLMapping;
 import org.openremote.controller.model.sensor.Sensor;
 import org.openremote.controller.statuscache.StatusCache;
 import org.openremote.controller.utils.Logger;
-import org.openremote.devicediscovery.domain.DiscoveredDeviceDTO;
+import org.openremote.model.DeviceDiscovery;
 import org.openremote.rest.GenericResourceResultWithErrorMessage;
 import org.openremote.security.KeyManager;
 import org.openremote.security.PasswordManager;
@@ -81,8 +96,11 @@ import org.restlet.representation.Representation;
 import org.restlet.resource.ClientResource;
 import org.springframework.security.providers.encoding.Md5PasswordEncoder;
 
-import flexjson.JSONDeserializer;
-import flexjson.JSONSerializer;
+
+// TODO : use is deprecated, to be removed
+import org.openremote.devicediscovery.domain.DiscoveredDeviceAttrDTO;
+import org.openremote.devicediscovery.domain.DiscoveredDeviceDTO;
+
 
 /**
  * Deployer service centralizes access to the controller's runtime state information. It maintains
@@ -106,7 +124,7 @@ import flexjson.JSONSerializer;
  * @see #softRestart
  * @see #getSensor
  *
- * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
+ * @author Juha Lindfors
  */
 public class Deployer
 {
@@ -241,9 +259,14 @@ public class Deployer
   private ControllerDTO controllerDTO;
 
   /**
-   * This list holds all discovered devices which are not announced to beehive yet 
+   * This list holds all discovered devices which are not announced to beehive yet
+   *
+   * TODO : the only reason this is not private is to satisfy a unit test
    */
-  private List<DiscoveredDeviceDTO> discoveredDevicesToAnnounce = new ArrayList<DiscoveredDeviceDTO>();
+  protected Set<DeviceDiscovery> discoveredDevicesToAnnounce =
+      new CopyOnWriteArraySet<DeviceDiscovery>();
+  
+  private Set<String> discoveredDevicesIdentifiersToRemove = new CopyOnWriteArraySet<String>();
 
   /**
    * Reference to the thread handling the controller announcement notifications
@@ -256,8 +279,9 @@ public class Deployer
   private DiscoveredDevicesAnnouncement discoveredDevicesAnnouncement;
   
   /**
-   * Reference to the service which checks Beehive regularly for any new actions that this controller should perform<br>
-   * For example unlink from Beehive, download new design, start proxy, update controller, ....
+   * Reference to the service which checks Beehive regularly for any new actions that this
+   * controller should perform<br> For example unlink from Beehive, download new design,
+   * start proxy, update controller, ....
    */
   private BeehiveCommandCheckService beehiveCommandCheckService;
 
@@ -705,15 +729,83 @@ public class Deployer
 
 
   /**
-   * Method is called by the commandBuilder of a protocol if the commandBuilders discovers devices for his
-   * protocol that should be announced to Beehive.
+   * Method is called by the commandBuilder of a protocol if the commandBuilders discovers devices
+   * for his protocol that should be announced to Beehive.
    * 
-   * @param list - the list of devices to announce
+   * @param devices
+   *            the list of devices to announce
+   *
+   * @deprecated
+   *            Use {@link #announceDeviceDiscovery(java.util.Set)} instead
    */
-  public void announceDiscoveredDevices(List<DiscoveredDeviceDTO> list) {
-     synchronized (discoveredDevicesToAnnounce) {
-        discoveredDevicesToAnnounce.addAll(list);
-     }
+  @Deprecated public void announceDiscoveredDevices(List<DiscoveredDeviceDTO> devices)
+  {
+    Set<DeviceDiscovery> discoveredDevices = new HashSet<DeviceDiscovery>(devices.size());
+
+    for (DiscoveredDeviceDTO device : devices)
+    {
+      String name = device.getName();
+      String protocol = device.getProtocol();
+      String model = device.getModel();
+
+      String type = device.getType();
+
+      List<DiscoveredDeviceAttrDTO> attributes = device.getDeviceAttrs();
+      Map<String, String> attrs = new HashMap<String, String>(attributes.size());
+
+      for (DiscoveredDeviceAttrDTO attr : attributes)
+      {
+        attrs.put(attr.getName(), attr.getValue());
+      }
+
+      DeviceDiscovery discovery = new DeviceDiscovery(name, protocol, model, type, attrs);
+
+      discoveredDevices.add(discovery);
+    }
+
+    discoveredDevicesToAnnounce.addAll(discoveredDevices);
+  }
+
+  //
+  // TODO :
+  //
+  //   Alternative API for device discoveries. This is a temporary utility method that accepts
+  //   a new version of the DeviceDiscovery instance. Internally it is still converted to the
+  //   previous model instance.
+  //
+  //   Slight differences in API design:
+  //     - Use of sets instead of lists (order is not relevant)
+  //     - New DeviceDiscovery does not use an additional tuple class for attributes but
+  //       an internal map instead
+  //
+  public void announceDeviceDiscovery(Set<DeviceDiscovery> discoveredDevices)
+  {
+    synchronized (discoveredDevicesToAnnounce) {
+      discoveredDevicesToAnnounce.addAll(discoveredDevices);
+      
+      // If device was scheduled to be removed, don't remove it, as it's being added
+      // TODO: this does not prevent all issues, add might result in 409 if device was added before
+      for (DeviceDiscovery dd : discoveredDevices) {
+        if (discoveredDevicesIdentifiersToRemove.contains(dd.getDeviceIdentifier())) {
+          discoveredDevicesIdentifiersToRemove.remove(dd.getDeviceIdentifier());
+        }
+      }
+    }
+  }
+  
+  public void removeDeviceDiscoveryIdentifiers(Set<String> identifiers)
+  {
+    synchronized (discoveredDevicesToAnnounce) {
+      discoveredDevicesIdentifiersToRemove.addAll(identifiers);
+      
+      // If device was scheduled to be announced, don't add it, as it's being removed
+      // TODO: this does not prevent all issues, delete might result in 404 if device was never announced
+      for (DeviceDiscovery dd : discoveredDevicesToAnnounce) {
+        if (identifiers.contains(dd.getDeviceIdentifier())) {
+          discoveredDevicesToAnnounce.remove(dd);
+        }
+      }
+    }
   }
 
   /**
@@ -2007,9 +2099,8 @@ public class Deployer
 
   
   /**
-   * Handles the announcement of discovered devices.<br>
-   * When discovered devices are available and the controller is linked to an account,<br>
-   * those devices are sent to Beehive.
+   * Handles the announcement of discovered devices. When discovered devices are available and
+   * the controller is linked to an account, those devices are sent to Beehive.
    */
   private class DiscoveredDevicesAnnouncement extends Thread
   {
@@ -2046,61 +2137,44 @@ public class Deployer
       }
 
       log.info("Starting device discovery service...");
-
-      while (true)
-      {
+      
+      while (true) {
         log.debug("checking for discovered devices...");
 
-        if (!discoveredDevicesToAnnounce.isEmpty())
-        {
-          synchronized (discoveredDevicesToAnnounce)
-          {
-            ClientResource cr = new ClientResource(
-                controllerConfig.getBeehiveDeviceDiscoveryServiceRESTRootUrl() + "discoveredDevices"
-            );
-
-            try
-            {
-              String username = getUserName();
-
-              if (username == null || username.equals(""))
-              {
-                log.error("Unable to retrieve username for device discovery API call. Skipped...");
-              }
-
-              else
-              {
-                cr.setChallengeResponse(ChallengeScheme.HTTP_BASIC, username, getPassword(username));
-
-                Representation rep = new JsonRepresentation(
-                    new JSONSerializer().exclude("*.class").deepSerialize(discoveredDevicesToAnnounce)
-                );
-
-                Representation result = cr.post(rep);
-                cr.release();
-
-                GenericResourceResultWithErrorMessage res = new JSONDeserializer<GenericResourceResultWithErrorMessage>()
-                    .use(null, GenericResourceResultWithErrorMessage.class)
-                    .use("result", ArrayList.class)
-                    .use("result.values", Long.class)
-                    .deserialize(result.getText());
-
-                if (res.getErrorMessage() != null)
-                {
-                   throw new RuntimeException(res.getErrorMessage());
-                }
-
-                discoveredDevicesToAnnounce.clear();
+        if (!discoveredDevicesToAnnounce.isEmpty() || !discoveredDevicesIdentifiersToRemove.isEmpty()) {
+          ChallengeResponse challengeResponse = null;
+          String username = getUserName();
+          if (username == null || username.equals("")) {
+            log.error("Unable to retrieve username for device discovery API call. Will not authenticate calls...");
+          } else {
+            try {
+              challengeResponse = new ChallengeResponse(ChallengeScheme.HTTP_BASIC, username, getPassword(username));
+            } catch (PasswordException e) {
+              log.error("Unable to retrieve password for device discovery API call. Will not authenticate calls...");
+            }
+          }
+           
+          synchronized (discoveredDevicesToAnnounce) {
+            for (DeviceDiscovery dd : discoveredDevicesToAnnounce) {               
+              try {
+                postDeviceDiscovery(dd, challengeResponse);
+                discoveredDevicesToAnnounce.remove(dd);
+              } catch (Exception e) {
+                log.error("Could not announce discovered device", e);
               }
             }
-
-            catch (Exception e)
-            {
-              log.error("Could not announce discovered devices", e);
+            
+            for (String ddIdentifier : discoveredDevicesIdentifiersToRemove) {
+               try {
+                  deleteDeviceDiscovery(ddIdentifier, challengeResponse);
+                  discoveredDevicesIdentifiersToRemove.remove(ddIdentifier);
+                } catch (Exception e) {
+                  log.error("Could not remove discovered device", e);
+                }
             }
           }
         }
-
+        
         try
         {
           Thread.sleep(1000 * 60);
@@ -2114,7 +2188,50 @@ public class Deployer
         }
       }
     }
+    
+    private void postDeviceDiscovery(DeviceDiscovery dd, ChallengeResponse challengeResponse) throws IOException
+    {
+      Representation rep = new JsonRepresentation(dd.toJSONString());
+      rep.setMediaType(MediaType.valueOf("application/vnd.openremote.device-discovery+json"));
+       
+      ClientResource cr = null;
+      try {
+        cr = new ClientResource(controllerConfig.getBeehiveDeviceDiscoveryServiceRESTRootUrl() + "devicediscovery/" + dd.getDeviceIdentifier());
+      
+        if (challengeResponse != null) {
+          cr.setChallengeResponse(challengeResponse);
+        }
+        
+        System.out.println("Representation to post is " + rep.getText());
 
+        Representation result = cr.post(rep);
+        System.out.println("Posted " + result);
+      } finally {
+        if (cr != null) {
+          cr.release();
+        }
+      }
+    }
+    
+    private void deleteDeviceDiscovery(String ddIdentifier, ChallengeResponse challengeResponse) throws IOException
+    {
+      ClientResource cr = null;
+      try {
+        cr = new ClientResource(controllerConfig.getBeehiveDeviceDiscoveryServiceRESTRootUrl() + "devicediscovery/" + ddIdentifier);
+      
+        if (challengeResponse != null) {
+          cr.setChallengeResponse(challengeResponse);
+        }
+        
+        Representation result = cr.delete();
+        System.out.println("Deleted " + result);
+      } finally {
+        if (cr != null) {
+          cr.release();
+        }
+      }
+    }
+    
   }
 
   public void unlinkController()
