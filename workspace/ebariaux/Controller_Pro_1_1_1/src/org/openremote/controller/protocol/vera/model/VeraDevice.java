@@ -1,5 +1,5 @@
 /*
- * OpenRemote, the Home of the Digital Home. Copyright 2008-2013, OpenRemote Inc.
+ * OpenRemote, the Home of the Digital Home. Copyright 2008-2015, OpenRemote Inc.
  * 
  * See the contributors.txt file in the distribution for a full listing of individual contributors.
  * 
@@ -19,6 +19,7 @@ package org.openremote.controller.protocol.vera.model;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.jdom.Element;
 import org.openremote.controller.model.sensor.Sensor;
 import org.openremote.controller.protocol.vera.VeraClient;
@@ -137,7 +138,7 @@ public abstract class VeraDevice {
       if (element.getAttributeValue("comment") != null) {
          this.comment = element.getAttributeValue("comment");
       }
-      if (element.getAttributeValue("batterylevel") != null) {
+      if (!StringUtils.isEmpty(element.getAttributeValue("batterylevel"))) {
          this.batteryLevel = Integer.parseInt(element.getAttributeValue("batterylevel"));
       }
       
