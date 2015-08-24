@@ -1,7 +1,7 @@
 ORCJAVA-489
 ===========
 
-  - Fixed: Issue parsing empty strings in status values
+  - Fixed: Issue parsing empty strings in status values by Vera protocol
 
 Controller Pro 1.1.0
 ====================
