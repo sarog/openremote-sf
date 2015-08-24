@@ -1,5 +1,6 @@
 package org.openremote.controller.protocol.vera.model;
 
+import org.apache.commons.lang.StringUtils;
 import org.jdom.Element;
 import org.openremote.controller.protocol.vera.VeraClient;
 import org.openremote.controller.protocol.vera.VeraCmd;
@@ -26,10 +27,10 @@ public class PowerMeter extends VeraDevice {
 
    @Override
    protected void updateDeviceSpecificStatus(Element element) {
-      if (element.getAttributeValue("watts") != null) {
+      if (!StringUtils.isEmpty(element.getAttributeValue("watts"))) {
          this.watts = Float.parseFloat(element.getAttributeValue("watts"));
       }
-      if (element.getAttributeValue("kwh") != null) {
+      if (!StringUtils.isEmpty(element.getAttributeValue("kwh"))) {
          this.kwh = Float.parseFloat(element.getAttributeValue("kwh"));
       }
    }
