@@ -1,5 +1,5 @@
 /*
- * OpenRemote, the Home of the Digital Home. Copyright 2008-2013, OpenRemote Inc.
+ * OpenRemote, the Home of the Digital Home. Copyright 2008-2015, OpenRemote Inc.
  * 
  * See the contributors.txt file in the distribution for a full listing of individual contributors.
  * 
