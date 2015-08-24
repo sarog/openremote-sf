@@ -1,5 +1,6 @@
 package org.openremote.controller.protocol.vera.model;
 
+import org.apache.commons.lang.StringUtils;
 import org.jdom.Element;
 import org.openremote.controller.protocol.vera.VeraClient;
 import org.openremote.controller.protocol.vera.VeraCmd;
@@ -22,7 +23,7 @@ public class HumiditySensor extends VeraDevice {
 
    @Override
    protected void updateDeviceSpecificStatus(Element element) {
-      if (element.getAttributeValue("humidity") != null) {
+      if (!StringUtils.isEmpty(element.getAttributeValue("humidity"))) {
          this.humidity = Float.parseFloat(element.getAttributeValue("humidity"));
       }
    }
