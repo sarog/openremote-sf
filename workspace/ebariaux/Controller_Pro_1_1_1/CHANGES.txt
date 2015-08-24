@@ -8,6 +8,8 @@ Bug Fixes:
   - Fixed: Drools exception when executing rules after controller xml has been reloaded (ORCJAVA-407)
   - Decode request path segments (Christian Bauer, ORCJAVA-471)
   - Update version of Restlet library used (fixed bug in Restlet thread management, ORCJAVA-476)
+  - Add more logging information on connection failure
+    when retrieving controller identity (ORCJAVA-459)
 
 Controller Pro 1.1.0
 ====================
