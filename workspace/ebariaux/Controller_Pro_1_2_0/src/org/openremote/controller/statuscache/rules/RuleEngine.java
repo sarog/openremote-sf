@@ -164,14 +164,15 @@ public class RuleEngine extends EventProcessor
         boolean debug = true;
         if (eventSources.keySet().contains(evt.getSourceID()))
         {
-           try
-           {
-             knowledgeSession.retract(eventSources.get(evt.getSourceID()));
-           }
-           finally
-           {
-             eventSources.remove(evt.getSourceID());
-           }
+          try
+          {
+            knowledgeSession.retract(eventSources.get(evt.getSourceID()));
+          }
+          finally
+          {
+            // Doing this in the finally to make sure we don't keep a reference to a fact when we should not (ORCJAVA-407)
+            eventSources.remove(evt.getSourceID());
+          }
           debug = false;
         }
 
@@ -359,6 +360,9 @@ public class RuleEngine extends EventProcessor
     }
     eventSources.clear();
 
+    // We're disposing of the knowledge base, don't keep references to any facts (ORCJAVA-407)
+    eventSources.clear();
+    
     kb = null;
   }
 

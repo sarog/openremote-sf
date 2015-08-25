@@ -1263,6 +1263,7 @@ public class BeehiveCommandCheckService
 
           catch (ConnectionException e)
           {
+            log.trace("Unable to retrieve controller identity", e);
             log.info("Unable to retrieve controller identity, retrying in {0} milliseconds...", DELAY);
           }
 

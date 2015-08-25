@@ -118,44 +118,71 @@ public class RrdGraphUrlCommand implements ExecutableCommand, EventListener {
             endOld.setTime(df.parse(tmp.end));
          }
          
+         boolean saveStartTime = false;
+         boolean saveEndTime = false;
+         
          if (command.equalsIgnoreCase("startMinus1Day")) {
             startOld.add(Calendar.DAY_OF_MONTH, -1);
+            saveStartTime = true;
          } else if (command.equalsIgnoreCase("startMinus1Hour")) {
             startOld.add(Calendar.HOUR_OF_DAY, -1);
+            saveStartTime = true;
          } else if (command.equalsIgnoreCase("startMinus1Month")) {
             startOld.add(Calendar.MONTH, -1);
+            saveStartTime = true;
          } else if (command.equalsIgnoreCase("startMinus1Year")) {
             startOld.add(Calendar.YEAR, -1);
+            saveStartTime = true;
          } else if (command.equalsIgnoreCase("endMinus1Hour")) {
             endOld.add(Calendar.HOUR_OF_DAY, -1);
+            saveEndTime = true;
          } else if (command.equalsIgnoreCase("endMinus1Day")) {
             endOld.add(Calendar.DAY_OF_MONTH, -1);
+            saveEndTime = true;
          } else if (command.equalsIgnoreCase("endMinus1Month")) {
             endOld.add(Calendar.MONTH, -1);
+            saveEndTime = true;
          } else if (command.equalsIgnoreCase("endMinus1Year")) {
             endOld.add(Calendar.YEAR, -1);
+            saveEndTime = true;
          } else if (command.equalsIgnoreCase("startPlus1Day")) {
             startOld.add(Calendar.DAY_OF_MONTH, 1);
+            saveStartTime = true;
          } else if (command.equalsIgnoreCase("startPlus1Hour")) {
             startOld.add(Calendar.HOUR_OF_DAY, 1);
+            saveStartTime = true;
          } else if (command.equalsIgnoreCase("startPlus1Month")) {
             startOld.add(Calendar.MONTH, 1);
+            saveStartTime = true;
          } else if (command.equalsIgnoreCase("startPlus1Year")) {
             startOld.add(Calendar.YEAR, 1);
+            saveStartTime = true;
          } else if (command.equalsIgnoreCase("endPlus1Hour")) {
             endOld.add(Calendar.HOUR_OF_DAY, 1);
+            saveEndTime = true;
          } else if (command.equalsIgnoreCase("endPlus1Day")) {
             endOld.add(Calendar.DAY_OF_MONTH, 1);
+            saveEndTime = true;
          } else if (command.equalsIgnoreCase("endPlus1Month")) {
             endOld.add(Calendar.MONTH, 1);
+            saveEndTime = true;
          } else if (command.equalsIgnoreCase("endPlus1Year")) {
             endOld.add(Calendar.YEAR, 1);
+            saveEndTime = true;
          }
          if (endOld.before(startOld)) {
             return;
          }
-         tmp.start = df.format(startOld.getTime());
-         tmp.end = df.format(endOld.getTime());
+         
+         if (saveStartTime)
+         {
+            tmp.start = df.format(startOld.getTime());
+         }
+         if (saveEndTime)
+         {
+            tmp.end = df.format(endOld.getTime());
+         }
+         
          tmp.sensor.update(createUrl(tmp));
       } catch (ParseException e) {
          // TODO Auto-generated catch block
@@ -195,10 +222,10 @@ public class RrdGraphUrlCommand implements ExecutableCommand, EventListener {
          cmd.port = "" + configuration.getWebappPort();
       }
       String url = "http://" + cmd.ip + ":" + cmd.port + "/controller/graph?name=" + cmd.graphName 
-         + "&start=" + cmd.start 
-         + "&end=" + cmd.end 
-         + "&width=" + cmd.width 
-         + "&height=" + cmd.height;
+         + "&amp;start=" + cmd.start 
+         + "&amp;end=" + cmd.end 
+         + "&amp;width=" + cmd.width 
+         + "&amp;height=" + cmd.height;
       return url;
    }
 }
