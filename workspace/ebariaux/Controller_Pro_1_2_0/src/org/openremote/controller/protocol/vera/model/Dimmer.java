@@ -1,5 +1,5 @@
 /*
- * OpenRemote, the Home of the Digital Home. Copyright 2008-2013, OpenRemote Inc.
+ * OpenRemote, the Home of the Digital Home. Copyright 2008-2015, OpenRemote Inc.
  * 
  * See the contributors.txt file in the distribution for a full listing of individual contributors.
  * 
@@ -16,6 +16,7 @@
  */
 package org.openremote.controller.protocol.vera.model;
 
+import org.apache.commons.lang.StringUtils;
 import org.jdom.Element;
 import org.openremote.controller.protocol.vera.VeraClient;
 import org.openremote.controller.protocol.vera.VeraCmd;
@@ -51,7 +52,7 @@ public class Dimmer extends Switch {
    @Override
    protected void updateDeviceSpecificStatus(Element element) {
       super.updateDeviceSpecificStatus(element);
-      if (element.getAttributeValue("level") != null) {
+      if (!StringUtils.isEmpty(element.getAttributeValue("level"))) {
          this.level = Integer.parseInt(element.getAttributeValue("level"));
       }
    }

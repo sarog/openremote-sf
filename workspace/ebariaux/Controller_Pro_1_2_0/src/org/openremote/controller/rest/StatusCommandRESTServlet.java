@@ -19,8 +19,6 @@
 */
 package org.openremote.controller.rest;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Logger;
@@ -50,24 +48,16 @@ public class StatusCommandRESTServlet extends RESTAPI {
 
    @Override
    protected void handleRequest(HttpServletRequest request, HttpServletResponse response) {
-      String url = request.getRequestURL().toString();
-      String regexp = "rest\\/status\\/(.*)";
-      Pattern pattern = Pattern.compile(regexp);
-      Matcher matcher = pattern.matcher(url);
-      String unParsedSensorIDs = null;
-
-      if (matcher.find()) {
-          unParsedSensorIDs = matcher.group(1);
-          try {
-              if (unParsedSensorIDs != null && !"".equals(unParsedSensorIDs)) {
-                 sendResponse(request, response, statusCommandService.readFromCache(unParsedSensorIDs));
-              }
-          } catch (ControllerException e) {
-              logger.error("CommandException occurs", e);
-              sendResponse(request, response, e.getErrorCode(), e.getMessage());
-          }
-      } else {
-         sendResponse(request, response, 400, "Bad REST Request, should be /rest/status/{sensor_id},{sensor_id}...");
-      }
+       if (request.getPathInfo() == null || request.getPathInfo().equals("/")) {
+           sendResponse(request, response, 400, "Bad REST Request, should be /rest/status/{sensor_id},{sensor_id}...");
+       } else {
+           String unParsedSensorIDs = request.getPathInfo().substring(1);
+           try {
+               sendResponse(request, response, statusCommandService.readFromCache(unParsedSensorIDs));
+           } catch (ControllerException e) {
+               logger.error("CommandException occurs", e);
+               sendResponse(request, response, e.getErrorCode(), e.getMessage());
+           }
+       }
    }
 }
