@@ -1,3 +1,8 @@
+WEBCONSOLE-80
+=============
+
+  - Increase timeouts for REST calls to help with slow connections
+
 WebConsole 2.1.3
 ================
 
