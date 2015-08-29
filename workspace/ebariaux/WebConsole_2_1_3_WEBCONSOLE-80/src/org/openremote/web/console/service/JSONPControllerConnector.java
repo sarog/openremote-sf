@@ -85,25 +85,25 @@ public class JSONPControllerConnector implements ControllerConnector {
 	@Override
 	public void getPanelIdentities(String controllerUrl, String username, String password, AsyncControllerCallback<PanelIdentityList> callback) {
 		EnumControllerCommand command = EnumControllerCommand.GET_PANEL_LIST;
-		doJsonpRequest(buildCompleteJsonUrl(controllerUrl, command), new JSONPControllerCallback(command, callback),10000);
+		doJsonpRequest(buildCompleteJsonUrl(controllerUrl, command), new JSONPControllerCallback(command, callback),20000);
 	}
 	
 	@Override
 	public void getPanel(String controllerUrl, String username, String password, String panelName, AsyncControllerCallback<Panel> callback) {
 		EnumControllerCommand command = EnumControllerCommand.GET_PANEL_LAYOUT;
-		doJsonpRequest(buildCompleteJsonUrl(controllerUrl, new String[] {panelName}, command), new JSONPControllerCallback(command, callback),20000);
+		doJsonpRequest(buildCompleteJsonUrl(controllerUrl, new String[] {panelName}, command), new JSONPControllerCallback(command, callback),60000);
 	}
 	
 	@Override
 	public void isSecure(String controllerUrl, String username, String password, AsyncControllerCallback<Boolean> callback) {
 		EnumControllerCommand command = EnumControllerCommand.IS_SECURE;
-		doJsonpRequest(buildCompleteJsonUrl(controllerUrl, command), new JSONPControllerCallback(command, callback),10000);
+		doJsonpRequest(buildCompleteJsonUrl(controllerUrl, command), new JSONPControllerCallback(command, callback),20000);
 	}
 
 	@Override
 	public void isAlive(String controllerUrl, String username, String password, AsyncControllerCallback<Boolean> callback) {
 		EnumControllerCommand command = EnumControllerCommand.IS_ALIVE;
-		doJsonpRequest(buildCompleteJsonUrl(controllerUrl, new String[] {}, command), new JSONPControllerCallback(command, callback),10000);	
+		doJsonpRequest(buildCompleteJsonUrl(controllerUrl, new String[] {}, command), new JSONPControllerCallback(command, callback),20000);	
 	}
 	
 	@Override
