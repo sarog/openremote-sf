@@ -186,23 +186,4 @@ public abstract class UIComponent extends BusinessEntity implements BeanModelTag
       return beanModelFactory.createModel(this);
    }
 
-   /**
-    * Creates the models.
-    * 
-    * @param list the list
-    * 
-    * @return the list< bean model>
-    */
-   public static List<BeanModel> createModels(Collection<? extends UIComponent> list) {
-      List<BeanModel> models = new ArrayList<BeanModel>();
-      for (UIComponent b : list) {
-         models.add(b.getBeanModel());
-      }
-      return models;
-
-
-   }
-   
-
-
 }
