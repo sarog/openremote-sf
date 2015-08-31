@@ -1,3 +1,8 @@
+MODELER-546
+===========
+
+ - Support building Designer using JDK 7
+
 Pro 1.0.14
 ==========
 
