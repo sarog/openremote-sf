@@ -4,6 +4,7 @@ Pro 1.2.0
 Fixes:
 
  - Fixed: Support building Designer using JDK 7 (MODELER-546)
+ - Fixed: Delete key only deletes the last object in a multiple selection (MODELER-441)
  
 Pro 1.1.0
 =========
