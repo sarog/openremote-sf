@@ -23,6 +23,7 @@ package org.openremote.controller.protocol.dscit100;
 import org.openremote.controller.command.Command;
 import org.openremote.controller.exception.NoSuchCommandException;
 import org.openremote.controller.utils.Logger;
+import org.openremote.controller.utils.Strings;
 
 /**
  * This class is an abstract superclass for DSC protocol read/write commands.
@@ -74,7 +75,7 @@ public abstract class DSCIT100Command implements Command
   public static DSCIT100Command createCommand(String command, String address, String code,
                                               String target, DSCIT100ConnectionManager mgr)
   {
-    command = command.trim().toUpperCase();   // TODO: see ORCJAVA-344 -- http://jira.openremote.org/browse/ORCJAVA-344
+    command = Strings.toUpperCase(command.trim());
 
     ExecuteCommand execCommand = ExecuteCommand.createCommand(command, address, code, target, mgr);
 
