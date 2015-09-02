@@ -42,6 +42,8 @@ public class Command {
    /** The label is used by all event except irEvent. */
    private String label = "";
    
+   private String deviceName = "";
+   
    /**
     * Gets the id.
     * 
@@ -131,5 +133,15 @@ public class Command {
    public void setLabel(String label) {
       this.label = label;
    }
+
+  public String getDeviceName()
+  {
+    return deviceName;
+  }
+
+  public void setDeviceName(String deviceName)
+  {
+    this.deviceName = deviceName;
+  }
    
 }
