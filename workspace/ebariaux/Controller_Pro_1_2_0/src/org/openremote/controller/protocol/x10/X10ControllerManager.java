@@ -26,6 +26,7 @@ import java.text.MessageFormat;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.openremote.controller.ControllerConfiguration;
+import org.openremote.controller.utils.Strings;
 
 import com.jpeterson.x10.Gateway;
 import com.jpeterson.x10.GatewayException;
@@ -77,9 +78,9 @@ public class X10ControllerManager {
       // Ideally the proper implementation should be obtained by service
       // resolution, in a component-based architecture.
       // For a first version this will do the trick.
-      if (hint.toUpperCase().equals("CM11A")) {
+      if (Strings.toUpperCase(hint).equals("CM11A")) {
          return new CM11A();
-      } else if (hint.toUpperCase().equals("CM17A")) {
+      } else if (Strings.toUpperCase(hint).equals("CM17A")) {
          return new CM17A();
       } else {
          return null;
