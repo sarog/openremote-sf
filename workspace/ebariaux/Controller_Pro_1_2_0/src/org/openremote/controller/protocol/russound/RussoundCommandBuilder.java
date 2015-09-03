@@ -119,7 +119,7 @@ public class RussoundCommandBuilder implements CommandBuilder {
 
       String paramValue = element.getAttributeValue(Command.DYNAMIC_VALUE_ATTR_NAME);
       try {
-         RussCmdEnum command = RussCmdEnum.valueOf(commandValue.trim().toUpperCase());
+         RussCmdEnum command = RussCmdEnum.valueOf(Strings.toUpperCase(commandValue.trim()));
          logger.debug("Russound command created successfully");
          return new RussoundCommand(controller, zone, command, paramValue, commClient);
       } catch (Exception e) {

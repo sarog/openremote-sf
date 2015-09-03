@@ -31,6 +31,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.openremote.controller.model.sensor.Sensor;
 import org.openremote.controller.utils.Logger;
+import org.openremote.controller.utils.Strings;
 
 /**
  * This class is doing the communication with the Russound controller.
@@ -301,7 +302,7 @@ public class RussoundClient {
    
    public void setAllOnOffPower(int power) {
       String setAllOnOffRequest = "F0 7E 00 7F 00 00 kk 05 02 02 00 00 F1 22 00 xx 00 00 00 01 00 F7";
-      int[] data = hexStringToByteArray(setAllOnOffRequest.replaceAll(" ", "").toLowerCase());
+      int[] data = hexStringToByteArray(Strings.toLowerCase(setAllOnOffRequest.replaceAll(" ", "")));
       data[6] = keypadId;
       data[15] = power;
       data[data.length - 2] = russChecksum(data);
@@ -313,7 +314,7 @@ public class RussoundClient {
       int zz = Integer.parseInt(zone)-1;
       
       String setPowerRequest = "F0 cc 00 7F cc zz kk 05 02 02 00 00 F1 23 00 pp 00 zz 00 01 00 F7";
-      int[] data = hexStringToByteArray(setPowerRequest.replaceAll(" ", "").toLowerCase());
+      int[] data = hexStringToByteArray(Strings.toLowerCase(setPowerRequest.replaceAll(" ", "")));
       data[1] = cc;
       data[4] = cc;
       data[5] = zz;
@@ -330,7 +331,7 @@ public class RussoundClient {
       int volume = Integer.parseInt(paramValue)/2;
       
       String setVolumeRequest = "F0 cc 00 7F cc zz kk 05 02 02 00 00 F1 21 00 vv 00 zz 00 01 00 F7";
-      int[] data = hexStringToByteArray(setVolumeRequest.replaceAll(" ", "").toLowerCase());
+      int[] data = hexStringToByteArray(Strings.toLowerCase(setVolumeRequest.replaceAll(" ", "")));
       data[1] = cc;
       data[4] = cc;
       data[5] = zz;
@@ -346,7 +347,7 @@ public class RussoundClient {
       int zz = Integer.parseInt(zone)-1;
       
       String setVolumeUpRequest = "F0 cc 00 7F cc zz kk 05 02 02 00 00 7F 00 00 00 00 00 01 00 F7";
-      int[] data = hexStringToByteArray(setVolumeUpRequest.replaceAll(" ", "").toLowerCase());
+      int[] data = hexStringToByteArray(Strings.toLowerCase(setVolumeUpRequest.replaceAll(" ", "")));
       data[1] = cc;
       data[4] = cc;
       data[5] = zz;
@@ -360,7 +361,7 @@ public class RussoundClient {
       int zz = Integer.parseInt(zone)-1;
       
       String setVolumeUpRequest = "F0 cc 00 7F cc zz kk 05 02 02 00 00 F1 7F 00 00 00 00 00 01 00 F7";
-      int[] data = hexStringToByteArray(setVolumeUpRequest.replaceAll(" ", "").toLowerCase());
+      int[] data = hexStringToByteArray(Strings.toLowerCase(setVolumeUpRequest.replaceAll(" ", "")));
       data[1] = cc;
       data[4] = cc;
       data[5] = zz;
@@ -375,7 +376,7 @@ public class RussoundClient {
       int source = Integer.parseInt(paramValue) - 1;
       
       String setSourceRequest = "F0 cc 00 7F cc zz kk 05 02 00 00 00 F1 3E 00 00 00 ss 00 01 00 F7";
-      int[] data = hexStringToByteArray(setSourceRequest.replaceAll(" ", "").toLowerCase());
+      int[] data = hexStringToByteArray(Strings.toLowerCase(setSourceRequest.replaceAll(" ", "")));
       data[1] = cc;
       data[4] = cc;
       data[5] = zz;
@@ -392,7 +393,7 @@ public class RussoundClient {
       int xx = 00;
       
       String setSettingsRequest = "F0 cc 00 7F cc zz kk 00 05 02 00 zz 00 00 00 00 00 01 00 01 00 xx 00 F7";
-      int[] data = hexStringToByteArray(setSettingsRequest.replaceAll(" ", "").toLowerCase());
+      int[] data = hexStringToByteArray(Strings.toLowerCase(setSettingsRequest.replaceAll(" ", "")));
       data[1] = cc;
       data[4] = cc;
       data[5] = zz;
@@ -447,7 +448,7 @@ public class RussoundClient {
       int zz = Integer.parseInt(zone)-1;
       
       String turnOnVolumeRequest = "F0 cc 00 7F cc zz kk 01 05 02 00 zz 00 04 00 00 00 F7";
-      int[] data = hexStringToByteArray(turnOnVolumeRequest.replaceAll(" ", "").toLowerCase());
+      int[] data = hexStringToByteArray(Strings.toLowerCase(turnOnVolumeRequest.replaceAll(" ", "")));
       data[1] = cc;
       data[4] = cc;
       data[5] = zz;
@@ -461,7 +462,7 @@ public class RussoundClient {
       try { Thread.sleep(200); } catch (InterruptedException e) { e.printStackTrace(); }
       
       String status = "F0 cc 00 7F cc zz kk 01 04 02 00 zz 07 00 00 00 F7";
-      data = hexStringToByteArray(status.replaceAll(" ", "").toLowerCase());
+      data = hexStringToByteArray(Strings.toLowerCase(status.replaceAll(" ", "")));
       data[1] = cc;
       data[4] = cc;
       data[5] = zz;
