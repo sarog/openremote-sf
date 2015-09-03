@@ -30,6 +30,7 @@ import org.openremote.controller.exception.NoSuchCommandException;
 import org.openremote.controller.protocol.vera.model.VeraDevice;
 import org.openremote.controller.service.Deployer;
 import org.openremote.controller.utils.Logger;
+import org.openremote.controller.utils.Strings;
 import org.openremote.devicediscovery.domain.DiscoveredDeviceAttrDTO;
 import org.openremote.devicediscovery.domain.DiscoveredDeviceDTO;
 
@@ -148,7 +149,7 @@ public class VeraCommandBuilder implements CommandBuilder {
          paramValue = commandValue;
       }
       try {
-         VeraCmd cmd = VeraCmd.valueOf(commandName.trim().toUpperCase());
+         VeraCmd cmd = VeraCmd.valueOf(Strings.toUpperCase(commandName.trim()));
          logger.debug("Vera command created successfully");
          return new VeraCommand(deviceId, cmd, paramValue, client, serviceId, action, variable, statusAttribute);
       } catch (Exception e) {
