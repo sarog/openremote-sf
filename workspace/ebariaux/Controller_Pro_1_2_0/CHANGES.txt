@@ -14,6 +14,10 @@ New Features:
   - Improve 1-wire implementation (Eric Bariaux, ORCJAVA-475)
   - Add log messages to Rules Engine (Isaac Martin, Michal Rutka, ORCJAVA-481)
 
+Bug Fixes:
+
+  - Update Vera implementation to use locale independent string case conversions (ORCJAVA-341)
+
 Controller Pro 1.1.1
 ====================
 
