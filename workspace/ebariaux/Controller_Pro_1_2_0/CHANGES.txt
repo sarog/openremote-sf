@@ -19,6 +19,7 @@ Bug Fixes:
   - Update Vera implementation to use locale independent string case conversions (ORCJAVA-341)
   - Update X10 implementation to use locale independent string case conversions (ORCJAVA-342)
   - Update Russound implementation to use locale independent string case conversions (ORCJAVA-343)
+  - Update DSCIT100 implementation to use locale independent string case conversions (ORCJAVA-344)
 
 Controller Pro 1.1.1
 ====================

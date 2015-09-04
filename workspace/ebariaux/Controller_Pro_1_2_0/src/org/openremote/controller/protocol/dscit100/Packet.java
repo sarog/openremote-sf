@@ -23,6 +23,7 @@ package org.openremote.controller.protocol.dscit100;
 import java.io.IOException;
 
 import org.openremote.controller.utils.Logger;
+import org.openremote.controller.utils.Strings;
 
 /**
  * @author Greg Rapp
@@ -164,7 +165,7 @@ class Packet
       iChecksum += data.charAt(i);
     }
 
-    String sChecksum = Integer.toHexString(iChecksum).toUpperCase();
+    String sChecksum = Strings.toUpperCase(Integer.toHexString(iChecksum));
     sChecksum = sChecksum.substring(sChecksum.length() - 2);
 
     return sChecksum;

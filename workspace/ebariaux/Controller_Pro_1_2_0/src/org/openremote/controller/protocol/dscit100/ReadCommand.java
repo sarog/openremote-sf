@@ -25,6 +25,7 @@ import java.util.Map;
 import org.openremote.controller.command.StatusCommand;
 import org.openremote.controller.component.EnumSensorType;
 import org.openremote.controller.utils.Logger;
+import org.openremote.controller.utils.Strings;
 
 /**
  * Read (polling) command implementation for DSC IP gateway (IT-100 or EnvisaLink).
@@ -75,7 +76,7 @@ public class ReadCommand extends DSCIT100Command implements StatusCommand
       return null;
     }
 
-    name = name.trim().toUpperCase();       // TODO: See ORCJAVA-344 -- http://jira.openremote.org/browse/ORCJAVA-344
+    name = Strings.toUpperCase(name.trim());
 
     StateDefinition stateDefinition = Lookup.get(name, target);
 
@@ -163,12 +164,12 @@ public class ReadCommand extends DSCIT100Command implements StatusCommand
 //    log.debug("Reading state for - " + this);
     PanelState.State state = super.read(this);
 //    if (state != null)
-//     log.debug("[state=" + state.toString().toUpperCase() + "]");
+//     log.debug("[state=" + Strings.toUpperCase(state.toString()) + "]");
 //    else
 //      log.debug("[state=NULL]");
     if (sensorType == EnumSensorType.CUSTOM)
     {
-      return state != null ? state.toString().toUpperCase() : "";
+      return state != null ? Strings.toUpperCase(state.toString()) : "";
     }
     else
     {
