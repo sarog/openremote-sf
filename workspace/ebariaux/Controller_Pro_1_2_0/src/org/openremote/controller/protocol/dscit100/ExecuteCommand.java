@@ -23,6 +23,7 @@ package org.openremote.controller.protocol.dscit100;
 import org.openremote.controller.command.ExecutableCommand;
 import org.openremote.controller.protocol.dscit100.Packet.PacketCallback;
 import org.openremote.controller.utils.Logger;
+import org.openremote.controller.utils.Strings;
 
 /**
  * Write command sent to DSC IP gateway (IT-100 or EnvisaLink)
@@ -83,7 +84,7 @@ public class ExecuteCommand extends DSCIT100Command implements ExecutableCommand
       return null;
     }
 
-    name = name.trim().toUpperCase();     // TODO : See ORCJAVA-344 -- http://jira.openremote.org/browse/ORCJAVA-344
+    name = Strings.toUpperCase(name.trim());
 
     // Pad code with zeros to make it 6 digits in length
     code = String.format("%-6s", code).replace(' ', '0');
