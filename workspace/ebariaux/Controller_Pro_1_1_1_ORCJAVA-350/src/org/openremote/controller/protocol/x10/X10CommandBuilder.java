@@ -168,7 +168,7 @@ public class X10CommandBuilder implements CommandBuilder
       {
         commandAsString = x10CommandPropertyValue;
       }
-      else
+      else if (!XMLPROPERTY_NAME.equalsIgnoreCase(x10CommandPropertyName))
       {
         log.warn(
             "Unknown X10 property '<" + XML_ELEMENT_PROPERTY + " " +
