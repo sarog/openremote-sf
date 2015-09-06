@@ -78,6 +78,11 @@ public interface CommandBuilder
    * Implicit name property for all commands that were introduced in Designer 2.13.x and later.
    */
   public final String XMLPROPERTY_NAME = "name";
+  
+  /**
+   * Prefix of all OpenRemote specific properties on device commands, introduced in MODELER-562.
+   */
+  public final String XMLPROPERTY_OPENREMOTE_COMMAND_PREFIX = "urn:openremote:device-command:";
 
   // Methods --------------------------------------------------------------------------------------
 
