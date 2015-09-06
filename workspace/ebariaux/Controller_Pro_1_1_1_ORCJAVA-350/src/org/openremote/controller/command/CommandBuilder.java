@@ -74,6 +74,10 @@ public interface CommandBuilder
    */
   public final String XML_ATTRIBUTENAME_VALUE    = "value";
 
+  /**
+   * Implicit name property for all commands that were introduced in Designer 2.13.x and later.
+   */
+  public final String XMLPROPERTY_NAME = "name";
 
   // Methods --------------------------------------------------------------------------------------
 
