@@ -734,7 +734,7 @@ public class ConsoleUnit extends VerticalPanel implements RotationHandler, Windo
 				loadController(currentControllerCredentials);
 			}
 		};
-		reloadTimer.schedule(2000);
+		reloadTimer.schedule(5000);
 	}
 	
 	public void restart() {
