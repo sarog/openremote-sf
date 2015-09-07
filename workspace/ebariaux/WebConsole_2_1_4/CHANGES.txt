@@ -1,3 +1,11 @@
+WebConsole 2.1.4
+================
+
+New features:
+
+  - Increase timeouts for REST calls to help with slow connections
+    (WEBCONSOLE-80)
+
 WebConsole 2.1.3
 ================
 
