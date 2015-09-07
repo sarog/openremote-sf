@@ -145,7 +145,7 @@ public class WebConsole implements EntryPoint {
     }
 
     // Initialise the Console Unit
-    boolean requestFullscreen = sizeInfo.getPanelSizeType().equals("fullscreen");
+    boolean requestFullscreen = sizeInfo.getPanelSizeType() != null && sizeInfo.getPanelSizeType().equals("fullscreen");
     if (BrowserUtils.isMobile || requestFullscreen) {
       // load in full screen mode with fixed orientation
       consoleUnit = new ConsoleUnit(true);
