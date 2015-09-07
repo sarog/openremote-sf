@@ -1,3 +1,8 @@
+WEBCONSOLE-84
+=============
+
+  - Fixed: Web Element not correctly identifying URL prefix
+
 WebConsole 2.1.3
 ================
 
