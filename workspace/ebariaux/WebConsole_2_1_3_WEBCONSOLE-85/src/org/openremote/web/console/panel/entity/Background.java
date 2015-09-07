@@ -32,7 +32,7 @@ public interface Background {
 	
 	public void setRelative(String relative);
 	
-	public void setAbsolute(AbsolutePosition absPos);
+	public void setAbsolute(String absPos);
 
    public Boolean getFillScreen();
    
@@ -40,5 +40,5 @@ public interface Background {
    
    public Image getImage();
    
-   public AbsolutePosition getAbsolute();
+   public String getAbsolute();
 }
