@@ -1,6 +1,6 @@
 <!doctype html>
 	<head>
-		<title>OpenRemote Web Console - 2.0</title>
+		<title>@TITLE@</title>
 		<meta http-equiv="content-type" content="text/html; charset=UTF-8">
 		
 		<!-- Enable IE9 Standards mode -->
@@ -48,137 +48,25 @@
 	 	<link rel="shortcut icon" href="resources/images/icon.png">
     	<link type="image/png" rel="icon" href="resources/images/icon.png">
 
-	    <style type="text/css">
-			body {
-				overflow: hidden;
-				overflow-x: hidden;
-				overflow-y: hidden;
-			}
-			
-	    	.fullscreen {
-	    		background-color: #000;
-	    	}
-	    	
-	    	#console_loading_image {
-	    		margin-left: -70px;
-	    		margin-top: -70px;
-	    		width: 140px;
-	    		height: 140px;
-	    		position: absolute;
-	    		top: 50%;
-	    		left: 50%;
-	    		background-image: url(resources/images/loading_logo_outer.png);
-	    		background-size: 100% 100%;
-	    		opacity: 0.3;
-	    	}
-	    	
-	    	#console_loading_msg {
-	    		margin-left: -150px;
-	    		margin-top: 75px;
-	    		width: 300px;
-	    		height: 25px;
-	    		line-height: 25px;
-	    		font-size: 18px;
-	    		position: absolute;
-	    		top: 50%;
-	    		left: 50%;
-	    		color: #2b6229;
-	    		font-weight: bold;
-	    		text-align: center;
-	    		opacity: 0.5;
-	    	}
-	    	
-			/* Pixel ratio of 1.5 */
-			@media only screen and (-moz-min-device-pixel-ratio: 1.5), only screen and (-o-min-device-pixel-ratio: 3/2), only screen and (-webkit-min-device-pixel-ratio: 1.5), only screen and (min-device-pixel-ratio: 1.5) {
-				#console_loading_image {
-					margin-left: -105px;
-		    		margin-top: -105px;
-		    		width: 210px;
-		    		height: 210px;
-				}
-				
-				#console_loading_msg {
-		    		margin-left: -200px;
-		    		margin-top: 110px;
-		    		width: 400px;
-		    		height: 40px;
-		    		line-height: 40px;
-		    		font-size: 27px;
-	    		}
-			}
-			/* Pixel ratio of 2 */
-			@media only screen and (-moz-min-device-pixel-ratio: 2), only screen and (-o-min-device-pixel-ratio: 2/1), only screen and (-webkit-min-device-pixel-ratio: 2), only screen and (min-device-pixel-ratio: 2) {
-				#console_loading_image {
-					margin-left: -140px;
-		    		margin-top: -140px;
-		    		width: 280px;
-		    		height: 280px;
-				}
-				
-				#console_loading_msg {
-		    		margin-left: -200px;
-		    		margin-top: 145px;
-		    		width: 400px;
-		    		height: 50px;
-		    		line-height: 50px;
-		    		font-size: 36px;
-	    		}
-			}
-	    	
-			.loading_image_outer {
-				-webkit-animation: forward 1s linear infinite;
-				-moz-animation: forward 1s linear infinite;
-				-o-animation: forward 1s linear infinite;
-			}
-			
-			.loading_image_inner {
-				-webkit-animation: backward 1s linear infinite;
-				-moz-animation: backward 1s linear infinite;
-				-o-animation: backward 1s linear infinite;			
-			}
-			
-			@keyframes forward {
-				from { -webkit-transform: rotate(0deg); }
-				to { -webkit-transform: rotate(360deg); }
-			}
-			
-			@-webkit-keyframes forward {
-				from { -webkit-transform: rotate(0deg); }
-				to { -webkit-transform: rotate(360deg); }
-			}
-			@-moz-keyframes forward {
-				from { -moz-transform: rotate(0deg); }
-				to { -moz-transform: rotate(360deg); }
-			}
-			@-o-keyframes forward {
-				from { -o-transform: rotate(0deg); }
-				to { -o-transform: rotate(360deg); }
-			}
-			
-			@keyframes backward {
-				from { transform: rotate(0deg); }
-				to { transform: rotate(360deg); }
-			}
-			
-			@-webkit-keyframes backward {
-				from { -webkit-transform: rotate(0deg); }
-				to { -webkit-transform: rotate(-720deg); }
-			}
-			@-moz-keyframes backward {
-				from { -moz-transform: rotate(0deg); }
-				to { -moz-transform: rotate(-720deg); }
-			}
-			@-o-keyframes backward {
-				from { -o-transform: rotate(0deg); }
-				to { -o-transform: rotate(-720deg); }
-			}
-	    </style>
+	    <link type="text/css" rel="stylesheet" href="resources/css/main.css">
 	    <link type="text/css" rel="stylesheet" href="resources/css/custom.css">
 		<link type="text/css" rel="stylesheet" href="resources/css/webconsole.css">
 		
 	    <!-- GWT Bootstrap -->
 		<script language="javascript">
+			window.alert = function() {};
 			var buildVersionStr = "@VERSION@";
+			
+			// var controllerUrl = null;
+			// var panelName = null;
+			// var consoleWidth = null;
+			// var consoleHeight = null;
+			// var orientation = null;
+			// var fullscreen = null;
+			// var showConsoleFrame = null;
+			// var showToolbar = null;
+			// var showWelcome = null;
+			// var disableFailsafe = null;
 		</script>
 	    <script language="javascript" src="webconsole/webconsole.nocache.js"></script>
 	</head>
