@@ -482,6 +482,22 @@ import com.google.web.bindery.autobean.shared.AutoBean;
 		  return showWelcome;
 		}
 		
+		public static String getOrientation()
+		{
+		  String orientation = Window.Location.getParameter("orientation");
+		  
+      if (orientation == null || (!orientation.equalsIgnoreCase("portrait") && !orientation.equalsIgnoreCase("landscape"))) {
+        orientation = BrowserUtils.getOrientationString();
+      }
+      
+      if (orientation == null || (!orientation.equalsIgnoreCase("portrait") && !orientation.equalsIgnoreCase("landscape"))) {
+        // Check local storage
+        orientation = LocalDataServiceImpl.getInstance().getObjectString("orientation");
+      }
+
+      return orientation;
+		}
+		
     /**
      * Determines if the toolbar should be shown by checking: -
      *  URL parameter
