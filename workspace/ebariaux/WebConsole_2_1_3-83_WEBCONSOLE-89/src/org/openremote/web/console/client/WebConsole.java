@@ -153,10 +153,7 @@ public class WebConsole implements EntryPoint {
       consoleUnit = new ConsoleUnit(sizeInfo.getPanelSizeWidth(), sizeInfo.getPanelSizeHeight());
       
       // Check orientation setting
-      String orientation = Window.Location.getParameter("orientation");
-      if (orientation == null || (!orientation.equalsIgnoreCase("portrait") && !orientation.equalsIgnoreCase("landscape"))) {
-        orientation = BrowserUtils.getOrientationString();
-      }
+      String orientation = BrowserUtils.getOrientation();
       
       if (orientation != null && (orientation.equalsIgnoreCase("portrait") || orientation.equalsIgnoreCase("landscape"))) {
         consoleUnit.setOrientation(orientation);
