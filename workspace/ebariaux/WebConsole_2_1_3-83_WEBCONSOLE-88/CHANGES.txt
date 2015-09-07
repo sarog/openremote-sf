@@ -3,6 +3,12 @@ WEBCONSOLE-83
 
   - Enhance user configuration options
 
+WEBCONSOLE-88
+=============
+
+  - Fixed: Possible Null reference exception at startup trying
+    to determine the default console size
+
 WebConsole 2.1.3
 ================
 
