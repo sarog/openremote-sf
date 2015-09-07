@@ -1,3 +1,8 @@
+WEBCONSOLE-83
+=============
+
+  - Enhance user configuration options
+
 WebConsole 2.1.3
 ================
 
