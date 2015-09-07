@@ -1,3 +1,8 @@
+WEBCONSOLE-86
+=============
+
+  - Make the web view widget interactive so that mouse clicks etc. are passed through
+
 WebConsole 2.1.3
 ================
 
