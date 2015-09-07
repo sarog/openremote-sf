@@ -3,6 +3,12 @@ WEBCONSOLE-83
 
   - Enhance user configuration options
 
+WEBCONSOLE-91
+=============
+
+  - Fixed: Welcome screen is shown on every console load not just
+    the first time after a version update
+
 WebConsole 2.1.3
 ================
 
