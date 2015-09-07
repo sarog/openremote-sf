@@ -151,10 +151,13 @@ public class ScreenViewImpl extends ConsoleComponentImpl implements ScreenView {
 			}
 			DOM.setStyleAttribute(getElement(), "backgroundPosition", position);
 		} else if (backgroundEntity.getAbsolute() != null) {
-			AbsolutePosition absPos = backgroundEntity.getAbsolute();
-			int top = absPos.getTop();
-			int left = absPos.getLeft();
-			DOM.setStyleAttribute(getElement(), "backgroundPosition", left + " " + top);
+			String absPos = backgroundEntity.getAbsolute();
+			if (absPos != null && !absPos.isEmpty()) {
+			  String[] strArr = absPos.split(",");
+			  int top = Integer.parseInt(strArr[1].trim());
+			  int left = Integer.parseInt(strArr[0].trim());
+			  DOM.setStyleAttribute(getElement(), "backgroundPosition", left + " " + top);
+			}
 		}
 	}
 	
