@@ -31,6 +31,21 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
     <url-pattern>/webconsole/imageproxy</url-pattern>
   </servlet-mapping>
   
+	<!-- Logging Service -->
+	<servlet>
+  		<servlet-name>remoteLogging</servlet-name>  
+  		<servlet-class>com.google.gwt.logging.server.RemoteLoggingServiceImpl</servlet-class>  
+	</servlet>  
+	<servlet-mapping>  
+  		<servlet-name>remoteLogging</servlet-name>  
+  		<url-pattern>/webconsole/remote_logging</url-pattern>  
+	</servlet-mapping>
+	
+	<init-param>  
+  		<param-name>symbolMaps</param-name>  
+  		<param-value>WEB-INF/deploy/webconsole/symbolMaps</param-value>  
+	</init-param>
+  
   <!-- GWT Cache Control Filter -->
   <filter>
     <filter-name>gwtCacheControlFilter</filter-name>
