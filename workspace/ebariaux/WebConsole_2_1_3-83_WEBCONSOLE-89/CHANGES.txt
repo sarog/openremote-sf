@@ -3,6 +3,11 @@ WEBCONSOLE-83
 
   - Enhance user configuration options
 
+WEBCONSOLE-89
+=============
+
+  - Add persistence for console orientation
+
 WebConsole 2.1.3
 ================
 
