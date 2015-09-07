@@ -1,5 +1,5 @@
 /* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2012, OpenRemote Inc.
+* Copyright 2008-2014, OpenRemote Inc.
 *
 * See the contributors.txt file in the distribution for a
 * full listing of individual contributors.
@@ -53,13 +53,11 @@ import org.openremote.web.console.panel.entity.Gesture;
 import org.openremote.web.console.panel.entity.Navigate;
 import org.openremote.web.console.panel.entity.Screen;
 import org.openremote.web.console.panel.entity.TabBar;
-import org.openremote.web.console.panel.entity.WelcomeFlag;
 import org.openremote.web.console.service.AsyncControllerCallback;
 import org.openremote.web.console.service.AutoBeanService;
 import org.openremote.web.console.service.AutoDiscoveryRPCService;
 import org.openremote.web.console.service.AutoDiscoveryRPCServiceAsync;
 import org.openremote.web.console.service.ControllerService;
-import org.openremote.web.console.service.EnumDataMap;
 import org.openremote.web.console.service.JSONPControllerConnector;
 import org.openremote.web.console.service.JSONControllerConnector;
 import org.openremote.web.console.service.LocalDataService;
@@ -99,17 +97,14 @@ public class ConsoleUnit extends VerticalPanel implements RotationHandler, Windo
 	public static final int MIN_HEIGHT = 460;
 	public static final int DEFAULT_DISPLAY_WIDTH = 320;
 	public static final int DEFAULT_DISPLAY_HEIGHT = 460;
-	public static final String DEFAULT_DISPLAY_COLOUR = "#000";
 	public static final String CONSOLE_HTML_ELEMENT_ID = "consoleUnit";
-	public static final int FRAME_WIDTH_TOP = 20;
-	public static final int FRAME_WIDTH_BOTTOM = 50;
-	public static final int FRAME_WIDTH_LEFT = 20;
-	public static final int FRAME_WIDTH_RIGHT = 20;
-	public static final int BOSS_WIDTH = 2;
+	public static int FRAME_WIDTH_TOP = 20;
+	public static int FRAME_WIDTH_BOTTOM = 50;
+	public static int FRAME_WIDTH_LEFT = 20;
+	public static int FRAME_WIDTH_RIGHT = 20;
+	public static int BOSS_WIDTH = 2;
 	public static final String LOGO_TEXT_LEFT = "Open";
 	public static final String LOGO_TEXT_RIGHT = "Remote";
-	public static final String WELCOME_MESSAGE_STRING = "Welcome to the latest Web Console!\n\nClick <a href=\"http://openremote.org/display/docs/Web+Console\" target=\"_blank\">here</a> for release notes and help on using the Web Console.";
-	public static final String COOKIE_WARNING_MESSAGE_STRING = "Cookies / Local Storage must be enabled for the Web Console to work correctly!";
 	public static final int IMAGE_CACHE_LOAD_TIMEOUT_SECONDS = 10;
 	protected ConsoleDisplay consoleDisplay;
 	private Boolean isFullscreen = true;
@@ -405,7 +400,7 @@ public class ConsoleUnit extends VerticalPanel implements RotationHandler, Windo
 			BrowserUtils.setStyleAttributeAllBrowsers(this.getElement(), "transform", "rotate(0deg) translate(0,0)");
 			this.addStyleName("portrait");
 			this.removeStyleName("landscape");
-		} else {
+		} else if ("landscape".equals(orientation)) {
 			if (!isFullscreen) {
 				BrowserUtils.setStyleAttributeAllBrowsers(this.getElement(), "transform", "rotate(-90deg) translate( -" + (halfOuterHeight + halfOuterWidth) + "px,-" + (halfOuterHeight - halfOuterWidth) + "px)");
 			} else {
@@ -954,61 +949,8 @@ public class ConsoleUnit extends VerticalPanel implements RotationHandler, Windo
 	}
 	
 	private void initialiseConsole() {
-		// Check welcome message has been shown for this version or showwelcome GET parameter is set
-    String showWelcome = Window.Location.getParameter("showWelcome");
-    if (showWelcome == null) {
-  		String versionStr = BrowserUtils.getBuildVersionString();
-  		int version = 0;
-  		
-  		try {
-  			version = Integer.parseInt(versionStr);
-  		} catch (Exception e) {}
-  		
-    	String welcomeObj = dataService.getObjectString(EnumDataMap.WELCOME_FLAG.getDataName());
-  		AutoBean<?> bean = AutoBeanService.getInstance().fromJsonString(EnumDataMap.WELCOME_FLAG.getClazz(), welcomeObj);
-  		Integer welcomeVersion = -1;
-  		WelcomeFlag welcomeFlag = null;
-  		
-  		if (bean != null) {
-  			welcomeFlag = (WelcomeFlag)bean.as();
-  			welcomeVersion = welcomeFlag.getWelcomeVersion() == null ? welcomeVersion : welcomeFlag.getWelcomeVersion();
-  		}
-  
-  		if (welcomeVersion < version) {
-  			// Show welcome message
-  			BrowserUtils.showAlert(WELCOME_MESSAGE_STRING);
-  			
-  			welcomeFlag = (WelcomeFlag) AutoBeanService.getInstance().getFactory().create(EnumDataMap.WELCOME_FLAG.getClazz()).as();
-  			welcomeFlag.setWelcomeVersion(version);
-  			
-  			dataService.setObject(EnumDataMap.WELCOME_FLAG.getDataName(), AutoBeanService.getInstance().toJsonString(welcomeFlag));
-  		}
-    }
-		
-		// Display warning if cookies disabled
-		if (!LocalDataServiceImpl.getInstance().isAvailable())
-		{
-			BrowserUtils.showAlert(COOKIE_WARNING_MESSAGE_STRING);
-		}
-		
-		// Check for Last Controller and Panel in Cache
-		ControllerCredentials controllerCreds;
-		String panelName = "";
-		
-		// Check for GET variables
-		String cUrl = Window.Location.getParameter("controllerURL");
-		String pName = Window.Location.getParameter("panelName");
-		
-		if (cUrl != null && !cUrl.isEmpty() && pName != null && !pName.isEmpty())
-		{
-			controllerCreds = AutoBeanService.getInstance().getFactory().create(ControllerCredentials.class).as();
-			controllerCreds.setUrl(cUrl);
-			controllerCreds.setDefaultPanel(pName);
-			loadController(controllerCreds);
-			return;
-		}
-		
-		controllerCreds = dataService.getLastControllerCredentials();
+    // Check for Last Controller and Panel in Cache
+		ControllerCredentials controllerCreds = dataService.getLastControllerCredentials();
 		if (controllerCreds != null && controllerCreds.getUrl() != null) {
 			loadController(controllerCreds);
 		} else {
@@ -1176,7 +1118,7 @@ public class ConsoleUnit extends VerticalPanel implements RotationHandler, Windo
 	
 	@Override
 	public void onHold(HoldEvent event) {
-		if (event.getSource() == consoleDisplay) {
+		if (event.getSource() == consoleDisplay && !BrowserUtils.disableFailsafe()) {
 			loadSettings(EnumSystemScreen.CONTROLLER_LIST, null);
 		}
 	}
