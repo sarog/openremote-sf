@@ -21,7 +21,7 @@
 		<!-- set startup image when web app launched from home screen on iOS -->
 		<link rel="apple-touch-startup-image" href="resources/images/startup.png">
 		
-		       <!-- iPhone ICON -->
+	    <!-- iPhone ICON -->
         <link href="resources/images/icon-57x57.png" sizes="57x57" rel="apple-touch-icon">
         <!-- iPad ICON-->
         <link href="resources/images/icon-72x72.png" sizes="72x72" rel="apple-touch-icon">
@@ -56,17 +56,16 @@
 		<script language="javascript">
 			window.alert = function() {};
 			var buildVersionStr = "@VERSION@";
-			
-			// var controllerUrl = null;
-			// var panelName = null;
-			// var consoleWidth = null;
-			// var consoleHeight = null;
-			// var orientation = null;
-			// var fullscreen = null;
-			// var showConsoleFrame = null;
-			// var showToolbar = null;
-			// var showWelcome = null;
-			// var disableFailsafe = null;
+			//var controllerURL = "@CONTROLLERURL@"
+			//var panelName = "@PANELNAME@";
+			//var consoleWidth = "320";
+			//var consoleHeight = "480";
+			//var orientation = "portrait";
+			//var fullscreen = "false";
+			//var showConsoleFrame = "true";
+			//var showToolbar = "true";
+			//var showWelcome = "true";
+			//var disableFailsafe = "false";
 		</script>
 	    <script language="javascript" src="webconsole/webconsole.nocache.js"></script>
 	</head>
@@ -75,7 +74,7 @@
 		<iframe id="__gwt_historyFrame" style="width:0;height:0;border:0"></iframe>
 		<div style="width: 3000px; height: 3000px;"></div>
 		<div id="console_loading_image" class="loading_image_outer">
-			<div class="loading_image_inner" style="width: 100%; height: 100%; background-image: url(resources/images/loading_logo_centre.png); background-size: 100% 100%;"></div>
+			<div class="loading_image_inner"></div>
 		</div>
 		<div id="console_loading_msg">
 			<span>LOADING...</span>
