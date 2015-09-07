@@ -1,0 +1,55 @@
+WebConsole 2.1.3
+================
+
+Fixes:
+
+  - Fixed : Console fails to load in Chrome on Mac (WEBCONSOLE-60)
+  - Fixed : Console fails to load when cookies are disabled (WEBCONSOLE-61)
+  - Fixed : Console fails to load in QtWebkit Browser (WEBCONSOLE-62)
+  - Fixed : Having a button with both a navigation and command,
+    the navigation occurs but the command is not executed (WEBCONSOLE-64)
+  - Fixed : Thumb rendered on slider, even "empty" png file
+    has been assigned as thumb image (WEBCONSOLE-65)
+  - Fixed : Incorrect SVN build reported by WebConsole (WEBCONSOLE-66)
+  - Fixed : Controller discovery icon continues to indicate
+    that discovery is in progress when it fails for some reason
+    (WEBCONSOLE-69)
+  - Fixed : Loading spinner not animating on certain browser versions 
+    (WEBCONSOLE-70)
+  - Code cleaning (WEBCONSOLE-79)
+  - Fixed : Widgets fail to display on qtEmbedded browser (WEBCONSOLE-77)
+
+New features:
+
+  - Support relative URLs in the web view widget (WEBCONSOLE-71)
+  - Add GET parameters to specify a controller
+    and panel combination to load at startup (WEBCONSOLE-72)
+  - Update ANT build configuration to abort build
+    if revision is not found from SVN (WEBCONSOLE-73)
+  - Add additional GET Parameters to allow more control
+    over console startup (WEBCONSOLE-74)
+  - Add ability to switch on debugging via configuration file
+    (WEBCONSOLE-76)
+  - Improve mobile browser detection by checking for touch event
+    support as well as looking at the useragent string (WEBCONSOLE-78)
+
+WebConsole 2.1.2
+================
+
+  - A label connected to a 'switch' type sensor was always
+    showing text 'on/off' instead of the text values
+    configured in the label for on/off states (WEBCONSOLE-57,
+    Richard Turner)
+  - Treat Midori web browser as a desktop (mouse control)
+    browser rather than mobile (touch controlled) browser
+    by default (WEBCONSOLE-59, Richard Turner)
+
+
+WebConsole 2.1.1
+================
+
+ Bug fix release:
+
+  - WEBCONSOLE-56: Fix to prevent Console from hanging at 
+    loading screen if an invalid response is received from 
+    Controller (Richard Turner)
