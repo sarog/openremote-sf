@@ -107,9 +107,9 @@
     <fileset dir = "${lib.dir}/json" includes = "**/*.jar"/>
     <fileset dir = "${lib.dir}/onewire" includes = "**/*.jar"/>
     <fileset dir = "${lib.dir}/drools-5.1.1" includes = "**/*.jar"/>
-    <fileset dir = "${lib.dir}/flexjson-2.1" includes = "**/*.jar"/>
     <fileset dir = "${lib.dir}/sunrise" includes = "**/*.jar"/>
     <fileset dir = "${lib.dir}/json-path" includes = "**/*.jar"/>
+    <fileset dir = "${lib.dir}/flexjson-3.2" includes = "**/*.jar"/>
     <fileset dir = "${lib.dir}/rrd4j-2.1.1" includes = "**/*.jar"/>
     <fileset dir = "${lib.dir}/jzmq" includes = "**/*.jar"/>
     <fileset dir = "${lib.dir}/openremote-logging-0.1.0" includes = "**/*.jar"/>
@@ -210,7 +210,7 @@
       <fileset dir = "${lib.dir}/drools-5.1.1">
         <include name = "*.jar"/>
       </fileset>
-      <fileset dir = "${lib.dir}/flexjson-2.1">
+      <fileset dir = "${lib.dir}/flexjson-3.2">
         <include name = "*.jar"/>
       </fileset>
       <fileset dir = "${lib.dir}/rrd4j-2.1.1">
