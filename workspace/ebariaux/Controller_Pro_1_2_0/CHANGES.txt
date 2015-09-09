@@ -25,6 +25,7 @@ Bug Fixes:
   - Fixed: False warning in X10 implementation (ORCJAVA-350)
   - Fixed: False warning in KNX implementation (ORCJAVA-351)
   - Fixed: False warning with in-memory virtual commands (ORCJAVA-352)
+  - Fixed: False warning in ISY-99 protocol implementation (ORCJAVA-491)
 
 Controller Pro 1.1.1
 ====================
