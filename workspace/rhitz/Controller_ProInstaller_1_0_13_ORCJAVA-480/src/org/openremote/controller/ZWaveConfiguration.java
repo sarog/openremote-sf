@@ -56,6 +56,12 @@ public class ZWaveConfiguration extends Configuration
    */
   public static final String ZWAVE_PAD_PORT = "zwave.pad.port";
 
+  /**
+   * Name of the Z-Wave property that configures the Z-Wave security layer
+   * network key (128 bit).
+   */
+  public static final String ZWAVE_NETWORK_KEY = "zwave.networkKey";
+
 
   // Class Members --------------------------------------------------------------------------------
 
@@ -94,6 +100,15 @@ public class ZWaveConfiguration extends Configuration
    * 'Port Abstraction Daemon' (PAD) TCP port.
    */
   private int padPort;
+
+  /**
+   * Z-Wave security network key (128 bit). <p>
+   *
+   * Each byte separated by a comma
+   * (e.g. 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F, 0x10)
+   */
+  private String networkKey;
+
 
   // Public Instance Methods ----------------------------------------------------------------------
 
@@ -175,5 +190,30 @@ public class ZWaveConfiguration extends Configuration
   public void setPadPort(int port)
   {
     this.padPort = port;
+  }
+
+  /**
+   * Returns the Z-Wave network key (128 bit) as a string. <p>
+   *
+   * Each byte separated by a comma
+   * (e.g. 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F, 0x10)
+   *
+   * @return  the Z-Wave network key
+   */
+  public String getNetworkKey()
+  {
+    return networkKey;
+  }
+
+  /**
+   * Sets the Z-Wave network key.
+   *
+   * @param networkKey  Z-Wave network key (128 bit). Each byte is separated by a comma
+   *                    (e.g. 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08,
+   *                          0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F, 0x10)
+   */
+  public void setNetworkKey(String networkKey)
+  {
+    this.networkKey = networkKey;
   }
 }
