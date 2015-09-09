@@ -6,13 +6,14 @@ Fixes:
   - Fixed: Web Element not correctly identifying URL prefix (WEBCONSOLE-84)
   - Fixed: Absolutely positioned screen background images not working
 	  (WEBCONSOLE-85)
+  - Fixed: ImageProxy should return the requested url in the same format
+    as it is stored rather than trying to convert it to PNG format (WEBCONSOLE-87)
 
 New features:
 
   - Increase timeouts for REST calls to help with slow connections
     (WEBCONSOLE-80)
   - Enhance user configuration options (WEBCONSOLE-83)
-
   - Make the web view widget interactive so that mouse clicks etc.
 	  are passed through (WEBCONSOLE-86)
 
