@@ -1,3 +1,8 @@
+ORCJAVA-370
+===========
+
+  - Add X10 logging category
+
 Controller Pro 1.1.1
 ====================
 
