@@ -4,6 +4,8 @@ WebConsole 2.1.4
 Fixes:
 
   - Fixed: Web Element not correctly identifying URL prefix (WEBCONSOLE-84)
+  - Fixed: Absolutely positioned screen background images not working
+	  (WEBCONSOLE-85)
 
 New features:
 
