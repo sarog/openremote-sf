@@ -18,6 +18,7 @@ New features:
   - Enhance user configuration options (WEBCONSOLE-83)
   - Make the web view widget interactive so that mouse clicks etc.
 	  are passed through (WEBCONSOLE-86)
+  - Add persistence for console orientation (WEBCONSOLE-89)
 
 WebConsole 2.1.3
 ================
