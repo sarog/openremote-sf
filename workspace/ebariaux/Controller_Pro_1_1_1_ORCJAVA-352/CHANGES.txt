@@ -1,3 +1,8 @@
+ORCJAVA-352
+===========
+
+  - Fixed: False warning with in-memory virtual commands
+
 Controller Pro 1.1.1
 ====================
 
