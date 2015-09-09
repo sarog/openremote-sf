@@ -141,7 +141,8 @@ public class VirtualCommandBuilder implements CommandBuilder
       {
         command = propertyValue;
       }
-      else
+      else if (!XMLPROPERTY_NAME.equalsIgnoreCase(propertyName)
+            && !propertyName.startsWith(XMLPROPERTY_OPENREMOTE_COMMAND_PREFIX))
       {
         log.warn(
             "Unknown virtual protocol property '<" + XML_ELEMENT_PROPERTY + " " +
