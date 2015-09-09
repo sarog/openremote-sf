@@ -1,3 +1,8 @@
+ORCJAVA-322
+===========
+
+  - Fixed: Weird URL in example of security constraint in web.xml
+
 Controller Pro 1.1.1
 ====================
 
