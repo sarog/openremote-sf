@@ -272,7 +272,8 @@ public class KNXCommandBuilder implements CommandBuilder
         dptString = knxPropertyValue;
       }
 
-      else
+      else if (!XMLPROPERTY_NAME.equalsIgnoreCase(knxPropertyName)
+            && !knxPropertyName.startsWith(XMLPROPERTY_OPENREMOTE_COMMAND_PREFIX))
       {
         log.warn(
             "Unknown KNX property '<" + XML_ELEMENT_PROPERTY + " " +

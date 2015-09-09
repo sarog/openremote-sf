@@ -22,6 +22,7 @@ Bug Fixes:
   - Update DSCIT100 implementation to use locale independent string case conversions (ORCJAVA-344)
   - Fixed: Weird URL in example of security constraint in web.xml (ORCJAVA-322)
   - Fixed: False warning in X10 implementation (ORCJAVA-350)
+  - Fixed: False warning in KNX implementation (ORCJAVA-351)
 
 Controller Pro 1.1.1
 ====================
