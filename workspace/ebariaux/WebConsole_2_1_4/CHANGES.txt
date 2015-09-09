@@ -10,6 +10,8 @@ Fixes:
     as it is stored rather than trying to convert it to PNG format (WEBCONSOLE-87)
   - Fixed: Possible Null reference exception at startup trying
     to determine the default console size (WEBCONSOLE-88)
+  - Improve sensor handing robustness when controller error occurs
+	  (WEBCONSOLE-90)
 
 New features:
 
