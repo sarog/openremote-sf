@@ -5,6 +5,7 @@ New features:
 
   - Increase timeouts for REST calls to help with slow connections
     (WEBCONSOLE-80)
+  - Enhance user configuration options (WEBCONSOLE-83)
 
 WebConsole 2.1.3
 ================
