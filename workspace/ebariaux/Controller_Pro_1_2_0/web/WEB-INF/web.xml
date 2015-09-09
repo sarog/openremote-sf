@@ -508,7 +508,7 @@
       <web-resource-collection>
         <web-resource-name>Panel identity RESTful service of Openremote Controller</web-resource-name>
         <description>Panel identity RESTful service of Openremote Controller</description>
-        <url-pattern>/rest/panel/HTTP</url-pattern>
+        <url-pattern>/rest/panel/*</url-pattern>
         <http-method>GET</http-method>
         <http-method>POST</http-method>
       </web-resource-collection>
