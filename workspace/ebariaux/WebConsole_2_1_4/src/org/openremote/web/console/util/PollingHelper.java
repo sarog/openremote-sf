@@ -22,7 +22,9 @@ package org.openremote.web.console.util;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+
 import org.openremote.web.console.client.WebConsole;
+import org.openremote.web.console.controller.EnumControllerResponseCode;
 import org.openremote.web.console.service.AsyncControllerCallback;
 /**
  * 
@@ -76,6 +78,16 @@ public class PollingHelper {
 					monitorSensors();
 				}
 			}
+			
+			@Override
+			public void onFailure(EnumControllerResponseCode response) {
+        monitorRunning = false;
+        if (monitorActive) {
+          // Restart monitoring
+          monitorSensors();
+        }
+		  }
+			
 			@Override
 			public void onSuccess(Map<Integer, String> result) {
 				monitorRunning = false;
