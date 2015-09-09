@@ -202,6 +202,9 @@ public class SlidingToolbar extends Composite implements KeyUpHandler, BlurHandl
 					eventOrientation = "portrait";
 				}
 				ConsoleUnitEventManager.getInstance().getEventBus().fireEvent(new RotationEvent(eventOrientation, BrowserUtils.getWindowWidth(), BrowserUtils.getWindowHeight()));
+
+				// Update local storage orientation
+				LocalDataServiceImpl.getInstance().setObject("orientation", eventOrientation);
 			}			
 		});
 		
