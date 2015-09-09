@@ -13,6 +13,7 @@ New Features:
   - More lenient CORS headers (Christian Bauer, ORCJAVA-472)
   - Improve 1-wire implementation (Eric Bariaux, ORCJAVA-475)
   - Add log messages to Rules Engine (Isaac Martin, Michal Rutka, ORCJAVA-481)
+  - Add X10 logging category (ORCJAVA-370)
 
 Bug Fixes:
 

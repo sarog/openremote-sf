@@ -21,6 +21,7 @@
 package org.openremote.controller.protocol.x10;
 
 import org.jdom.Element;
+import org.openremote.controller.Constants;
 import org.openremote.controller.command.Command;
 import org.openremote.controller.command.CommandBuilder;
 import org.openremote.controller.exception.CommandBuildException;
@@ -69,7 +70,7 @@ public class X10CommandBuilder implements CommandBuilder
    * A common log category name intended to be used across all classes related to
    * X10 implementation.
    */
-  public final static String X10_LOG_CATEGORY = "X10";
+  public final static String X10_LOG_CATEGORY = Constants.CONTROLLER_PROTOCOL_LOG_CATEGORY + "X10";
 
   /**
    * String constant for parsing X10 protocol XML entries from controller.xml file.
