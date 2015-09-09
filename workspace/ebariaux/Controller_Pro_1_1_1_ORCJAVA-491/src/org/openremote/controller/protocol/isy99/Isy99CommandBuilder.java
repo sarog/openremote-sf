@@ -141,7 +141,8 @@ public class Isy99CommandBuilder implements CommandBuilder
       {
         command = propertyValue;
       }
-      else
+      else if (!XMLPROPERTY_NAME.equalsIgnoreCase(propertyName)
+            && !propertyName.startsWith(XMLPROPERTY_OPENREMOTE_COMMAND_PREFIX))
       {
         log.warn("Unknown ISY-99 property '<" + XML_ELEMENT_PROPERTY + " " +
             XML_ATTRIBUTENAME_NAME + " = \"" + propertyName + "\" " + XML_ATTRIBUTENAME_VALUE +
