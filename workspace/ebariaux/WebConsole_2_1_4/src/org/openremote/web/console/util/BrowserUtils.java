@@ -534,6 +534,7 @@ import com.google.web.bindery.autobean.shared.AutoBean;
       PanelSizeInfo sizeInfo = AutoBeanService.getInstance().getFactory().create(PanelSizeInfo.class).as();
       sizeInfo.setPanelSizeWidth(ConsoleUnit.DEFAULT_DISPLAY_WIDTH);
       sizeInfo.setPanelSizeHeight(ConsoleUnit.DEFAULT_DISPLAY_HEIGHT);
+      sizeInfo.setPanelSizeType("fixed");
       
       // Check URL parameters
       String fullscreenStr = Window.Location.getParameter("fullscreen");
