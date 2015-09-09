@@ -23,6 +23,7 @@ Bug Fixes:
   - Fixed: Weird URL in example of security constraint in web.xml (ORCJAVA-322)
   - Fixed: False warning in X10 implementation (ORCJAVA-350)
   - Fixed: False warning in KNX implementation (ORCJAVA-351)
+  - Fixed: False warning with in-memory virtual commands (ORCJAVA-352)
 
 Controller Pro 1.1.1
 ====================
