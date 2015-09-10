@@ -117,6 +117,7 @@
     <property name="commLayer" value="${zwave.commLayer}" />
     <property name="padHost" value="${zwave.pad.host}" />
     <property name="padPort" value="${zwave.pad.port}" />
+    <property name="networkKey" value="${zwave.networkKey}" />
   </bean>
 
   <bean id="marantzAVRConfig" class="org.openremote.controller.MarantzAVRConfig">
