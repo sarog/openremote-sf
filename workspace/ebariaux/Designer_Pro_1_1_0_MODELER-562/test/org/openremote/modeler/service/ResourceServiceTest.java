@@ -1355,11 +1355,7 @@ public class ResourceServiceTest {
         Element commandElement = commandsElement.element("command");
         assertAttribute(commandElement, "id", referencedCommandId);
         assertAttribute(commandElement, "protocol", "ir");
-        Assert.assertEquals("Expecting command element to have 1 child", 1, commandElement.elements().size());
-        Assert.assertEquals("Expecting command element to have 1 property child", 1, commandElement.elements("property").size());
-        Element propertyElement = commandElement.element("property");
-        assertAttribute(propertyElement, "name", "name");
-        Assert.assertNotNull("Expecting property to have a value attribute", propertyElement.attribute("value"));
+        assertCommandPropertiesElement(commandElement, dev.getName());
 
         status.setRollbackOnly();
       }
@@ -1488,11 +1484,7 @@ public class ResourceServiceTest {
         Element commandElement = commandsElement.element("command");
         assertAttribute(commandElement, "id", referencedCommandId);
         assertAttribute(commandElement, "protocol", "ir");
-        Assert.assertEquals("Expecting command element to have 1 child", 1, commandElement.elements().size());
-        Assert.assertEquals("Expecting command element to have 1 property child", 1, commandElement.elements("property").size());
-        Element propertyElement = commandElement.element("property");
-        assertAttribute(propertyElement, "name", "name");
-        Assert.assertNotNull("Expecting property to have a value attribute", propertyElement.attribute("value"));
+        assertCommandPropertiesElement(commandElement, dev.getName());
 
         status.setRollbackOnly();
       }
@@ -1671,16 +1663,12 @@ public class ResourceServiceTest {
         for (Element commandElement : ((List <Element>)commandsElement.elements("command"))) {
           Assert.assertNotNull("Expecting command element to have id attribute", commandElement.attribute("id"));
           assertAttribute(commandElement, "protocol", "ir");
-          Assert.assertEquals("Expecting command element to have 1 child", 1, commandElement.elements().size());
-          Assert.assertEquals("Expecting command element to have 1 property child", 1, commandElement.elements("property").size());
-          Element propertyElement = commandElement.element("property");
-          assertAttribute(propertyElement, "name", "name");
-          Assert.assertNotNull("Expecting property to have a value attribute", propertyElement.attribute("value"));
+          String value = assertCommandPropertiesElement(commandElement, dev.getName());
     
           if (commandElement.attribute("id").getText().equals(referencedCommandId1)) {
-            Assert.assertEquals("Expecting property value to be onCommand", "Command one", propertyElement.attribute("value").getText());        
+            Assert.assertEquals("Expecting property value to be onCommand", "Command one", value);        
           } else if (commandElement.attribute("id").getText().equals(referencedCommandId2)) {
-            Assert.assertEquals("Expecting property value to be onCommand", "Command two", propertyElement.attribute("value").getText());        
+            Assert.assertEquals("Expecting property value to be onCommand", "Command two", value);        
           } else {
             Assert.fail("Un-expected command found, id: " + commandElement.attribute("id").getText());
           }
@@ -1904,18 +1892,14 @@ public class ResourceServiceTest {
         for (Element commandElement : ((List <Element>)commandsElement.elements("command"))) {
           Assert.assertNotNull("Expecting command element to have id attribute", commandElement.attribute("id"));
           assertAttribute(commandElement, "protocol", "ir");
-          Assert.assertEquals("Expecting command element to have 1 child", 1, commandElement.elements().size());
-          Assert.assertEquals("Expecting command element to have 1 property child", 1, commandElement.elements("property").size());
-          Element propertyElement = commandElement.element("property");
-          assertAttribute(propertyElement, "name", "name");
-          Assert.assertNotNull("Expecting property to have a value attribute", propertyElement.attribute("value"));
+          String value = assertCommandPropertiesElement(commandElement, dev.getName());
     
           if (commandElement.attribute("id").getText().equals(referencedOnCommandId)) {
-            Assert.assertEquals("Expecting property value to be onCommand", "onCommand", propertyElement.attribute("value").getText());        
+            Assert.assertEquals("Expecting property value to be onCommand", "onCommand", value);        
           } else if (commandElement.attribute("id").getText().equals(referencedOffCommandId)) {
-            Assert.assertEquals("Expecting property value to be onCommand", "offCommand", propertyElement.attribute("value").getText());        
+            Assert.assertEquals("Expecting property value to be onCommand", "offCommand", value);        
           } else if (commandElement.attribute("id").getText().equals(referencedReadCommandId)) {
-            Assert.assertEquals("Expecting property value to be onCommand", "readCommand", propertyElement.attribute("value").getText());        
+            Assert.assertEquals("Expecting property value to be onCommand", "readCommand", value);        
           } else {
             Assert.fail("Un-expected command found, id: " + commandElement.attribute("id").getText());
           }
@@ -2250,16 +2234,12 @@ public class ResourceServiceTest {
         for (Element commandElement : ((List <Element>)commandsElement.elements("command"))) {
           Assert.assertNotNull("Expecting command element to have id attribute", commandElement.attribute("id"));
           assertAttribute(commandElement, "protocol", "ir");
-          Assert.assertEquals("Expecting command element to have 1 child", 1, commandElement.elements().size());
-          Assert.assertEquals("Expecting command element to have 1 property child", 1, commandElement.elements("property").size());
-          Element propertyElement = commandElement.element("property");
-          assertAttribute(propertyElement, "name", "name");
-          Assert.assertNotNull("Expecting property to have a value attribute", propertyElement.attribute("value"));
+          String value = assertCommandPropertiesElement(commandElement, dev.getName());
     
           if (commandElement.attribute("id").getText().equals(referencedSetCommandId)) {
-            Assert.assertEquals("Expecting property value to be setCommand", "setCommand", propertyElement.attribute("value").getText());        
+            Assert.assertEquals("Expecting property value to be setCommand", "setCommand", value);        
           } else if (commandElement.attribute("id").getText().equals(referencedReadCommandId)) {
-            Assert.assertEquals("Expecting property value to be onCommand", "readCommand", propertyElement.attribute("value").getText());        
+            Assert.assertEquals("Expecting property value to be onCommand", "readCommand", value);        
           } else {
             Assert.fail("Un-expected command found, id: " + commandElement.attribute("id").getText());
           }
@@ -2531,11 +2511,7 @@ public class ResourceServiceTest {
         Element commandElement = commandsElement.element("command");
         assertAttribute(commandElement, "id", referencedReadCommandId);
         assertAttribute(commandElement, "protocol", "ir");
-        Assert.assertEquals("Expecting command element to have 1 child", 1, commandElement.elements().size());
-        Assert.assertEquals("Expecting command element to have 1 property child", 1, commandElement.elements("property").size());
-        Element propertyElement = commandElement.element("property");
-        assertAttribute(propertyElement, "name", "name");
-        Assert.assertNotNull("Expecting property to have a value attribute", propertyElement.attribute("value"));
+        assertCommandPropertiesElement(commandElement, dev.getName());
 
         status.setRollbackOnly();
       }
@@ -2797,11 +2773,7 @@ public class ResourceServiceTest {
         Element commandElement = commandsElement.element("command");
         assertAttribute(commandElement, "id", referencedReadCommandId);
         assertAttribute(commandElement, "protocol", "ir");
-        Assert.assertEquals("Expecting command element to have 1 child", 1, commandElement.elements().size());
-        Assert.assertEquals("Expecting command element to have 1 property child", 1, commandElement.elements("property").size());
-        Element propertyElement = commandElement.element("property");
-        assertAttribute(propertyElement, "name", "name");
-        Assert.assertNotNull("Expecting property to have a value attribute", propertyElement.attribute("value"));
+        assertCommandPropertiesElement(commandElement, dev.getName());
 
         status.setRollbackOnly();
       }
@@ -2976,11 +2948,7 @@ public class ResourceServiceTest {
         Element commandElement = commandsElement.element("command");
         assertAttribute(commandElement, "id", referencedReadCommandId);
         assertAttribute(commandElement, "protocol", "ir");
-        Assert.assertEquals("Expecting command element to have 1 child", 1, commandElement.elements().size());
-        Assert.assertEquals("Expecting command element to have 1 property child", 1, commandElement.elements("property").size());
-        Element propertyElement = commandElement.element("property");
-        assertAttribute(propertyElement, "name", "name");
-        Assert.assertNotNull("Expecting property to have a value attribute", propertyElement.attribute("value"));
+        assertCommandPropertiesElement(commandElement, dev.getName());
 
         status.setRollbackOnly();
       }
@@ -3241,11 +3209,7 @@ public class ResourceServiceTest {
         Element commandElement = commandsElement.element("command");
         assertAttribute(commandElement, "id", referencedReadCommandId);
         assertAttribute(commandElement, "protocol", "ir");
-        Assert.assertEquals("Expecting command element to have 1 child", 1, commandElement.elements().size());
-        Assert.assertEquals("Expecting command element to have 1 property child", 1, commandElement.elements("property").size());
-        Element propertyElement = commandElement.element("property");
-        assertAttribute(propertyElement, "name", "name");
-        Assert.assertNotNull("Expecting property to have a value attribute", propertyElement.attribute("value"));
+        assertCommandPropertiesElement(commandElement, dev.getName());
 
         status.setRollbackOnly();
       }
@@ -3379,11 +3343,7 @@ public class ResourceServiceTest {
         Element commandElement = commandsElement.element("command");
         assertAttribute(commandElement, "id", referencedCommandId);
         assertAttribute(commandElement, "protocol", "ir");
-        Assert.assertEquals("Expecting command element to have 1 child", 1, commandElement.elements().size());
-        Assert.assertEquals("Expecting command element to have 1 property child", 1, commandElement.elements("property").size());
-        Element propertyElement = commandElement.element("property");
-        assertAttribute(propertyElement, "name", "name");
-        Assert.assertNotNull("Expecting property to have a value attribute", propertyElement.attribute("value"));
+        assertCommandPropertiesElement(commandElement, dev.getName());
 
         status.setRollbackOnly();
       }
@@ -3480,6 +3440,36 @@ public class ResourceServiceTest {
      assertAttribute(sensorElement, "id", sensorId);
      assertAttribute(sensorElement, "type", sensorType);
      assertAttribute(sensorElement, "name", sensorName);
+   }
+   
+   /**
+    * Validates that the command element has the "mandatory" properties: name, device-name
+    * and that device-name has expected value.
+    * 
+    * @return String text of the value property
+    */
+   private String assertCommandPropertiesElement(Element commandElement, String deviceName) {
+     Assert.assertEquals("Expecting command element to have 2 children", 2, commandElement.elements().size());
+     Assert.assertEquals("Expecting command element to have 2 property children", 2, commandElement.elements("property").size());
+   
+     String value = null;
+     
+     @SuppressWarnings("unchecked")
+     List<Element> propertyElements = commandElement.elements("property");
+     for (Element propertyElement : propertyElements) {
+       if ("name".equals(propertyElement.attribute("name").getText())) {
+         assertAttribute(propertyElement, "name", "name");
+         Assert.assertNotNull("Expecting property to have a value attribute", propertyElement.attribute("value"));
+         value = propertyElement.attribute("value").getText();
+       } else if ("urn:openremote:device-command:device-name".equals(propertyElement.attribute("name").getText())) {
+         assertAttribute(propertyElement, "name", "urn:openremote:device-command:device-name");
+         assertAttribute(propertyElement, "value", deviceName);
+       } else {
+         Assert.fail("Unknown property on command " + propertyElement.attribute("name").getText());
+       }
+     }
+
+     return value;
    }
    
    private String assertElementWithOneChild(Element element) {
