@@ -2333,6 +2333,7 @@ public class LocalFileCache implements ResourceCache<File>
       uiButtonEvent.setId(maxId.maxId());
       uiButtonEvent.setProtocolDisplayName(protocolType);
       uiButtonEvent.setDeviceName(deviceCommand.getDevice().getName());
+      uiButtonEvent.setDeviceId(Long.toString(deviceCommand.getDevice().getOid()));
 
       for (ProtocolAttr protocolAttr : protocolAttrs) {
         uiButtonEvent.getProtocolAttrs().put(protocolAttr.getName(), protocolAttr.getValue());
@@ -2447,6 +2448,7 @@ public class LocalFileCache implements ResourceCache<File>
      uiButtonEvent.setId(maxId.maxId());
      uiButtonEvent.setProtocolDisplayName(protocolType);
      uiButtonEvent.setDeviceName(deviceCommand.getDevice().getName());
+     uiButtonEvent.setDeviceId(Long.toString(deviceCommand.getDevice().getOid()));
      for (ProtocolAttr protocolAttr : protocolAttrs) {
         uiButtonEvent.getProtocolAttrs().put(protocolAttr.getName(), protocolAttr.getValue());
      }
