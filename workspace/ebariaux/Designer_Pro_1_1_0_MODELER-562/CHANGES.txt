@@ -1,7 +1,7 @@
 MODELER-562
 ===========
 
- - Include device name in generated controller.xml
+ - Include device name and id in generated controller.xml
 
 Pro 1.1.0
 =========
