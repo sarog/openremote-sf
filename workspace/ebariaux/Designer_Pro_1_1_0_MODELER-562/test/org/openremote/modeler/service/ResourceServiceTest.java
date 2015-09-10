@@ -91,6 +91,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
+import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
@@ -172,6 +173,19 @@ public class ResourceServiceTest {
           cache.getPanelXmlFile().getParentFile().mkdirs();
         }
       });
+   }
+   
+   /**
+    * account instance is shared by all tests.
+    * This methods cleans up all relationships on the account that might be modified by the individual tests.
+    */
+   @AfterMethod
+   public void cleanupAccount() {
+     account.getDevices().clear();
+     account.getSensors().clear();
+     account.getSwitches().clear();
+     account.getSliders().clear();
+     account.getDeviceMacros().clear();
    }
    
   /**
@@ -593,11 +607,6 @@ public class ResourceServiceTest {
         Element componentsElement = topElement.element("components");
         Assert.assertEquals("Expecting 6 children for components element", 6, componentsElement.elements().size());
         
-        // Must cleanup what we did, explicit remove of device from account is required as account is shared by all tests
-        account.getDevices().remove(dev);
-        account.getSwitches().remove(buildingSwitch);
-        account.getSliders().remove(buildingSlider);
-        account.getSensors().remove(sensor);
         status.setRollbackOnly();
       }
     });
@@ -821,11 +830,6 @@ public class ResourceServiceTest {
         Element componentsElement = topElement.element("components");
         Assert.assertEquals("Expecting 6 children for components element", 6, componentsElement.elements().size());
         
-        // Must cleanup what we did, explicit remove of device from account is required as account is shared by all tests
-        account.getDevices().remove(dev);
-        account.getSwitches().remove(buildingSwitch);
-        account.getSliders().remove(buildingSlider);
-        account.getSensors().remove(sensor);
         status.setRollbackOnly();
       }
     });
@@ -1917,10 +1921,6 @@ public class ResourceServiceTest {
           }
         }
     
-        // Must cleanup what we did, explicit remove of device from account is required as account is shared by all tests
-        account.getDevices().remove(dev);
-        account.getSwitches().remove(buildingSwitch);
-        account.getSensors().remove(sensor);
         status.setRollbackOnly();
       }
     });
@@ -2265,10 +2265,6 @@ public class ResourceServiceTest {
           }
         }
     
-        // Must cleanup what we did, explicit remove of device from account is required as account is shared by all tests
-        account.getDevices().remove(dev);
-        account.getSliders().remove(buildingSlider);
-        account.getSensors().remove(sensor);
         status.setRollbackOnly();
       }
     });
@@ -2541,9 +2537,6 @@ public class ResourceServiceTest {
         assertAttribute(propertyElement, "name", "name");
         Assert.assertNotNull("Expecting property to have a value attribute", propertyElement.attribute("value"));
 
-        // Must cleanup what we did, explicit remove of device from account is required as account is shared by all tests
-        account.getDevices().remove(dev);
-        account.getSensors().remove(sensor);
         status.setRollbackOnly();
       }
     });
@@ -2810,9 +2803,6 @@ public class ResourceServiceTest {
         assertAttribute(propertyElement, "name", "name");
         Assert.assertNotNull("Expecting property to have a value attribute", propertyElement.attribute("value"));
 
-        // Must cleanup what we did, explicit remove of device from account is required as account is shared by all tests
-        account.getDevices().remove(dev);
-        account.getSensors().remove(sensor);
         status.setRollbackOnly();
       }
     });
@@ -2992,9 +2982,6 @@ public class ResourceServiceTest {
         assertAttribute(propertyElement, "name", "name");
         Assert.assertNotNull("Expecting property to have a value attribute", propertyElement.attribute("value"));
 
-        // Must cleanup what we did, explicit remove of device from account is required as account is shared by all tests
-        account.getDevices().remove(dev);
-        account.getSensors().remove(sensor);
         status.setRollbackOnly();
       }
     });
@@ -3260,9 +3247,6 @@ public class ResourceServiceTest {
         assertAttribute(propertyElement, "name", "name");
         Assert.assertNotNull("Expecting property to have a value attribute", propertyElement.attribute("value"));
 
-        // Must cleanup what we did, explicit remove of device from account is required as account is shared by all tests
-        account.getDevices().remove(dev);
-        account.getSensors().remove(sensor);
         status.setRollbackOnly();
       }
     });
