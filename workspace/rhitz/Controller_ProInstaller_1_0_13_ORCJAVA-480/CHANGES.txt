@@ -3,6 +3,11 @@ ORCJAVA-440
 
   - Implement Z-Wave command classes that are needed for configuring Z-Wave nodes (Rainer Hitz)
 
+ORCJAVA-480
+===========
+
+  - Implement the Z-Wave security layer (COMMAND_CLASS_SECURITY)
+
 Controller Pro 1.0.13
 =====================
 	  
