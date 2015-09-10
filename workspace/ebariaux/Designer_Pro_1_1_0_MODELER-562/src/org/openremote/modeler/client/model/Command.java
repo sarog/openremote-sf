@@ -44,6 +44,8 @@ public class Command {
    
    private String deviceName = "";
    
+   private String deviceId = "";
+   
    /**
     * Gets the id.
     * 
@@ -143,5 +145,15 @@ public class Command {
   {
     this.deviceName = deviceName;
   }
-   
+
+  public String getDeviceId()
+  {
+    return deviceId;
+  }
+
+  public void setDeviceId(String deviceId)
+  {
+    this.deviceId = deviceId;
+  }
+  
 }
