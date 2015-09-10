@@ -14,6 +14,7 @@ New Features:
   - Improve 1-wire implementation (Eric Bariaux, ORCJAVA-475)
   - Add log messages to Rules Engine (Isaac Martin, Michal Rutka, ORCJAVA-481)
   - Add X10 logging category (ORCJAVA-370)
+	- Implement the Z-Wave security layer (COMMAND_CLASS_SECURITY) (Rainer Hitz, ORCJAVA-480)
 
 Bug Fixes:
 
