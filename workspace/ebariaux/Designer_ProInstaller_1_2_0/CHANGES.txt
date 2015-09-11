@@ -6,6 +6,9 @@ Fixes:
  - Fixed: Support building Designer using JDK 7 (MODELER-546)
  - Fixed: Delete key only deletes the last object in a multiple selection (MODELER-441)
  
+New features:
+ - Include device name and id in generated controller.xml (MODELER-562)
+
 Pro 1.1.0
 =========
 

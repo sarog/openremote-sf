@@ -2319,7 +2319,7 @@ public class LocalFileCache implements ResourceCache<File>
   /**
    * Adds the data base commands into protocolEventContainer.
    */
-  public void addDataBaseCommands(ProtocolCommandContainer protocolEventContainer, MaxId maxId) {
+  private void addDataBaseCommands(ProtocolCommandContainer protocolEventContainer, MaxId maxId) {
     // Part of patch R3181 -- include all components in controller.xml even if
     // not bound to UI components
 
@@ -2332,6 +2332,8 @@ public class LocalFileCache implements ResourceCache<File>
       Command uiButtonEvent = new Command();
       uiButtonEvent.setId(maxId.maxId());
       uiButtonEvent.setProtocolDisplayName(protocolType);
+      uiButtonEvent.setDeviceName(deviceCommand.getDevice().getName());
+      uiButtonEvent.setDeviceId(Long.toString(deviceCommand.getDevice().getOid()));
 
       for (ProtocolAttr protocolAttr : protocolAttrs) {
         uiButtonEvent.getProtocolAttrs().put(protocolAttr.getName(), protocolAttr.getValue());
@@ -2445,6 +2447,8 @@ public class LocalFileCache implements ResourceCache<File>
      Command uiButtonEvent = new Command();
      uiButtonEvent.setId(maxId.maxId());
      uiButtonEvent.setProtocolDisplayName(protocolType);
+     uiButtonEvent.setDeviceName(deviceCommand.getDevice().getName());
+     uiButtonEvent.setDeviceId(Long.toString(deviceCommand.getDevice().getOid()));
      for (ProtocolAttr protocolAttr : protocolAttrs) {
         uiButtonEvent.getProtocolAttrs().put(protocolAttr.getName(), protocolAttr.getValue());
      }

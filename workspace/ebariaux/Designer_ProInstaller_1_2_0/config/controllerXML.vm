@@ -218,6 +218,8 @@
     			<property name="${property}" value="$!{uiButtonEvent.getProtocolAttrs().get(${property})}" />
     		#end
     			<property name="name" value="${uiButtonEvent.getLabel()}" />
+    			<property name="urn:openremote:device-command:device-name" value="${uiButtonEvent.getDeviceName()}" />
+    			<property name="urn:openremote:device-command:device-id" value="${uiButtonEvent.getDeviceId()}" />
     		</command>
     	#end
     #end
