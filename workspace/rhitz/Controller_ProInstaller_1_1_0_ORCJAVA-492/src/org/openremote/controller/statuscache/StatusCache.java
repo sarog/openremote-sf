@@ -32,6 +32,7 @@ import org.openremote.controller.exception.ResourceNotFoundException;
 import org.openremote.controller.model.sensor.Sensor;
 import org.openremote.controller.model.Command;
 import org.openremote.controller.protocol.Event;
+import org.openremote.controller.service.DeployerCommandListener;
 import org.openremote.controller.utils.Logger;
 
 /**
@@ -43,7 +44,7 @@ import org.openremote.controller.utils.Logger;
  * @author @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
  * @author Javen Zhang
  */
-public class StatusCache
+public class StatusCache implements DeployerCommandListener
 {
 
   // Class Members --------------------------------------------------------------------------------
@@ -110,6 +111,18 @@ public class StatusCache
   }
 
 
+  // Implements DeployerCommandListener -----------------------------------------------------------
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override public void processNewCommands(Set<Command> commands)
+  {
+    // Initialize the status cache's event context so commands can be used directly
+    // from within scripts and rules...
+
+    initializeEventContext(commands);
+  }
 
 
   // Public Instance Methods ----------------------------------------------------------------------
@@ -356,7 +369,10 @@ public class StatusCache
     eventProcessorChain.createCommandFacade(commands);
   }
 
-
+  public Integer sensorIDFromName(String sensorName)
+  {
+    return sensorMap.getSensorID(sensorName);
+  }
 
   // Private Instance Methods ---------------------------------------------------------------------
 
@@ -464,6 +480,10 @@ public class StatusCache
       return currentState.get(id);
     }
 
+    private Integer getSensorID(String sensorName)
+    {
+      return nameIdIndex.get(sensorName);
+    }
 
     private void update(Event event)
     {
