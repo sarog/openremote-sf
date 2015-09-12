@@ -1,6 +1,6 @@
 /*
  * OpenRemote, the Home of the Digital Home.
- * Copyright 2008-2011, OpenRemote Inc.
+ * Copyright 2008-2015, OpenRemote Inc.
  *
  * See the contributors.txt file in the distribution for a
  * full listing of individual contributors.
@@ -24,6 +24,7 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.jdom.Element;
+import org.openremote.controller.Constants;
 import org.openremote.controller.command.Command;
 import org.openremote.controller.command.CommandBuilder;
 import org.openremote.controller.exception.NoSuchCommandException;
@@ -34,7 +35,7 @@ public class DomintellCommandBuilder implements CommandBuilder {
     * A common log category name intended to be used across all classes related
     * to Domintell implementation.
     */
-   public final static String DOMINTELL_LOG_CATEGORY = "Domintell";
+   public final static String DOMINTELL_LOG_CATEGORY = Constants.CONTROLLER_PROTOCOL_LOG_CATEGORY + "domintell";
 
    /**
     * String constant for parsing Domintell protocol XML entries from
@@ -78,6 +79,12 @@ public class DomintellCommandBuilder implements CommandBuilder {
     */
    public final static String DOMINTELL_XMLPROPERTY_TEMP_MODE = "temp_mode";
 
+   // TODO: move this to a more generic place, as it's used by all protocols
+   /**
+    * String contact for parsing name XML entries from controller.xml file.
+    * This applies to all protocols.
+    */
+   public final static String XMLPROPERTY_NAME = "name";
 
    // Class Members --------------------------------------------------------------------------------
 
@@ -183,7 +190,7 @@ public class DomintellCommandBuilder implements CommandBuilder {
             modeAsString = propertyValue;
          }
 
-         else {
+         else if (!XMLPROPERTY_NAME.equalsIgnoreCase(propertyName)) {
             log.warn("Unknown Domintell property '<" + XML_ELEMENT_PROPERTY + " " + XML_ATTRIBUTENAME_NAME + " = \"" + propertyName + "\" " + XML_ATTRIBUTENAME_VALUE + " = \"" + propertyValue + "\"/>'.");
          }
       }
