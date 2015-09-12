@@ -1,6 +1,6 @@
 /*
  * OpenRemote, the Home of the Digital Home.
- * Copyright 2008-2011, OpenRemote Inc.
+ * Copyright 2008-2015, OpenRemote Inc.
  *
  * See the contributors.txt file in the distribution for a
  * full listing of individual contributors.
@@ -28,15 +28,18 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.util.HashMap;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
 import org.openremote.controller.DomintellConfig;
 import org.openremote.controller.protocol.domintell.model.DimmerModule;
 import org.openremote.controller.protocol.domintell.model.DomintellModule;
+import org.openremote.controller.protocol.domintell.model.InputModule;
 import org.openremote.controller.protocol.domintell.model.RelayModule;
 import org.openremote.controller.protocol.domintell.model.TemperatureModule;
-import org.openremote.controller.protocol.lutron.LutronHomeWorksDeviceException;
-import org.openremote.controller.protocol.lutron.MessageQueueWithPriorityAndTTL;
+import org.openremote.controller.protocol.MessageQueueWithPriorityAndTTL;
 
 public class DomintellGateway {
 
@@ -46,6 +49,11 @@ public class DomintellGateway {
     * Domintell logger. Uses a common category for all Domintell related logging.
     */
    private final static Logger log = Logger.getLogger(DomintellCommandBuilder.DOMINTELL_LOG_CATEGORY);
+
+   /**
+    * Interval in ms between 2 pings to the Domintell system (using HELLO command)
+    */
+   private static final int PING_INTERVAL = 59000;
 
    private static HashMap<String, DomintellModule> moduleCache = new HashMap<String, DomintellModule>();
    
@@ -59,6 +67,11 @@ public class DomintellGateway {
 
    private LoginState loginState = new LoginState();
 
+   // A timer to ping the DETH02, ensuring session stays opened.
+   private Timer pingTimer = new Timer();
+   // Tasks that does the pinging using the HELLO command
+   private TimerTask pingTask = null;
+   
    private DomintellConnectionThread connectionThread;
    
    static {
@@ -72,6 +85,8 @@ public class DomintellGateway {
       moduleClasses.put("TE2", TemperatureModule.class);
       moduleClasses.put("LC3", TemperatureModule.class);
       moduleClasses.put("PBL", TemperatureModule.class);
+      moduleClasses.put("IS4", InputModule.class);
+      moduleClasses.put("IS8", InputModule.class);
    }
    
    public synchronized void startGateway() {
@@ -95,16 +110,36 @@ public class DomintellGateway {
       // Ask to start gateway, if it's already done, this will do nothing
       startGateway();
       queue.add(new DomintellCommandPacket(command));
+      
+      // As we sent a command, we don't need an explicit ping (HELLO command)
+      resetPingTask();
     }
+   
+   private void resetPingTask() {
+      synchronized (pingTimer) {
+        if (pingTask != null) {
+           pingTask.cancel();
+           pingTimer.purge();
+        }
+        pingTask = new TimerTask() {
+          @Override
+          public void run() {
+             queue.add(new DomintellCommandPacket("HELLO"));
+          }
+           
+        };
+        pingTimer.schedule(pingTask, PING_INTERVAL, PING_INTERVAL);
+      }
+   }
 
    /**
-    * Gets the HomeWorks device from the cache, creating it if not already
+    * Gets the Domintell Module from the cache, creating it if not already
     * present.
     * 
     * @param address
     * @return
     * @return
-    * @throws LutronHomeWorksDeviceException 
+    * @throws DomintellModuleException 
     */
    public DomintellModule getDomintellModule(String moduleType, DomintellAddress address, Class<? extends DomintellModule> moduleClass) throws DomintellModuleException {      
      DomintellModule module = moduleCache.get(moduleType + address);
@@ -136,6 +171,12 @@ public class DomintellGateway {
 
    private class DomintellConnectionThread extends Thread {
 
+      /**
+       * Timeout on the reader thread i.e. we must receive a packet within that delay since the last read
+       * We should receive the clock update every minute from the Domintell master, so using 61s for this should be safe.
+       */
+      private static final int READ_TIMEOUT = 61000;
+
       DatagramSocket socket;
       
       private DomintellReaderThread readerThread;
@@ -146,12 +187,10 @@ public class DomintellGateway {
         if (socket == null) {
           while (!isInterrupted()) {
             try {
-               socket = new DatagramSocket();
-               
-               // We should receive the clock update every minute from the Domintell master, so this should never timeout
-               socket.setSoTimeout(60000);
+              socket = new DatagramSocket();
+              socket.setSoTimeout(READ_TIMEOUT);
 
-               log.info("Trying to connect to " + domintellConfig.getAddress() + " on port " + domintellConfig.getPort());
+              log.info("Trying to connect to " + domintellConfig.getAddress() + " on port " + domintellConfig.getPort());
               socket.connect(InetAddress.getByName(domintellConfig.getAddress()), domintellConfig.getPort());
               log.info("Socket connected");
               readerThread = new DomintellReaderThread(socket);
@@ -166,37 +205,31 @@ public class DomintellGateway {
                 if (!readerThread.isAlive()) {
                   log.info("Reader thread is dead, clean and re-try to connect");
                   socket.disconnect();
+                  socket.close();
                   readerThread = null;
                   writerThread.interrupt();
                   writerThread = null;
                 }
               }
             } catch (SocketException e) {
-              // TODO Auto-generated catch block
-              e.printStackTrace();
-
+              log.warn("Failed to connect to Domintell, retrying later", e);
               // We could not connect, sleep for a while before trying again
               try {
                 Thread.sleep(15000);
               } catch (InterruptedException e1) {
-                // TODO Auto-generated catch block
-                e1.printStackTrace();
+                log.trace("Been interrupted while waiting to re-connect", e1);
               }
 
             } catch (IOException e) {
-              // TODO Auto-generated catch block
-              e.printStackTrace();
+               log.warn("Failed to connect to Domintell, retrying later", e);
               // We could not connect, sleep for a while before trying again
               try {
                 Thread.sleep(15000);
               } catch (InterruptedException e1) {
-                // TODO Auto-generated catch block
-                e1.printStackTrace();
+                 log.trace("Been interrupted while waiting to re-connect", e1);
               }
-
             } catch (InterruptedException e) {
-              // TODO Auto-generated catch block
-              e.printStackTrace();
+               log.trace("Connection thread has been interrupted", e);
             }
           }
         }
@@ -241,6 +274,11 @@ public class DomintellGateway {
                   }
                    loginState.needsLogin = false;
                   log.info("Sent log in info");
+                } else {
+                   // We're logged in, send a PING command to make sure we get a current view of system status
+                   queue.add(new DomintellCommandPacket("PING"));
+                   // and start the ping task
+                   resetPingTask();
                 }
                 // We've been awakened and we're logged in, we'll just go out of the loop and proceed with normal execution
               } catch (InterruptedException e) {
@@ -248,7 +286,13 @@ public class DomintellGateway {
               }
             }
           }
-          DomintellCommandPacket cmd = queue.blockingPoll();
+
+          DomintellCommandPacket cmd = null;
+          try {
+               cmd = queue.blockingPoll();
+          } catch (InterruptedException e) {
+             break;
+          }
           if (cmd != null) {
             log.info("Sending >" + cmd.toString() + "< on socket");
             byte[] buf = cmd.toString().getBytes();
@@ -258,18 +302,29 @@ public class DomintellGateway {
             } catch (IOException e) {
                log.warn("Could not send packet >" + cmd.toString() + "<");
             }
+            // Domintell specifies 25ms delay between messages
+            try {
+               Thread.sleep(25);
+            } catch (InterruptedException e) {
+               break;
+            }
           }
         }
+        log.debug("Writer thread stopping");
       }
 
    }
 
    private class DomintellReaderThread extends Thread {
       private DatagramSocket socket;
+      
+      // A pattern to match the date/time packet sent by the DETH02
+      private Pattern dateTimePattern;
 
       public DomintellReaderThread(DatagramSocket socket) {
         super();
         this.socket = socket;
+        this.dateTimePattern = Pattern.compile("\\d{1,2}:\\d{1,2} \\d{1,2}/\\d{1,2}/\\d{1,2}");
       }
 
       @Override
@@ -290,6 +345,12 @@ public class DomintellGateway {
              DatagramPacket p = new DatagramPacket(buffer, buffer.length);
              socket.receive(p);
              String packetText = new String(p.getData(), 0, p.getLength(), "ISO-8859-1");
+             
+             // Get rid of line ending
+             if (packetText.endsWith("\n")) {
+                packetText = packetText.substring(0, packetText.lastIndexOf("\n") - 1);
+             }
+             
             log.info("Reader thread got packet >" + packetText + "<");
             if (packetText.startsWith("INFO:Session opened:INFO")) {
               synchronized (loginState) {
@@ -320,6 +381,18 @@ public class DomintellGateway {
               }
               // Get out of our read loop, this will terminate the thread
               break;
+            } else if (packetText.equals("INFO:Session timeout:INFO")) {
+               synchronized (loginState) {
+                  loginState.loggedIn = false;
+                }
+                // Get out of our read loop, this will terminate the thread
+               break;
+            } else if (packetText.equals("INFO:World:INFO")) {
+               log.debug("Domintell system replied to HELLO");
+            } else if (packetText.equals("PONG")) {
+               log.debug("Domintell system replied to PING");
+            } else if (dateTimePattern.matcher(packetText).matches()) {
+               log.debug("Domintell system reported date/time: " + packetText);
             } else {
                // First 3 chars in module type
                // Next 6 is address
