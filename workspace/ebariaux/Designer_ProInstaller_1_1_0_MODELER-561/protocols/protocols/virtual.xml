@@ -45,7 +45,7 @@
         <allowBlank>false</allowBlank>
         <maxLength>254</maxLength>
 
-        <regex message = "Use on/off or status">on|On|ON|off|Off|OFF|status|Status|STATUS</regex>
+        <regex message = "Use on/off, status or a string value">.*</regex>
 
       </validations>
     </attr>
