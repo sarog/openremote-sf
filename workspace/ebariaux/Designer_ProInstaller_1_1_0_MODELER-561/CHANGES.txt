@@ -1,3 +1,8 @@
+MODELER-561
+===========
+
+ - Relax limitations on commands usable for In-memory Virtual Commands
+
 Pro 1.1.0
 =========
 
