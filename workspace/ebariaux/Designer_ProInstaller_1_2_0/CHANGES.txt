@@ -8,6 +8,7 @@ Fixes:
  
 New features:
  - Include device name and id in generated controller.xml (MODELER-562)
+ - Relax limitations on commands usable for In-memory Virtual Commands (MODELER-561)
 
 Pro 1.1.0
 =========
