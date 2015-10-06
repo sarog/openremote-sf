@@ -44,27 +44,31 @@ public class TcpSocketPort implements Port
 {
   /**
    * A Packet Processor delegate that builds the packet and indicates
-   * when a packet is completely assembled
+   * when a packet is completely assembled.
+   * 
    * @author <a href="mailto:richard@openremote.org">Richard Turner</a>
-   *
    */
   public interface PacketProcessor {
     /**
      * Process the new byte read from the socket and optionally
      * add it to the packet being built; return true if the
      * packet is completely assembled and ready to be returned
-     * otherwise return false
-     * @param packet
-     * @param newByte
-     * @return
+     * otherwise return false.
+     * 
+     * @param packet a ByteArrayOutputStream representing the packet currently being built
+     * @param newByte newly read byte
+     * @return true if packet is fully assembled, false otherwise
      */
     boolean processByte(ByteArrayOutputStream packet, byte newByte);
     
     /**
      * Called just before a packet is returned to the caller; allows
-     * the packet to be validated; return true if valid otherwise false
-     * @param packet
-     * @return
+     * the packet to be validated; return true if valid otherwise false.
+     * Packet indicated as invalid are dropped, packet buffer is emptied
+     * and reading continues with the next byte in search for valid packet. 
+     * 
+     * @param packet a ByteArrayOutputStream representing the packet currently being built
+     * @return true if packet is valid, false otherwise
      */
     boolean packetIsValid(ByteArrayOutputStream packet);
   }
