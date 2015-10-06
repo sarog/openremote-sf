@@ -75,7 +75,7 @@ public class TcpSocketPort implements Port
 
   public final static String TCP_PORT_LOG_CATEGORY = Constants.CONTROLLER_PROTOCOL_LOG_CATEGORY + "port.tcp";
   private final static Logger log = Logger.getLogger(TCP_PORT_LOG_CATEGORY);
-  private final static char[] hexArray = "0123456789ABCDEF".toCharArray();
+
   private Byte startByte;
   private Byte endByte;
   private Integer packetSize;
@@ -170,13 +170,4 @@ public class TcpSocketPort implements Port
     return new Message(packetBytes);
   }
   
-  public static String bytesToHex(byte[] bytes) {
-      char[] hexChars = new char[bytes.length * 2];
-      for ( int j = 0; j < bytes.length; j++ ) {
-          int v = bytes[j] & 0xFF;
-          hexChars[j * 2] = hexArray[v >>> 4];
-          hexChars[j * 2 + 1] = hexArray[v & 0x0F];
-      }
-      return new String(hexChars);
-  }
 }
