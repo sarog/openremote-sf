@@ -134,7 +134,7 @@ public class TcpSocketPort implements Port
           // Validate the packet
           if (!processor.packetIsValid(baos)) {
             baos.reset();
-            System.out.println("Processor deemed packet as invalid");
+            log.info("Processor deemed packet as invalid");
           } else {
             break;
           }
