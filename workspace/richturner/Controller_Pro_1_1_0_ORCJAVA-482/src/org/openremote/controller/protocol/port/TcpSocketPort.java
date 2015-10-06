@@ -110,7 +110,6 @@ public class TcpSocketPort implements Port
 
    @Override
    public void send(Message message) throws IOException {
-     //System.out.println("Packet Send: " + bytesToHex(message.getContent()));
      OutputStream out = socket.getOutputStream();
      out.write(message.getContent());
      out.flush();
@@ -123,23 +122,6 @@ public class TcpSocketPort implements Port
       throw new IOException("Configuration error, listening socket is null and cannot receive!");
     }
     
-//    if (packetSize == null && startByte == null && endByte == null || (packetSize == null && (startByte == null || endByte == null)) {
-//      throw new IOException("Configuration error, either packet size or start and end bytes must be set!");
-//    }
-    
-//    if (packetSize != null) {
-//      InputStream is = socket.getInputStream();
-//      byte[] buffer = new byte[packetSize];
-//      int offset = 0;
-//      while (offset < packetSize) {
-//          int bytesRead = is.read(buffer, offset, packetSize - offset);
-//          if (bytesRead == -1) { 
-//              // Incomplete packet - handle however you want to
-//          }
-//          offset += bytesRead;
-//      }
-//    }
-
     InputStream is = socket.getInputStream();
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
     byte[] buffer = new byte[1];
@@ -185,7 +167,6 @@ public class TcpSocketPort implements Port
     }
     
     byte[] packetBytes = baos.toByteArray();
-    //System.out.println("Packet Received: " + bytesToHex(packetBytes));
     return new Message(packetBytes);
   }
   
