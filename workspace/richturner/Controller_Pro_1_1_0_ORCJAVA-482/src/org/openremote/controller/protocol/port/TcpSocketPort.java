@@ -99,11 +99,12 @@ public class TcpSocketPort implements Port
 
    @Override
    public void stop() {
-    if (this.socket != null)
-    try {
-      this.socket.close();
-    } catch (IOException e) {
-      log.error(e.getMessage(), e);
+    if (this.socket != null) {
+      try {
+        this.socket.close();
+      } catch (IOException e) {
+        log.error(e.getMessage(), e);
+      }
     }
    }
 
@@ -116,8 +117,8 @@ public class TcpSocketPort implements Port
    }
 
 
-  @Override public Message receive() throws IOException
-  {
+  @Override
+  public Message receive() throws IOException {
     if (socket == null) {
       throw new IOException("Configuration error, listening socket is null and cannot receive!");
     }
@@ -143,7 +144,7 @@ public class TcpSocketPort implements Port
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
     byte[] buffer = new byte[1];
     
-    while (is.read(buffer,0, 1)  != -1) {
+    while (is.read(buffer, 0, 1)  != -1) {
       // If packet processor defined then delegate packet logic to it
       if (processor != null) {
         if (processor.processByte(baos, buffer[0])) {
