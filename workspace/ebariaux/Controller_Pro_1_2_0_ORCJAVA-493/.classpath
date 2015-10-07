@@ -55,5 +55,8 @@
 	<classpathentry kind="lib" path="lib/jzmq/zmq.jar"/>
 	<classpathentry kind="lib" path="lib/drools-5.1.1/drools-compiler-5.1.1_patched.jar"/>
 	<classpathentry kind="lib" path="lib/onewire/jowfsclient-1.2.0.jar"/>
+	<classpathentry kind="lib" path="lib/bouncycastle-1.50/bcpkix-jdk15on-150.jar"/>
+	<classpathentry kind="lib" path="lib/bouncycastle-1.50/bcprov-jdk15on-150.jar"/>
+	<classpathentry kind="lib" path="lib/openremote-security-0.2.0/openremote-security-0.2.0.jar"/>
 	<classpathentry kind="output" path="web/WEB-INF/classes"/>
 </classpath>
