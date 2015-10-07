@@ -55,5 +55,8 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/ORCommons"/>
 	<classpathentry kind="lib" path="lib/jzmq/zmq.jar"/>
 	<classpathentry kind="lib" path="lib/drools-5.1.1/drools-compiler-5.1.1_patched.jar"/>
+	<classpathentry kind="lib" path="lib/test/mockito-1.19.10/mockito-core-1.10.19.jar"/>
+	<classpathentry kind="lib" path="lib/test/hamcrest-1.1/hamcrest-core-1.1.jar"/>
+	<classpathentry kind="lib" path="lib/test/objenesis-2.1/objenesis-2.1.jar"/>
 	<classpathentry kind="output" path="web/WEB-INF/classes"/>
 </classpath>
