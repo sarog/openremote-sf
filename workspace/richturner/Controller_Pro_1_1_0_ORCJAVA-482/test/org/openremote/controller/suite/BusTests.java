@@ -23,6 +23,7 @@ package org.openremote.controller.suite;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.openremote.controller.protocol.port.PortFactoryTest;
+import org.openremote.controller.protocol.port.TcpSocketPortTest;
 
 /**
  * All protocol.bus tests aggregated here.
@@ -30,7 +31,8 @@ import org.openremote.controller.protocol.port.PortFactoryTest;
 @RunWith(Suite.class)
 @Suite.SuiteClasses(
    {
-       PortFactoryTest.class
+       PortFactoryTest.class,
+       TcpSocketPortTest.class
    }
 )
 public class BusTests
