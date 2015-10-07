@@ -42,7 +42,13 @@ import org.openremote.controller.utils.Logger;
  */
 public class TcpSocketPort implements Port
 {
-  /**
+  public static final String TCP_PORT_CONFIGURATION_PACKET_SIZE = "packetSize";
+  public static final String TCP_PORT_CONFIGURATION_END_BYTE = "endByte";
+  public static final String TCP_PORT_CONFIGURATION_START_BYTE = "startByte";
+  public static final String TCP_PORT_CONFIGURATION_PROCESSOR = "processor";
+  public static final String TCP_PORT_CONFIGURATION_SOCKET = "socket";
+
+/**
    * A Packet Processor delegate that builds the packet and indicates
    * when a packet is completely assembled.
    * 
@@ -86,11 +92,11 @@ public class TcpSocketPort implements Port
   @Override
   public void configure(Map<String, Object> configuration)
   {
-    this.socket = (Socket) configuration.get("socket");
-    this.processor = (PacketProcessor) configuration.get("processor");
-    this.startByte = (Byte)configuration.get("startByte");
-    this.endByte = (Byte)configuration.get("endByte");
-    this.packetSize = (Integer)configuration.get("packetSize");
+    this.socket = (Socket) configuration.get(TCP_PORT_CONFIGURATION_SOCKET);
+    this.processor = (PacketProcessor) configuration.get(TCP_PORT_CONFIGURATION_PROCESSOR);
+    this.startByte = (Byte)configuration.get(TCP_PORT_CONFIGURATION_START_BYTE);
+    this.endByte = (Byte)configuration.get(TCP_PORT_CONFIGURATION_END_BYTE);
+    this.packetSize = (Integer)configuration.get(TCP_PORT_CONFIGURATION_PACKET_SIZE);
   }
 
    @Override
