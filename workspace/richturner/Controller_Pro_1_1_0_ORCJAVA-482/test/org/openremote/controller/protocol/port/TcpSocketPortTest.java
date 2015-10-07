@@ -46,7 +46,7 @@ public class TcpSocketPortTest {
       when(mockedSocket.getInputStream()).thenReturn(new ByteArrayInputStream("test_packet".getBytes()));
 
       Map<String, Object> portConfiguration = new HashMap<String, Object>();
-      portConfiguration.put("socket", mockedSocket);
+      portConfiguration.put(TcpSocketPort.TCP_PORT_CONFIGURATION_SOCKET, mockedSocket);
       socketPort.configure(portConfiguration);
 
       Message message = socketPort.receive();
@@ -71,8 +71,8 @@ public class TcpSocketPortTest {
       when(mockedSocket.getInputStream()).thenReturn(new ByteArrayInputStream("123456".getBytes()));
 
       Map<String, Object> portConfiguration = new HashMap<String, Object>();
-      portConfiguration.put("socket", mockedSocket);
-      portConfiguration.put("packetSize", 3);
+      portConfiguration.put(TcpSocketPort.TCP_PORT_CONFIGURATION_SOCKET, mockedSocket);
+      portConfiguration.put(TcpSocketPort.TCP_PORT_CONFIGURATION_PACKET_SIZE, 3);
       socketPort.configure(portConfiguration);
 
       Message message = socketPort.receive();
@@ -95,9 +95,9 @@ public class TcpSocketPortTest {
       when(mockedSocket.getInputStream()).thenReturn(new ByteArrayInputStream("1x234x56".getBytes()));
 
       Map<String, Object> portConfiguration = new HashMap<String, Object>();
-      portConfiguration.put("socket", mockedSocket);
-      portConfiguration.put("packetSize", 3);
-      portConfiguration.put("startByte", "x".getBytes()[0]);
+      portConfiguration.put(TcpSocketPort.TCP_PORT_CONFIGURATION_SOCKET, mockedSocket);
+      portConfiguration.put(TcpSocketPort.TCP_PORT_CONFIGURATION_PACKET_SIZE, 3);
+      portConfiguration.put(TcpSocketPort.TCP_PORT_CONFIGURATION_START_BYTE, "x".getBytes()[0]);
       socketPort.configure(portConfiguration);
 
       Message message = socketPort.receive();
@@ -120,8 +120,8 @@ public class TcpSocketPortTest {
       when(mockedSocket.getInputStream()).thenReturn(new ByteArrayInputStream("1x234x56".getBytes()));
 
       Map<String, Object> portConfiguration = new HashMap<String, Object>();
-      portConfiguration.put("socket", mockedSocket);
-      portConfiguration.put("endByte", "x".getBytes()[0]);
+      portConfiguration.put(TcpSocketPort.TCP_PORT_CONFIGURATION_SOCKET, mockedSocket);
+      portConfiguration.put(TcpSocketPort.TCP_PORT_CONFIGURATION_END_BYTE, "x".getBytes()[0]);
       socketPort.configure(portConfiguration);
 
       Message message = socketPort.receive();
@@ -151,9 +151,9 @@ public class TcpSocketPortTest {
       when(mockedSocket.getInputStream()).thenReturn(new ByteArrayInputStream("1x23y4x5y6".getBytes()));
 
       Map<String, Object> portConfiguration = new HashMap<String, Object>();
-      portConfiguration.put("socket", mockedSocket);
-      portConfiguration.put("startByte", "x".getBytes()[0]);
-      portConfiguration.put("endByte", "y".getBytes()[0]);
+      portConfiguration.put(TcpSocketPort.TCP_PORT_CONFIGURATION_SOCKET, mockedSocket);
+      portConfiguration.put(TcpSocketPort.TCP_PORT_CONFIGURATION_START_BYTE, "x".getBytes()[0]);
+      portConfiguration.put(TcpSocketPort.TCP_PORT_CONFIGURATION_END_BYTE, "y".getBytes()[0]);
       socketPort.configure(portConfiguration);
 
       Message message = socketPort.receive();
@@ -184,8 +184,8 @@ public class TcpSocketPortTest {
       TestProcessor testProcessor = new TestProcessor();
 
       Map<String, Object> portConfiguration = new HashMap<String, Object>();
-      portConfiguration.put("socket", mockedSocket);
-      portConfiguration.put("processor", testProcessor);
+      portConfiguration.put(TcpSocketPort.TCP_PORT_CONFIGURATION_SOCKET, mockedSocket);
+      portConfiguration.put(TcpSocketPort.TCP_PORT_CONFIGURATION_PROCESSOR, testProcessor);
       socketPort.configure(portConfiguration);
 
       Message message = socketPort.receive();
