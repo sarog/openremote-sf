@@ -1,3 +1,8 @@
+ORCJAVA-493
+===========
+
+  - Have an option to store password in plain text file instead of keystore
+
 Controller Pro 1.2.0
 ====================
 
