@@ -31,6 +31,8 @@ import java.util.Locale;
 public class Strings
 {
 
+   private final static char[] hexArray = "0123456789ABCDEF".toCharArray();
+
   /**
    * Translates a signed Java byte into an unsigned hex string.
    *
@@ -61,6 +63,25 @@ public class Strings
                         : "0x"  + toUpperCase(Integer.toHexString(value)));
   }
 
+  /**
+   * Translates an array of signed Java bytes into an unsigned hex string.
+   * 
+   * Hex values are always padded on 2 characters, no prefix is added,
+   * no spacing between the different byte values.
+   *  
+   * @param bytes Array of bytes to convert
+   * @return Unsigned hex representations of input bytes.
+   */
+  public static String bytesToHex(byte[] bytes) {
+     char[] hexChars = new char[bytes.length * 2];
+     for ( int j = 0; j < bytes.length; j++ ) {
+         int v = bytes[j] & 0xFF;
+         hexChars[j * 2] = hexArray[v >>> 4];
+         hexChars[j * 2 + 1] = hexArray[v & 0x0F];
+     }
+     return new String(hexChars);
+ }
+  
   /**
    * Locale independent string to upper case method. This should be used by all code related
    * string case changes to avoid issues with system default locales that can have unpredictable
