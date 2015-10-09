@@ -1,6 +1,6 @@
 /* 
  * OpenRemote, the Home of the Digital Home.
- * Copyright 2008-2014, OpenRemote Inc.
+ * Copyright 2008-2015, OpenRemote Inc.
  *
  * See the contributors.txt file in the distribution for a
  * full listing of individual contributors.
@@ -52,6 +52,7 @@ import org.openremote.controller.utils.Logger;
  *
  *
  * @author <a href="mailto:juha@openremote.org>Juha Lindfors</a>
+ * @author <a href="mailto:eric@openremote.org">Eric Bariaux</a>
  *
  * @see ControllerConfiguration
  * @see RoundRobinConfiguration
@@ -181,8 +182,6 @@ public abstract class Configuration
     }
   }
 
-
-
   // Instance Fields ------------------------------------------------------------------------------
 
 
@@ -282,8 +281,6 @@ public abstract class Configuration
     return configurationProperties.containsKey(attrName) ?
         configurationProperties.get(attrName).split(",") : defaultValue;
   }
-
-
 
   // Nested Classes -------------------------------------------------------------------------------
 
