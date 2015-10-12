@@ -48,7 +48,8 @@
             <value>classpath:denonAVRSerial.properties</value>
             <value>classpath:enocean.properties</value>
             <value>classpath:zwave.properties</value>
-        </list>
+            <value>classpath:velbus.properties</value>
+            </list>
       </property>
   </bean>
 
@@ -118,6 +119,11 @@
     <property name="padHost" value="${zwave.pad.host}" />
     <property name="padPort" value="${zwave.pad.port}" />
     <property name="networkKey" value="${zwave.networkKey}" />
+  </bean>
+  
+  <bean id="velbusConfig" class="org.openremote.controller.VelbusConfiguration">
+    <property name="serverHostnames" value="${velbus.server.hostnames}" />
+    <property name="serverPorts" value="${velbus.server.ports}" />
   </bean>
 
   <bean id="marantzAVRConfig" class="org.openremote.controller.MarantzAVRConfig">
