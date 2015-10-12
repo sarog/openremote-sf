@@ -286,9 +286,18 @@ public class DeviceRESTServlet extends RESTAPI
 
         cmdsArray.put(cmdObj);
 
-        // TODO : add tags
-      }
+        JSONArray tagArray = new JSONArray();
 
+        for (String curTag : curCmd.getTags())
+        {
+          tagArray.put(curTag);
+        }
+
+        if (tagArray.length() > 0)
+        {
+          cmdObj.put("tags", tagArray);
+        }
+      }
 
       JSONArray sensorArray = new JSONArray();
       rootObj.put("sensors", sensorArray);
@@ -434,7 +443,13 @@ public class DeviceRESTServlet extends RESTAPI
 
       eleCmds.addContent(eleCmd);
 
-      // TODO : add tags
+      for (String curTag : curCmd.getTags())
+      {
+        Element eleTag = new Element("tag");
+        eleTag.setText(curTag);
+
+        eleCmd.addContent(eleTag);
+      }
     }
 
     Element eleSensors = new Element("sensors");

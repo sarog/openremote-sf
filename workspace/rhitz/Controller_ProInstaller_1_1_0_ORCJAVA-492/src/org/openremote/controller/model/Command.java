@@ -20,6 +20,7 @@
  */
 package org.openremote.controller.model;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.HashSet;
@@ -85,6 +86,12 @@ public class Command
   public final static String COMMAND_DEVICE_ID_PROPERTY =
       "urn:openremote:device-command:device-id";
 
+  /**
+   * Command property that contains a tag in order to store meta data of the command.
+   */
+  public final static String COMMAND_TAG_PROPERTY =
+      "urn:openremote:device-command:tag";
+
 
   // Class Members --------------------------------------------------------------------------------
 
@@ -122,6 +129,11 @@ public class Command
   private Map<String, String> properties;
 
   /**
+   * Tags that are related to the command in order to store meta data.
+   */
+  private List<String> tags;
+
+  /**
    * Command factory delegates creation of command execution model to specific protocol specific
    * builders (Such as X10, KNX, one-wire, etc.)
    */
@@ -153,12 +165,17 @@ public class Command
    *            may have special meaning. The property name,value pairs match the
    *            {@code <property>} elements nested within {@code <command>} elements within
    *            controller's XML document model.
+   *
+   * @param tags
+   *            Tags that are related to the command in order to store meta data.
    */
-  public Command(CommandFactory commandFactory, int id, String type, Map<String, String> properties)
+  public Command(CommandFactory commandFactory, int id, String type, Map<String, String> properties,
+                 List<String> tags)
   {
     this.id = id;
     this.protocolType = type;
     this.properties = properties;
+    this.tags = tags;
     this.commandFactory = commandFactory;
   }
 
@@ -206,6 +223,15 @@ public class Command
     return protocolType;
   }
 
+  /**
+   * Returns a list of meta data tags.
+   *
+   * @return  meta data tags
+   */
+  public List<String> getTags()
+  {
+    return tags;
+  }
 
   /**
    * Returns a command property value.
