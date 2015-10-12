@@ -47,7 +47,7 @@
             <value>classpath:amx_ni.properties</value>
             <value>classpath:denonAVRSerial.properties</value>
             <value>classpath:enocean.properties</value>
-          </list>
+        </list>
       </property>
   </bean>
 
@@ -139,6 +139,10 @@
 
   <bean id = "commandService"
         class = "org.openremote.controller.service.impl.CommandServiceImpl">
+  </bean>
+
+  <bean id = "deviceService"
+        class = "org.openremote.controller.service.impl.DeviceServiceImpl">
   </bean>
 
   <bean id="denonAVRSerialConfiguration" class="org.openremote.controller.DenonAVRSerialConfiguration">
@@ -247,6 +251,18 @@
         <list>
             <ref bean="statusCache"/>
             <ref bean="commandService"/>
+            <ref bean="statusCommandByNameService"/>
+            <ref bean="statusPollingByNameService"/>
+            <ref bean="deviceService"/>
+        </list>
+    </property>
+
+    <property name = "sensorListeners">
+        <list>
+            <ref bean="statusCache"/>
+            <ref bean="statusCommandByNameService"/>
+            <ref bean="statusPollingByNameService"/>
+            <ref bean="deviceService"/>
         </list>
     </property>
 

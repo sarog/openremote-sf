@@ -206,7 +206,7 @@ public class StatusPollingRESTServlet extends RESTAPI {
    @Override protected void handleRequest(HttpServletRequest request, HttpServletResponse response)
    {
 
-      if (isPollingByName(request))
+      if (isPollingByName(request) || DeviceRESTServlet.isDeviceRequest(request, 3, "polling"))
       {
         handleRequestByName(request, response);
 
@@ -317,7 +317,8 @@ public class StatusPollingRESTServlet extends RESTAPI {
   }
 
   /**
-   * Handles the servlet REST API '/rest/polling/{device_id}?name={sensor_name}&name={sensor_name}'
+   * Handles the servlet REST API '/rest/polling/{device_id}?name={sensor_name}&name={sensor_name}' or
+   * '/rest/devices/{device_name}/polling/{device_id}?name={sensor_name}&name={sensor_name}'
    * functionality.
    *
    * @param request   the HTTP request
@@ -331,9 +332,36 @@ public class StatusPollingRESTServlet extends RESTAPI {
     try
     {
       Set<String> sensorNames = sensorNamesFromQueryString(request);
-      Map<String, Integer> name2IDMap = statusPollingByNameService.getSensorIDsFromNames(sensorNames);
+      Map<String, Integer> name2IDMap = null;
+      String deviceID = null;
 
-      String sensorIDsAsString = getSensorIDsAsString(name2IDMap.values());
+      if (DeviceRESTServlet.isDeviceRequest(request, 3, "polling"))
+      {
+        // /rest/devices/{device_name}/polling/{device_id}?name={sensor_name}&name={sensor_name}
+
+        String deviceName = deviceNameFromRequest(request);
+
+        name2IDMap = statusPollingByNameService.getSensorIDsFromNames(
+            deviceName, sensorNames
+        );
+
+        deviceID = getDeviceIDFromDeviceRequest(request);
+      }
+
+      else
+      {
+        // /rest/polling/{device_id}?name={sensor_name}&name={sensor_name}
+
+        name2IDMap = statusPollingByNameService.getSensorIDsFromNames(
+            sensorNames
+        );
+
+        deviceID = getDeviceID(request);
+      }
+
+      String sensorIDsAsString = getSensorIDsAsString(
+          name2IDMap.values()
+      );
 
       if ("".equals(sensorIDsAsString))
       {
@@ -342,8 +370,6 @@ public class StatusPollingRESTServlet extends RESTAPI {
         return;
       }
 
-      String deviceID = getDeviceID(request);
-
       String pollingResults = statusPollingService.queryChangedState(deviceID, sensorIDsAsString);
 
       if (pollingResults != null && !"".equals(pollingResults))
@@ -351,7 +377,8 @@ public class StatusPollingRESTServlet extends RESTAPI {
         if (Constants.SERVER_RESPONSE_TIME_OUT.equalsIgnoreCase(pollingResults))
         {
           sendSensorValueResponse(request, response, new HashMap<String, String>());
-        } else
+        }
+        else
         {
           Map<Integer, String> id2ValueMap = new HashMap<Integer, String>();
           Map<String, String> name2ValueMap = new HashMap<String, String>();
@@ -373,7 +400,8 @@ public class StatusPollingRESTServlet extends RESTAPI {
 
           sendSensorValueResponse(request, response, name2ValueMap);
         }
-      } else
+      }
+      else
       {
         sendSensorValueResponse(request, response, new HashMap<String, String>());
       }
@@ -398,6 +426,8 @@ public class StatusPollingRESTServlet extends RESTAPI {
   private String getDeviceID(HttpServletRequest request) throws ControllerRESTAPIException
   {
     String deviceID = null;
+
+    // PathInfo : /{device_id}
 
     String pathInfo = request.getPathInfo();
     StringTokenizer st = null;
@@ -427,6 +457,23 @@ public class StatusPollingRESTServlet extends RESTAPI {
           "Invalid URL format -- expected format '/rest/polling/{device_id}?name={sensor_name}', got '" +
           request.getServletPath() + (queryString.length() > 0 ? "?" : "") + queryString + "'."
       );
+    }
+
+    return deviceID;
+  }
+
+  private String getDeviceIDFromDeviceRequest(HttpServletRequest request) throws ControllerRESTAPIException
+  {
+    String deviceID = null;
+
+    // PathInfo : /{device_name}/polling/{device_id}
+
+    String pathInfo = request.getPathInfo();
+    StringTokenizer st = new StringTokenizer(pathInfo, "/");
+
+    for(int i = 0; i < 3; i++)
+    {
+      deviceID = st.nextToken();
     }
 
     return deviceID;
@@ -502,5 +549,17 @@ public class StatusPollingRESTServlet extends RESTAPI {
     }
 
     return map;
+  }
+
+  private String deviceNameFromRequest(HttpServletRequest request)
+  {
+    // PathInfo : /{device_name}/polling/{device_id}
+
+    String pathInfo = request.getPathInfo();
+
+    StringTokenizer st = new StringTokenizer(pathInfo, "/");
+    String deviceName = st.nextToken();
+
+    return deviceName;
   }
 }

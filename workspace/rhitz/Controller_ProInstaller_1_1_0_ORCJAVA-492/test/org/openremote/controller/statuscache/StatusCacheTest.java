@@ -89,7 +89,7 @@ public class StatusCacheTest
 
     DummyCommand cmd1 = new DummyCommand("0");
 
-    Sensor s1 = new RangeSensor("test1", 1, cache, cmd1, -10, 10);
+    Sensor s1 = new RangeSensor("test1", 1, cache, cmd1, 1, -10, 10);
 
     cache.registerSensor(s1);
 
@@ -105,7 +105,7 @@ public class StatusCacheTest
 
     DummyCommand cmd2 = new DummyCommand("10");
 
-    Sensor s2 = new LevelSensor("test2", 2, cache, cmd2);
+    Sensor s2 = new LevelSensor("test2", 2, cache, cmd2, 1);
 
     cache.registerSensor(s2);
 
@@ -152,7 +152,7 @@ public class StatusCacheTest
 
     DummyCommand cmd = new DummyCommand("on");
 
-    Sensor s = new SwitchSensor("test-sensor", 2, cache, cmd);
+    Sensor s = new SwitchSensor("test-sensor", 2, cache, cmd, 1);
 
     cache.registerSensor(s);
 

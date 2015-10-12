@@ -18,15 +18,17 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Map;
 import java.util.Set;
+import java.util.StringTokenizer;
 
 /**
- * This servlet implements the REST API '/rest/status?name={sensor_name}&name={sensor_name}'
- * functionality which returns an XML or JSON document with the current values of all requested
+ * This servlet implements the REST API '/rest/status?name={sensor_name}&name={sensor_name}' or
+ * '/rest/devices/{device_name}/status?name={sensor_name}&name={sensor_name}' functionality
+ * which returns an XML or JSON document with the current values of all requested
  * sensors. <p>
  *
- * Note: if the cache does not have a value for the given sensor,
- * '{@link org.openremote.controller.model.sensor.Sensor#UNKNOWN_STATUS}' is returned (including
- * if no sensor with that name exists).
+ * If the cache does not have a value for the given sensor,
+ * '{@link org.openremote.controller.model.sensor.Sensor#UNKNOWN_STATUS}' is returned. In case
+ * of an device name or sensor name ambiguity error the HTTP error code 409 is returned.
  *
  * <h2>XML Request</h2>
  *
@@ -136,12 +138,28 @@ public class StatusCommandByNameRESTServlet extends RESTAPI
    */
   @Override protected void handleRequest(HttpServletRequest request, HttpServletResponse response)
   {
-    Set<String> sensorNames = sensorNamesFromQueryString(request);
-
-    Map<String, String> valueMap = commandService.readFromCache(sensorNames);
-
     try
     {
+      Map<String, String> valueMap = null;
+
+      Set<String> sensorNames = sensorNamesFromQueryString(request);
+
+      if (DeviceRESTServlet.isDeviceRequest(request, 2, "status"))
+      {
+        // '/rest/devices/{device_name}/status?name={sensor_name}&name={sensor_name}'
+
+        String deviceName = deviceNameFromRequest(request);
+
+        valueMap = commandService.readFromCache(deviceName, sensorNames);
+      }
+
+      else
+      {
+        // '/rest/status?name={sensor_name}&name={sensor_name}'
+
+        valueMap = commandService.readFromCache(sensorNames);
+      }
+
       sendSensorValueResponse(request, response, valueMap);
     }
 
@@ -159,5 +177,17 @@ public class StatusCommandByNameRESTServlet extends RESTAPI
 
       sendErrorResponse(exc, request, response);
     }
+  }
+
+  private String deviceNameFromRequest(HttpServletRequest request)
+  {
+    // PathInfo : /{device_name}/status
+
+    String pathInfo = request.getPathInfo();
+
+    StringTokenizer st = new StringTokenizer(pathInfo, "/");
+    String deviceName = st.nextToken();
+
+    return deviceName;
   }
 }
