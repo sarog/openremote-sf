@@ -3,6 +3,7 @@ Controller Pro 1.3.0
 
 New Features:
   - Add TCPSocketPort for protocols that use TCP (Richard Turner, ORCJAVA-482)
+  - Have an option to store password in plain text file instead of keystore (ORCJAVA-493)
 
 Controller Pro 1.2.0
 ====================
