@@ -100,6 +100,7 @@ public abstract class ServiceContext
     DEVICE_STATE_CACHE("statusCache"),                        // TODO : Deprecated, see ORCJAVA-197
     COMPONENT_CONTROL_SERVICE("controlCommandService"),       // TODO : should be retrieved through deployer interface
     COMMAND_SERVICE("commandService"),                        // TODO : should be retrieved through deployer interface
+    DEVICE_SERVICE("deviceService"),                          // TODO : should be retrieved through deployer interface
     DENONAVRSERIAL_CONFIGURATION("denonAVRSerialConfiguration"), // TODO : To be removed, see ORCJAVA-183
     ENOCEAN_CONFIGURATION("enoceanConfig");                   // TODO : To be removed, see ORCJAVA-183
 
@@ -347,6 +348,21 @@ public abstract class ServiceContext
     {
       throw new Error(
           "Command service implementation has had an incompatible change.", e
+      );
+    }
+  }
+
+  public static DeviceService getDeviceService()
+  {
+    try
+    {
+      return (DeviceService)getInstance().getService(ServiceName.DEVICE_SERVICE);
+    }
+
+    catch (ClassCastException e)
+    {
+      throw new Error(
+          "Device service implementation has had an incompatible change.", e
       );
     }
   }

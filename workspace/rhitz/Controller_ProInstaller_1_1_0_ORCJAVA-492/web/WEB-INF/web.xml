@@ -283,6 +283,16 @@
   </servlet-mapping>
 
   <servlet>
+      <servlet-name>devicesRESTServlet</servlet-name>
+      <servlet-class>org.openremote.controller.rest.DeviceRESTServlet</servlet-class>
+  </servlet>
+
+  <servlet-mapping>
+      <servlet-name>devicesRESTServlet</servlet-name>
+      <url-pattern>/rest/devices/*</url-pattern>
+  </servlet-mapping>
+
+  <servlet>
     <servlet-name>controlRESTServlet</servlet-name>
     <servlet-class>org.openremote.controller.rest.ControlCommandRESTServlet</servlet-class>
   </servlet>

@@ -177,6 +177,10 @@ public abstract class Sensor
    */
   private int sensorID;
 
+  /**
+   * Identifier of the the related command that is used to receive sensor values.
+   */
+  private int commandID;
 
   /**
    * Reference to the state cache that receives and processes the events generated from this sensor.
@@ -241,6 +245,9 @@ public abstract class Sensor
    * @param eventProducer
    *          protocol handler implementation
    *
+   * @param commandID
+   *          A unique command ID. Must be unique per controller deployment.
+   *
    * @param sensorProperties
    *          Additional sensor properties. These properties can be used by the protocol
    *          implementors to direct their implementation according to sensor configuration.
@@ -249,7 +256,7 @@ public abstract class Sensor
    *          datatype for this sensor
    *
    */
-  protected Sensor(String name, int sensorID, StatusCache cache, EventProducer eventProducer,
+  protected Sensor(String name, int sensorID, StatusCache cache, EventProducer eventProducer, int commandID,
                    Map<String, String> sensorProperties, EnumSensorType sensorType)
   {
     if (sensorType == null || eventProducer == null)
@@ -269,6 +276,7 @@ public abstract class Sensor
     this.sensorID = sensorID;
     this.deviceStateCache = cache;
     this.eventProducer = eventProducer;
+    this.commandID = commandID;
     this.sensorProperties = sensorProperties;
     this.sensorType = sensorType;
   }
@@ -295,6 +303,16 @@ public abstract class Sensor
   public int getSensorID()
   {
     return sensorID;
+  }
+
+  /**
+   * Returns the identifier of the related command that is used to receive sensor values.
+   *
+   * @return  the command ID
+   */
+  public int getCommandID()
+  {
+    return commandID;
   }
 
 

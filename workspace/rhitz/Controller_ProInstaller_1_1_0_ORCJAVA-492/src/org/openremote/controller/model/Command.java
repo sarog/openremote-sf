@@ -73,6 +73,18 @@ public class Command
    */
   public final static String COMMAND_NAME_PROPERTY = "name";
 
+  /**
+   * Command property that contains the name of the related device.
+   */
+  public final static String COMMAND_DEVICE_NAME_PROPERTY =
+      "urn:openremote:device-command:device-name";
+
+  /**
+   * Command property that contains the ID of the related device.
+   */
+  public final static String COMMAND_DEVICE_ID_PROPERTY =
+      "urn:openremote:device-command:device-id";
+
 
   // Class Members --------------------------------------------------------------------------------
 
@@ -154,6 +166,16 @@ public class Command
 
   // Public Instance Methods ----------------------------------------------------------------------
 
+  /**
+   * Returns the unique identifier of the command that corresponds to 'id' attribute of
+   * {@code <command>} element in controller's XML definition.
+   *
+   * @return   unique identifier of the command
+   */
+  public int getID()
+  {
+    return id;
+  }
 
   /**
    * Returns a command's name property if present.
@@ -171,6 +193,17 @@ public class Command
     }
 
     return name;
+  }
+
+  /**
+   * Returns the protocol type of the command that corresponds to 'protocol' attribute of
+   * {@code <command>} element in controller's XML definition.
+   *
+   * @return  the protocol type
+   */
+  public String getProtocolType()
+  {
+    return protocolType;
   }
 
 

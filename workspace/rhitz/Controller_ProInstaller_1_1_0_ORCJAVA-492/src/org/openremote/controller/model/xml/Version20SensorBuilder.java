@@ -284,7 +284,9 @@ public class Version20SensorBuilder implements SensorBuilder<Version20ModelBuild
     try
     {
       int sensorID = Integer.parseInt(sensorIDValue);
-      EventProducer ep = parseSensorEventProducer(sensorElement);
+      EventProducerItem epItem = parseSensorEventProducer(sensorElement);
+      EventProducer ep = epItem.getEventProducer();
+      int epID = epItem.getID();
 
       StatusCache deviceStateCache = modelBuilder.getDeviceStateCache();
 
@@ -295,23 +297,23 @@ public class Version20SensorBuilder implements SensorBuilder<Version20ModelBuild
           int min = getMinProperty(sensorElement);
           int max = getMaxProperty(sensorElement);
 
-          return new RangeSensor(sensorName, sensorID, deviceStateCache, ep, min, max);
+          return new RangeSensor(sensorName, sensorID, deviceStateCache, ep, epID, min, max);
 
         case LEVEL:
 
-          return new LevelSensor(sensorName, sensorID, deviceStateCache, ep);
+          return new LevelSensor(sensorName, sensorID, deviceStateCache, ep, epID);
 
         case SWITCH:
 
           StateSensor.DistinctStates states = getSwitchStateMapping(sensorElement);
 
-          return new SwitchSensor(sensorName, sensorID, deviceStateCache, ep, states);
+          return new SwitchSensor(sensorName, sensorID, deviceStateCache, ep, epID, states);
 
         case CUSTOM:
 
           StateSensor.DistinctStates stateMapping = getDistinctStateMapping(sensorElement);
 
-          StateSensor sensor = new StateSensor(sensorName, sensorID, deviceStateCache, ep, stateMapping);
+          StateSensor sensor = new StateSensor(sensorName, sensorID, deviceStateCache, ep, epID, stateMapping);
 
           sensor.setStrictStateMapping(false);
 
@@ -384,13 +386,14 @@ public class Version20SensorBuilder implements SensorBuilder<Version20ModelBuild
    *
    * @param sensorElement   JDOM element pointing to sensor structure
    *
-   * @return  event producer instance that the sensor uses to retrieve device state
+   * @return  structure that contains the event producer instance and related command ID
+   *          that the sensor uses to retrieve device state
    *
    * @throws InitializationException
    *            if the sensor element does not have a child include element, or if the
    *            referenced command in include element could not be created
    */
-  private EventProducer parseSensorEventProducer(Element sensorElement)
+  private EventProducerItem parseSensorEventProducer(Element sensorElement)
     throws InitializationException
   {
     List<Element> sensorPropertyElements = AbstractModelBuilder.getChildElements(sensorElement);
@@ -421,7 +424,9 @@ public class Version20SensorBuilder implements SensorBuilder<Version20ModelBuild
 
             if (eventProducer instanceof EventProducer)
             {
-              return (EventProducer) eventProducer;
+              return new EventProducerItem(
+                  (EventProducer) eventProducer, eventProducerID
+              );
             }
 
             else
@@ -716,4 +721,27 @@ public class Version20SensorBuilder implements SensorBuilder<Version20ModelBuild
 //  }
 
 
+  // Nested Classes -------------------------------------------------------------------------------
+
+  private class EventProducerItem
+  {
+    private EventProducer eventProducer;
+    private int id;
+
+    public EventProducerItem(EventProducer producer, int commandID)
+    {
+      this.eventProducer = producer;
+      this.id = commandID;
+    }
+
+    public EventProducer getEventProducer()
+    {
+      return eventProducer;
+    }
+
+    public int getID()
+    {
+      return id;
+    }
+  }
 }

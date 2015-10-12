@@ -33,6 +33,7 @@ import org.openremote.controller.model.sensor.Sensor;
 import org.openremote.controller.model.Command;
 import org.openremote.controller.protocol.Event;
 import org.openremote.controller.service.DeployerCommandListener;
+import org.openremote.controller.service.DeployerSensorListener;
 import org.openremote.controller.utils.Logger;
 
 /**
@@ -44,7 +45,7 @@ import org.openremote.controller.utils.Logger;
  * @author @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
  * @author Javen Zhang
  */
-public class StatusCache implements DeployerCommandListener
+public class StatusCache implements DeployerCommandListener, DeployerSensorListener
 {
 
   // Class Members --------------------------------------------------------------------------------
@@ -116,12 +117,26 @@ public class StatusCache implements DeployerCommandListener
   /**
    * {@inheritDoc}
    */
-  @Override public void processNewCommands(Set<Command> commands)
+  @Override public void onCommandsDeployed(Set<Command> commands)
   {
     // Initialize the status cache's event context so commands can be used directly
     // from within scripts and rules...
 
     initializeEventContext(commands);
+  }
+
+
+  // Implements DeployerSensorListener ------------------------------------------------------------
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override public void onSensorsDeployed(Set<Sensor> sensors)
+  {
+    for (Sensor sensor : sensors)
+    {
+      registerSensor(sensor);
+    }
   }
 
 
