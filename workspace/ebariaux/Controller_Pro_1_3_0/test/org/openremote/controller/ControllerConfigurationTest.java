@@ -698,6 +698,121 @@ public class ControllerConfigurationTest
         ControllerConfiguration.DEFAULT_REMOTE_COMMAND_RESPONSE_TIMEOUT
     );
   }
+  
+  /**
+   * Test setting security password storage using an Enum.
+   */
+  @Test
+  public void testSetSecurityPasswordStorage()
+  {
+     ControllerConfiguration config = new ControllerConfiguration();
+     
+     config.setSecurityPasswordStorage(SecurityPasswordStorage.KEYSTORE);     
+     Assert.assertEquals(SecurityPasswordStorage.KEYSTORE, config.getSecurityPasswordStorage());
+     
+     config.setSecurityPasswordStorage(SecurityPasswordStorage.PLAINTEXT);     
+     Assert.assertEquals(SecurityPasswordStorage.PLAINTEXT, config.getSecurityPasswordStorage());
+  }
+  
+  /**
+   * Test setting security password storage using a String value.
+   */
+  @Test
+  public void testSetSecurityPasswordStorageAsString()
+  {
+     ControllerConfiguration config = new ControllerConfiguration();
+     
+     config.setSecurityPasswordStorageAsString("keystore");     
+     Assert.assertEquals(SecurityPasswordStorage.KEYSTORE, config.getSecurityPasswordStorage());
+     
+     config.setSecurityPasswordStorageAsString("plaintext");     
+     Assert.assertEquals(SecurityPasswordStorage.PLAINTEXT, config.getSecurityPasswordStorage());
+  }
 
+  /**
+   * Test setting security password storage using a String value with leading / trailing spaces.
+   */
+  @Test
+  public void testSetSecurityPasswordStorageAsStringWithSpaces()
+  {
+     ControllerConfiguration config = new ControllerConfiguration();
+     
+     config.setSecurityPasswordStorageAsString("  keystore  ");     
+     Assert.assertEquals(SecurityPasswordStorage.KEYSTORE, config.getSecurityPasswordStorage());
+     
+     config.setSecurityPasswordStorageAsString("  plaintext  ");     
+     Assert.assertEquals(SecurityPasswordStorage.PLAINTEXT, config.getSecurityPasswordStorage());
+  }
+
+  /**
+   * Test setting security password storage via configuration API. When a non-valid (as per Enum definition)
+   * value is provided, should fall back to a default value.
+   */
+  @Test
+  public void testSetSecurityPasswordStorageAsStringInvalidValue()
+  {
+     ControllerConfiguration config = new ControllerConfiguration();
+     
+     config.setSecurityPasswordStorageAsString("fjhsdhjkfsd");
+     Assert.assertEquals(SecurityPasswordStorage.KEYSTORE, config.getSecurityPasswordStorage());
+  }
+  
+  /**
+   * Test setting security password storage via overriding property list.
+   * The direct API provided value should be overridden.
+   */
+  @Test
+  public void testSetSecurityPasswordStorageOverride()
+  {
+    ControllerConfiguration config = new ControllerConfiguration();
+
+    Map<String, String> props = new HashMap<String, String>(3);
+    props.put("security.passwordStorage", "plaintext");
+    config.setConfigurationProperties(props);
+
+    Assert.assertEquals(SecurityPasswordStorage.PLAINTEXT, config.getSecurityPasswordStorage());
+  }
+
+  /**
+   * Test setting security password storage via overriding property list. If an invalid
+   * overriding value is provided, the original API provided value should remain.
+   */
+  @Test
+  public void testSetSecurityPasswordStorageOverrideInvalidValue()
+  {
+    ControllerConfiguration config = new ControllerConfiguration();
+
+    Map<String, String> props = new HashMap<String, String>(3);
+    props.put("security.passwordStorage", "gfhjd");
+    config.setConfigurationProperties(props);
+
+    Assert.assertEquals(SecurityPasswordStorage.KEYSTORE, config.getSecurityPasswordStorage());
+  }
+
+  /**
+   * Test setting security password storage via overriding property list. If no matching
+   * overriding value is provided, the original API provided value should remain.
+   */
+  @Test
+  public void testSetSecurityPasswordStorageOverrideEmptyValue()
+  {
+    ControllerConfiguration config = new ControllerConfiguration();
+
+    Map<String, String> props = new HashMap<String, String>(3);
+    config.setConfigurationProperties(props);
+
+    Assert.assertEquals(SecurityPasswordStorage.KEYSTORE, config.getSecurityPasswordStorage());
+  }
+
+  /**
+   * Test security password storage default value.
+   */
+  @Test
+  public void testSetSecurityPasswordStorageDefaultValue()
+  {
+    ControllerConfiguration config = new ControllerConfiguration();
+
+    Assert.assertEquals(SecurityPasswordStorage.KEYSTORE, config.getSecurityPasswordStorage());
+  }  
 }
 

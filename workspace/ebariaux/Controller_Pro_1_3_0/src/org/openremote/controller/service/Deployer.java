@@ -1,6 +1,6 @@
 /*
  * OpenRemote, the Home of the Digital Home.
- * Copyright 2008-2014, OpenRemote Inc.
+ * Copyright 2008-2015, OpenRemote Inc.
  *
  * See the contributors.txt file in the distribution for a
  * full listing of individual contributors.
@@ -38,6 +38,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.nio.charset.Charset;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.ArrayList;
@@ -54,6 +55,7 @@ import org.jdom.Element;
 import org.openremote.controller.Constants;
 import org.openremote.controller.ControllerConfiguration;
 import org.openremote.controller.OpenRemoteRuntime;
+import org.openremote.controller.SecurityPasswordStorage;
 import org.openremote.controller.deployer.ModelBuilder;
 import org.openremote.controller.deployer.Version20ModelBuilder;
 import org.openremote.controller.deployer.Version30ModelBuilder;
@@ -107,6 +109,7 @@ import flexjson.JSONSerializer;
  * @see #getSensor
  *
  * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
+ * @author <a href="mailto:eric@openremote.org">Eric Bariaux</a>
  */
 public class Deployer
 {
@@ -854,46 +857,100 @@ public class Deployer
     //        command check service -- should move back when the Beehive command check is
     //        part of the Beehive Connection implementation where it belongs
 
-    if (getKeyStoreLocation().getScheme().startsWith("file"))
-    {
-      File f = new File(getKeyStoreLocation());
+    byte[] credentials = null;
+    
+    if (controllerConfig.getSecurityPasswordStorage() == SecurityPasswordStorage.PLAINTEXT) {
+       if (getPasswordFileLocation().getScheme().startsWith("file")) {
+         File f = new File(getPasswordFileLocation());
+ 
+         if (!f.exists()) {
+           throw new PasswordException(
+             "User credentials were not present, please synchronize the controller with your "+
+             "OpenRemote Designer/Beehive account first.");
+         }
+         
+         BufferedReader reader = null;
 
-      if (!f.exists())
-      {
-        throw new PasswordException(
-            "User credentials were not present, please synchronize the controller with your "+
-            "OpenRemote Designer/Beehive account first."
-        );
-      }
+         try
+         {
+
+           reader = new BufferedReader(new FileReader(f));
+
+           credentials = reader.readLine().getBytes(Charset.forName("UTF-8"));
+         }
+
+         catch (IOException e)
+         {
+           log.error("Can't read password due to I/O error : {0}", e, e.getMessage());
+         }
+
+         catch (SecurityException e)
+         {
+           log.error("Security manager has prevented access to user's password: {0}", e, e.getMessage());
+         }
+
+         finally
+         {
+           if (reader != null)
+           {
+             try
+             {
+               reader.close();
+             }
+
+             catch (IOException e)
+             {
+               log.warn("Unable to close file ''{0}''", getPasswordFileLocation());
+             }
+           }
+         }
+       }
+    } else {
+       if (getKeyStoreLocation().getScheme().startsWith("file"))
+       {
+         File f = new File(getKeyStoreLocation());
+   
+         if (!f.exists())
+         {
+           throw new PasswordException(
+               "User credentials were not present, please synchronize the controller with your "+
+               "OpenRemote Designer/Beehive account first."
+           );
+         }
+       }
+   
+       try
+       {
+         PasswordManager pw = new PasswordManager(
+             getKeyStoreLocation(),
+             (getSystemUser() + ".key").toCharArray()
+         );
+   
+         credentials = pw.getPassword(username, (getSystemUser() + ".key").toCharArray()
+         );
+
+       }
+   
+       catch (PasswordManager.PasswordNotFoundException e)
+       {
+         throw new PasswordException(
+             "Password for user ''{0}'' was not found", e, username, e.getMessage()
+         );
+       }
+   
+       catch (KeyManager.KeyManagerException e)
+       {
+         throw new PasswordException(
+             "Error accessing user's password: {0}", e, e.getMessage()
+         );
+       }
     }
-
-    try
-    {
-      PasswordManager pw = new PasswordManager(
-          getKeyStoreLocation(),
-          (getSystemUser() + ".key").toCharArray()
-      );
-
-      byte[] credentials = pw.getPassword(
-          username, (getSystemUser() + ".key").toCharArray()
-      );
-
-      return encodeKey(username, credentials);
+    if (credentials == null) {
+       throw new PasswordException(
+             "User credentials could not be retrieved, please synchronize the controller with your "+
+             "OpenRemote Designer/Beehive account first.");
     }
-
-    catch (PasswordManager.PasswordNotFoundException e)
-    {
-      throw new PasswordException(
-          "Password for user ''{0}'' was not found", e, username, e.getMessage()
-      );
-    }
-
-    catch (KeyManager.KeyManagerException e)
-    {
-      throw new PasswordException(
-          "Error accessing user's password: {0}", e, e.getMessage()
-      );
-    }
+    return encodeKey(username, credentials);
   }
 
 
@@ -1338,6 +1395,24 @@ public class Deployer
   }
 
   /**
+   * Returns the URI to the password file in the controller. The .password file will be stored
+   * in the location defined by
+   * {@link org.openremote.controller.ControllerConfiguration#getResourcePath()}.
+   * 
+   * A password file is used when password security is configured to use plain text.
+   *
+   * This implementation assumes the configured resource path location can be converted to a
+   * correctly formatted file URI.
+   *
+   * @return  URI pointing to a password file location
+   */
+  private URI getPasswordFileLocation()
+  {
+     File resourceDir = new File(controllerConfig.getResourcePath());
+     return new File(resourceDir, ".password").toURI();
+  }
+  
+  /**
    * Returns an URI to the user login name file in the controller. The .user file will be stored
    * in the location defined by
    * {@link org.openremote.controller.ControllerConfiguration#getResourcePath()}. <p>
@@ -1765,109 +1840,160 @@ public class Deployer
      */
     private void storeCredentials(String username, byte[] credentials)
     {
-      // Use a key to access the keystore. Note that this is not a secret key, access to
-      // the keystore file itself must be made secure by the host system.
-      //
-      // TODO : allow configuration of retrieving the store key from other locations
+       File userfile = new File(deployer.getUserFileLocation());
 
-      String storeKey = deployer.getSystemUser() + ".key";
+       BufferedWriter userWriter = null;
+       try
+       {
+         // If there was a previous user login file, delete it...
+         deleteUserFile();
+
+         // Write the current user login name to the file...
+         userWriter = new BufferedWriter(new FileWriter(userfile));
+         userWriter.write(username);
+         userWriter.close();
+       } catch (IOException e)
+         {
+           log.error(
+               "Unable to save current user login name. Background API requests will not " +
+               "be able to authenticate: {0}", e, e.getMessage());
+   
+           try
+           {
+             // clean up if there was any left-overs...
+   
+             deleteUserFile();
+           }
+   
+           catch (IOException io)
+           {
+             log.warn(
+                 "Could not delete existing file ''{0}'' due to I/O error: {1}",
+                 io, userfile, io.getMessage()
+             );
+           }
+         }
+       finally
+       {
+         if (userWriter != null)
+         {
+           try
+           {
+             userWriter.close();
+           }
+ 
+           catch (IOException e)
+           {
+             log.warn("Could not close file ''{0}'': {1}", e, userfile, e.getMessage());
+           }
+         }
+       }
+
+      if (deployer.controllerConfig.getSecurityPasswordStorage() == SecurityPasswordStorage.PLAINTEXT) {
+         File passwordFile = new File(deployer.getPasswordFileLocation());
+
+         BufferedWriter passwordWriter = null;
+         try
+         {
+           // If there was a previous password login file, delete it...
+           deletePasswordFile();
+
+           // Write the current user login name to the file...
+           passwordWriter = new BufferedWriter(new FileWriter(passwordFile));
+           passwordWriter.write(new String(credentials, Charset.forName("UTF-8")));
+           passwordWriter.close();
+         } catch (IOException e)
+           {
+             log.error(
+                 "Unable to save current user password. Background API requests will not " +
+                 "be able to authenticate: {0}", e, e.getMessage());
+     
+             try
+             {
+               // clean up if there was any left-overs...
+     
+               deletePasswordFile();
+             }
+     
+             catch (IOException io)
+             {
+               log.warn(
+                   "Could not delete existing file ''{0}'' due to I/O error: {1}",
+                   io, passwordFile, io.getMessage()
+               );
+             }
+           }
+         finally
+         {
+           if (passwordWriter != null)
+           {
+             try
+             {
+                passwordWriter.close();
+             }
+   
+             catch (IOException e)
+             {
+               log.warn("Could not close file ''{0}'': {1}", e, passwordFile, e.getMessage());
+             }
+           }
+         }
+      } else {
+
+         // Use a key to access the keystore. Note that this is not a secret key, access to
+         // the keystore file itself must be made secure by the host system.
+         //
+         // TODO : allow configuration of retrieving the store key from other locations
+
+         String storeKey = deployer.getSystemUser() + ".key";
 
 
-      URI keystoreLocation = deployer.getKeyStoreLocation();
-      File userfile = new File(deployer.getUserFileLocation());
-      BufferedWriter writer = null;
+         URI keystoreLocation = deployer.getKeyStoreLocation();
 
-      try
-      {
-        // If there was a previous user login file, delete it...
-
-        deleteUserFile();
-
-        // Write the current user login name to the file...
-
-        writer = new BufferedWriter(new FileWriter(userfile));
-        writer.write(username);
-        writer.close();
-
-        // Create a keystore or load an existing one if already present...
-
-        PasswordManager pw = new PasswordManager(keystoreLocation, storeKey.toCharArray());
-
-        // TODO : make sure previous user's key will also get removed...
-
-        // Add current user's credentials to keystore (delete previous one if existed)...
-
-        pw.removePassword(username, storeKey.toCharArray());
-        pw.addPassword(username, credentials, storeKey.toCharArray());
-     }
-
-      catch (IOException e)
-      {
-        log.error(
-            "Unable to save current user login name. Background API requests will not " +
-            "be able to authenticate: {0}", e, e.getMessage());
-
-        try
-        {
-          // clean up if there was any left-overs...
-
-          deleteUserFile();
+         try {
+           // Create a keystore or load an existing one if already present...
+   
+           PasswordManager pw = new PasswordManager(keystoreLocation, storeKey.toCharArray());
+   
+           // TODO : make sure previous user's key will also get removed...
+   
+           // Add current user's credentials to keystore (delete previous one if existed)...
+   
+           pw.removePassword(username, storeKey.toCharArray());
+           pw.addPassword(username, credentials, storeKey.toCharArray());
         }
-
-        catch (IOException io)
-        {
-          log.warn(
-              "Could not delete existing file ''{0}'' due to I/O error: {1}",
-              io, userfile, io.getMessage()
-          );
-        }
-      }
-
-      catch (SecurityException e)
-      {
-        log.error(
-            "Security manager has prevented saving user login name. Background API requests " +
-            "will not be able to authenticate: {0}", e, e.getMessage()
-        );
-
-        try
-        {
-          // clean up if there was any left-overs...
-
-          deleteUserFile();
-        }
-
-        catch (IOException io)
-        {
-          log.warn(
-              "Could not delete existing file ''{0}'' due to I/O error: {1}",
-              io, userfile, io.getMessage()
-          );
-        }
-      }
-
-      catch (KeyManager.KeyManagerException e)
-      {
-        log.error(
-            "Unable to store user credentials. Background API requests will not be able to " +
-            "authenticate: {0}", e, e.getMessage()
-        );
-      }
-
-      finally
-      {
-        if (writer != null)
-        {
-          try
-          {
-            writer.close();
-          }
-
-          catch (IOException e)
-          {
-            log.warn("Could not close file ''{0}'': {1}", e, userfile, e.getMessage());
-          }
-        }
+   
+   
+         catch (SecurityException e)
+         {
+           log.error(
+               "Security manager has prevented saving user login name. Background API requests " +
+               "will not be able to authenticate: {0}", e, e.getMessage()
+           );
+   
+           try
+           {
+             // clean up if there was any left-overs...
+   
+             deleteUserFile();
+           }
+   
+           catch (IOException io)
+           {
+             log.warn(
+                 "Could not delete existing file ''{0}'' due to I/O error: {1}",
+                 io, userfile, io.getMessage()
+             );
+           }
+         }
+   
+         catch (KeyManager.KeyManagerException e)
+         {
+           log.error(
+               "Unable to store user credentials. Background API requests will not be able to " +
+               "authenticate: {0}", e, e.getMessage()
+           );
+         }
       }
     }
 
@@ -1921,6 +2047,54 @@ public class Deployer
       }
     }
 
+    /**
+     * Handles the file I/O and security on deleting the password file containing user's password.
+     *
+     * @throws IOException    if security manager denies access to delete the password file
+     */
+    private void deletePasswordFile() throws IOException
+    {
+      final File passwordFile = new File(deployer.getPasswordFileLocation());
+
+      try
+      {
+        // ---- BEGIN PRIVILEGED CODE BLOCK -------------------------------------------------------
+
+        boolean success = AccessController.doPrivilegedWithCombiner(new PrivilegedAction<Boolean>()
+        {
+          @Override public Boolean run()
+          {
+            if (passwordFile.exists())
+            {
+              return passwordFile.delete();
+            }
+
+            else
+            {
+              return true;
+            }
+          }
+        });
+
+        // ---- END PRIVILEGED CODE BLOCK ---------------------------------------------------------
+
+        if (!success)
+        {
+          log.error(
+              "Cannot store user credentials. Unable to delete existing .password file. " +
+              "Background API requests will not be able to authenticate."
+          );
+        }
+      }
+
+      catch (SecurityException e)
+      {
+        throw new IOException(
+            "Security manager has denied access to password file at '" + deployer.getPasswordFileLocation() +
+            "': " + e.getMessage(), e
+        );
+      }
+    }
 
     // TODO
     //

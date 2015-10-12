@@ -1,6 +1,6 @@
 /*
  * OpenRemote, the Home of the Digital Home.
- * Copyright 2008-2014, OpenRemote Inc.
+ * Copyright 2008-2015, OpenRemote Inc.
  *
  * See the contributors.txt file in the distribution for a
  * full listing of individual contributors.
@@ -31,6 +31,7 @@ import java.util.logging.Level;
 import org.openremote.controller.exception.ConfigurationException;
 import org.openremote.controller.service.ServiceContext;
 import org.openremote.controller.utils.Logger;
+import org.openremote.controller.utils.Strings;
 
 
 /**
@@ -50,6 +51,7 @@ import org.openremote.controller.utils.Logger;
  * @author Dan Cong
  * @author <a href="mailto:juha@openremote.org>Juha Lindfors</a>
  * @author Jerome Velociter
+ * @author <a href="mailto:eric@openremote.org">Eric Bariaux</a>
  */
 public class ControllerConfiguration extends Configuration
 {
@@ -120,6 +122,8 @@ public class ControllerConfiguration extends Configuration
 
 
   public static final String CONTROLLER_APPLICATIONNAME = "controller.applicationname";
+  
+  public static final String SECURITY_PASSWORD_STORAGE = "security.passwordStorage";
 
 
   /**
@@ -196,7 +200,8 @@ public class ControllerConfiguration extends Configuration
   private String lircdconfPath;
   private int proxyTimeout;
   private String lagartoBroadcastAddr;
-
+  private SecurityPasswordStorage securityPasswordStorage;
+  
   /**
    * The set of URIs used to retrieve remote commands. Note that this can contain a comma
    * separated list of URIs. Therefore for programmatic access, the method
@@ -899,6 +904,41 @@ public class ControllerConfiguration extends Configuration
   public void setBeehiveSyncing(boolean beehiveSyncing)
   {
     this.beehiveSyncing = beehiveSyncing;
+  }
+  
+  public void setSecurityPasswordStorageAsString(String securityPasswordStorageAsString)
+  {
+     try {
+        this.securityPasswordStorage = SecurityPasswordStorage.valueOf(
+              (securityPasswordStorageAsString != null)?Strings.toUpperCase(securityPasswordStorageAsString.trim()):"");
+      } catch (IllegalArgumentException e) {
+         log.info("Security password storage was set to invalid value ''{0}'', using {1} instead.",
+               securityPasswordStorageAsString, SecurityPasswordStorage.KEYSTORE.name());
+         this.securityPasswordStorage = SecurityPasswordStorage.KEYSTORE;
+      }
+  }
+  
+  public void setSecurityPasswordStorage(SecurityPasswordStorage securityPasswordStorage)
+  {
+     this.securityPasswordStorage = securityPasswordStorage;
+  }
+  
+  public SecurityPasswordStorage getSecurityPasswordStorage()
+  {
+    String defaultSecurityPasswordStorage = SecurityPasswordStorage.KEYSTORE.name();
+    if (this.securityPasswordStorage != null) {
+       defaultSecurityPasswordStorage = this.securityPasswordStorage.name();
+    }
+    String securityPasswordStorageAsString = preferAttrCustomValue(SECURITY_PASSWORD_STORAGE, defaultSecurityPasswordStorage);
+    try {
+      return SecurityPasswordStorage.valueOf(
+            (securityPasswordStorageAsString != null)?Strings.toUpperCase(securityPasswordStorageAsString.trim()):"");
+
+    } catch (IllegalArgumentException e) {
+       log.info("Security password storage was set to invalid value ''{0}'', using {1} instead.",
+             securityPasswordStorageAsString, SecurityPasswordStorage.KEYSTORE.name());
+       return SecurityPasswordStorage.KEYSTORE;
+    }
   }
 
 }
