@@ -139,7 +139,7 @@ public class DeviceServiceImpl implements DeviceService, DeployerCommandListener
 
     String deviceName = deviceID2NameMap.get(deviceID);
 
-    if (deviceName != null)
+    if (deviceName != null && deviceName2DeviceID2SensorName2SensorsMap.get(deviceName) != null)
     {
       Map<String, List<Sensor>> sensorName2SensorsMap = deviceName2DeviceID2SensorName2SensorsMap
                                                                                   .get(deviceName)
