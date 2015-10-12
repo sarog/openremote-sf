@@ -369,6 +369,35 @@ If it's true, controller will auto-detect its groupmembers with multicast.
       </hint>
     </config>
   </category>
+	
+  <category name="velbus">
+    <description>
+        <![CDATA[
+          Configuration for the Velbus protocol
+        ]]>
+      </description>
+    <config name="protocol.velbus.classname" value="org.openremote.controller.protocol.velbus.VelbusCommandBuilder">
+      <hint>
+          <![CDATA[
+           Velbus CommandBuilder class. This entry should not be changed.
+          ]]>
+        </hint>
+    </config>
+    <config name="velbus.server.hostnames" value="localhost">
+      <hint>
+          <![CDATA[
+            Address or name of the Velbus <> TCP server. If multiple networks are needed then these should be entered as ‘;’ separated values with no spaces.
+          ]]>
+        </hint>
+    </config>
+    <config name="velbus.server.ports" value="8080">
+      <hint>
+          <![CDATA[
+            Port of the Velbus <> TCP server. If multiple networks are needed then these should be entered as ‘;’ separated values with no spaces.
+          ]]>
+        </hint>
+    </config>
+  </category>
 
   <category name="vera"> 
     <description> 
