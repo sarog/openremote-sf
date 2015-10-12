@@ -1,4 +1,5 @@
 @echo off
+set CATALINA_PID=C:\temp\or.pid
 rem Licensed to the Apache Software Foundation (ASF) under one or more
 rem contributor license agreements.  See the NOTICE file distributed with
 rem this work for additional information regarding copyright ownership.
@@ -187,10 +188,10 @@ rem have been set. Otherwise uses default values.
 
   rem Beehive Device Discovery Variables...
   if "%BEEHIVE_DEVICE_DISCOVERY_SERVICE_PATH%" == "" set BEEHIVE_DEVICE_DISCOVERY_SERVICE_PATH=dds/rest/
-  if "%BEEHIVE_DEVICE_DISCOVERY_SERVICE_URI%" ] == "" set BEEHIVE_DEVICE_DISCOVERY_SERVICE_URI=%BEEHIVE_BASE_URI%/%BEEHIVE_DEVICE_DISCOVERY_SERVICE_PATH%
+  if "%BEEHIVE_DEVICE_DISCOVERY_SERVICE_URI%" == "" set BEEHIVE_DEVICE_DISCOVERY_SERVICE_URI=%BEEHIVE_BASE_URI%/%BEEHIVE_DEVICE_DISCOVERY_SERVICE_PATH%
  
   rem print variables if not running in service mode
-  if "%SERVICE% == "" (
+  if "%SERVICE%" == "" (
     echo BEEHIVE_BASE_URI = %BEEHIVE_BASE_URI%
     echo BEEHIVE_REMOTE_SERVICE_PATH = %BEEHIVE_REMOTE_SERVICE_PATH%
     echo BEEHIVE_REMOTE_SERVICE_URI = %BEEHIVE_REMOTE_SERVICE_URI%
@@ -203,7 +204,7 @@ rem have been set. Otherwise uses default values.
 
 :setControllerID
   if "%OPENREMOTE_CONTROLLER_ID%" == "" set OPENREMOTE_CONTROLLER_ID=1
-  if "%SERVICE% == "" echo OPENREMOTE_CONTROLLER_ID = %OPENREMOTE_CONTROLLER_ID%
+  if "%SERVICE%" == "" echo OPENREMOTE_CONTROLLER_ID = %OPENREMOTE_CONTROLLER_ID%
   exit /B 0
 
 :setTomcatConsoleLevel
@@ -225,27 +226,26 @@ rem have been set. Otherwise uses default values.
 
 rem  Executes the Tomcat runtime.
 :executeTomcat
-if not "%SERVICE%" == "" goto redirectDone
-set "ACTION=%ACTION% | head -c 50000 >> ""%CATALINA_BASE%\logs\container\stderrout.log"" 2>&1"
+if "%SERVICE%" == "" goto redirectDone
+set "ACTION=%ACTION% | head -c 50000 >> ""%CATALINA_BASE%\logs\container\stderrout.log"" 2>&1 """
 :redirectDone
 
 rem Execute Java with the applicable properties
-echo %_EXECJAVA% %JAVA_OPTS% %CATALINA_OPTS% %JPDA_OPTS% %DEBUG_OPTS% ^
-  -Djava.endorsed.dirs="%JAVA_ENDORSED_DIRS%" ^
-  -Dcatalina.home="%CATALINA_HOME%" ^
-  -Dcatalina.base="%CATALINA_BASE%" ^
-  -Djava.io.tmpdir="%CATALINA_TMPDIR%"
-  -classpath "%CLASSPATH%" ^
-  -Dtomcat.server.console.log.level="%TOMCAT_SERVER_CONSOLE_LOG_LEVEL%" ^
-  -Dopenremote.controller.startup.log.level="%CONTROLLER_STARTUP_LOG_LEVEL%" ^
-  -Dopenremote.controller.console.threshold="%CONTROLLER_CONSOLE_THRESHOLD%" ^
-  -Dopenremote.remote.command.service.uri="%BEEHIVE_REMOTE_SERVICE_URI%" ^
-  -Dopenremote.device.discovery.service.uri="%BEEHIVE_DEVICE_DISCOVERY_SERVICE_URI%" ^
-  -Dopenremote.sync.service.uri="%BEEHIVE_SYNC_SERVICE_URI%" ^
-  -Dopenremote.controller.id="%OPENREMOTE_CONTROLLER_ID%" ^
-  %MAINCLASS% %ACTION%
-pause
-exit /B 0
+%_EXECJAVA% %JAVA_OPTS% %CATALINA_OPTS% %JPDA_OPTS% %DEBUG_OPTS%^
+ -Djava.endorsed.dirs="%JAVA_ENDORSED_DIRS%"^
+ -Dcatalina.home="%CATALINA_HOME%"^
+ -Dcatalina.base="%CATALINA_BASE%"^
+ -Djava.io.tmpdir="%CATALINA_TMPDIR%"^
+ -classpath "%CLASSPATH%"^
+ -Dtomcat.server.console.log.level="%TOMCAT_SERVER_CONSOLE_LOG_LEVEL%"^
+ -Dopenremote.controller.startup.log.level="%CONTROLLER_STARTUP_LOG_LEVEL%"^
+ -Dopenremote.controller.console.threshold="%CONTROLLER_CONSOLE_THRESHOLD%"^
+ -Dopenremote.remote.command.service.uri="%BEEHIVE_REMOTE_SERVICE_URI%"^
+ -Dopenremote.device.discovery.service.uri="%BEEHIVE_DEVICE_DISCOVERY_SERVICE_URI%"^
+ -Dopenremote.sync.service.uri="%BEEHIVE_SYNC_SERVICE_URI%"^
+ -Dopenremote.controller.id="%OPENREMOTE_CONTROLLER_ID%"^
+ %MAINCLASS% %ACTION%
+  exit /B 0
 
 
 :endFunctions
@@ -321,9 +321,9 @@ goto end
   rem Configure logging when 'blocking' run target is executed (assumes development
   rem or troubleshoot environment)...
   rem Default startup log to DEBUG level unless explicitly set with env variable...
-  if not "%CONTROLLER_STARTUP_LOG_LEVEL% == "" goto okLogLevel
+  if not "%CONTROLLER_STARTUP_LOG_LEVEL%" == "" goto okLogLevel
   set CONTROLLER_STARTUP_LOG_LEVEL=DEBUG
-  :okLogLevel  
+  :okLogLevel
   rem Default standard out (console) output to INFO level unless explicitly set
   rem with env variable...
   if not "%CONTROLLER_CONSOLE_THRESHOLD%" == "" goto okLogThreshold
@@ -346,9 +346,9 @@ goto end
   echo/
   echo -----------------------------------------------------------------------
   rem Parameterize Beehive Service URIs...
-  call :setBeehiveServiceConfigurations printValues
+  call :setBeehiveServiceConfigurations
   rem Parameterize fixed controller ID...
-  call :setControllerID printValues
+  call :setControllerID
   echo/
   echo/
   rem run Tomcat...
@@ -360,7 +360,7 @@ goto end
   set SERVICE=1
   shift
   rem Default startup log to INFO level unless explicitly set with env variable...
-  if not "%CONTROLLER_STARTUP_LOG_LEVEL% == "" goto okLogLevel
+  if not "%CONTROLLER_STARTUP_LOG_LEVEL%" == "" goto okLogLevel
   set CONTROLLER_STARTUP_LOG_LEVEL=INFO
   :okLogLevel
   rem Default standard out (console) output to OFF level unless explicitly set
@@ -379,23 +379,24 @@ goto end
   echo/
   echo/
   if not "%OS%" == "Windows_NT" goto noTitle
-  set _EXECJAVA=start "Tomcat" %_RUNJAVA%
+  set _EXECJAVA=start "Tomcat" /MIN ""%_RUNJAVA%
   goto gotTitle
   :noTitle
   set _EXECJAVA=start %_RUNJAVA%
   :gotTitle
+
   rem get list of existing java PIDs so we can compare and determine new PID
   setlocal EnableExtensions EnableDelayedExpansion
   set "PID="
   set "OLDPIDS=p"
-  for /f "TOKENS=1" %%a in ('wmic PROCESS where "Name='java.exe'" get ProcessID ^| findstr [0-9]') do (set "OLDPIDS=!OLDPIDS!%%ap")
+  for /f "TOKENS=1" %%a in ('wmic PROCESS where "Name='java.exe'" get ProcessID 2^>nul ^| findstr [0-9]') do (set "OLDPIDS=!OLDPIDS!%%ap")
 
   rem run Tomcat as service...
   call :executeTomcat
 
   rem Check for CATALINA_PID and find new java PID then store in PID file
   if "%CATALINA_PID%" == "" goto end
-  for /f "TOKENS=1" %%a in ('wmic PROCESS where "Name='java.exe'" get ProcessID ^| findstr [0-9]') do (
+  for /f "TOKENS=1" %%a in ('wmic PROCESS where "Name='java.exe'" get ProcessID 2^>nul ^| findstr [0-9]') do (
     if "!OLDPIDS:p%%ap=zz!"=="%OLDPIDS%" (
       set "PID=%%a"
       echo %%a>%CATALINA_PID%
@@ -410,11 +411,11 @@ goto end
   shift
   if not ""%1"" == ""-force"" goto setStop
   shift
-  if "%CATALINA_PID%" == "" goto stopError
+  if "%CATALINA_PID%" == "" goto killError
   set /p PID= <%CATALINA_PID%
   goto setStop
-  :stopError
-  echo Stop failed: CATALINA_PID not set
+  :killError
+  echo Kill failed: CATALINA_PID not set
   goto end
   :setStop
   set ACTION=stop
