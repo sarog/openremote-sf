@@ -751,14 +751,12 @@ public class Deployer
       String type = device.getType();
 
       List<DiscoveredDeviceAttrDTO> attributes = device.getDeviceAttrs();
-      Map<String, String> attrs = new HashMap<String, String>(attributes.size());
 
+      DeviceDiscovery discovery = new DeviceDiscovery(name, protocol, model, type);
       for (DiscoveredDeviceAttrDTO attr : attributes)
       {
-        attrs.put(attr.getName(), attr.getValue());
+        discovery.addAttribute(attr.getName(), attr.getValue());
       }
-
-      DeviceDiscovery discovery = new DeviceDiscovery(name, protocol, model, type, attrs);
 
       discoveredDevices.add(discovery);
     }
@@ -2143,6 +2141,7 @@ public class Deployer
 
         if (!discoveredDevicesToAnnounce.isEmpty() || !discoveredDevicesIdentifiersToRemove.isEmpty()) {
           ChallengeResponse challengeResponse = null;
+          
           String username = getUserName();
           if (username == null || username.equals("")) {
             log.error("Unable to retrieve username for device discovery API call. Will not authenticate calls...");
