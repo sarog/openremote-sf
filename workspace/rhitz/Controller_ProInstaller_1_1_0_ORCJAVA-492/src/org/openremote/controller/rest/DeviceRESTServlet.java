@@ -264,18 +264,16 @@ public class DeviceRESTServlet extends RESTAPI
                                      String deviceName, List<Command> commands, List<Sensor> sensors)
       throws ControllerRESTAPIException
   {
-    JSONArray rootArray = new JSONArray();
+    JSONObject deviceObj = new JSONObject();
     String jsonStr = null;
 
     try
     {
-      JSONObject rootObj = new JSONObject();
-      rootObj.put("id", Integer.toString(deviceID));
-      rootObj.put("name", deviceName);
-      rootArray.put(rootObj);
+      deviceObj.put("id", Integer.toString(deviceID));
+      deviceObj.put("name", deviceName);
 
       JSONArray cmdsArray = new JSONArray();
-      rootObj.put("commands", cmdsArray);
+      deviceObj.put("commands", cmdsArray);
 
       for (Command curCmd : commands)
       {
@@ -300,7 +298,7 @@ public class DeviceRESTServlet extends RESTAPI
       }
 
       JSONArray sensorArray = new JSONArray();
-      rootObj.put("sensors", sensorArray);
+      deviceObj.put("sensors", sensorArray);
 
       for (Sensor curSensor : sensors)
       {
@@ -325,7 +323,7 @@ public class DeviceRESTServlet extends RESTAPI
       }
 
       int INDENT_FACTOR = 2;
-      jsonStr = rootArray.toString(INDENT_FACTOR);
+      jsonStr = deviceObj.toString(INDENT_FACTOR);
     }
 
     catch (JSONException e)
