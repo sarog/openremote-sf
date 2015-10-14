@@ -8,6 +8,11 @@ ORCJAVA-497
 
   - Fixed: Multiple issues in BeehiveCommandCheckServiceTest
 
+ORCJAVA-498
+===========
+
+  - Upgrade flexjson library to version 3.2
+
 Controller Pro 1.2.0
 ====================
 
