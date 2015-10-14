@@ -176,14 +176,14 @@ rem have been set. Otherwise uses default values.
 :setBeehiveServiceConfigurations
   rem Base URI for all Beehive services. This base URI will be used to construct service URIs
   rem unless a service-specific override has been set...
-  if "%BEEHIVE_BASE_URI%" == "" set BEEHIVE_BASE_URI=https://beehive.openremote.org
+  if "%BEEHIVE_BASE_URI%" == "" set BEEHIVE_BASE_URI=https://designer.openremote.com
 
   rem Remote Command Service Variables...
-  if "%BEEHIVE_REMOTE_SERVICE_PATH%" == "" set BEEHIVE_REMOTE_SERVICE_PATH=remote
+  if "%BEEHIVE_REMOTE_SERVICE_PATH%" == "" set BEEHIVE_REMOTE_SERVICE_PATH=ccs/rest/
   if "%BEEHIVE_REMOTE_SERVICE_URI%" == "" set BEEHIVE_REMOTE_SERVICE_URI=%BEEHIVE_BASE_URI%/%BEEHIVE_REMOTE_SERVICE_PATH%
 
   rem Beehive Sync Service Variables...
-  if "%BEEHIVE_SYNC_SERVICE_PATH%" == "" set BEEHIVE_SYNC_SERVICE_PATH=3.0/alpha5/rest/
+  if "%BEEHIVE_SYNC_SERVICE_PATH%" == "" set BEEHIVE_SYNC_SERVICE_PATH=beehive/rest/
   if "%BEEHIVE_SYNC_SERVICE_URI%" == "" set BEEHIVE_SYNC_SERVICE_URI=%BEEHIVE_BASE_URI%/%BEEHIVE_SYNC_SERVICE_PATH%
 
   rem Beehive Device Discovery Variables...
