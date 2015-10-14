@@ -210,7 +210,8 @@ public class BeehiveCommandCheckServiceTest
    *
    * @throws Exception    if test fails
    */
-  @Test public void testRemoteCommandRequest() throws Exception
+  @Test(timeout=10000)
+  public void testRemoteCommandRequest() throws Exception
   {
     SecureTCPTestServer s = null;
 
@@ -304,7 +305,8 @@ public class BeehiveCommandCheckServiceTest
    *
    * @throws Exception    if test fails
    */
-  @Test public void testRemoteCommandRequestLoop() throws Exception
+  @Test(timeout=10000)
+  public void testRemoteCommandRequestLoop() throws Exception
   {
     SecureTCPTestServer s = null;
 
@@ -455,7 +457,8 @@ public class BeehiveCommandCheckServiceTest
    *
    * @throws Exception    if test fails
    */
-  @Test public void testRemoteCommandRequestNoResponse() throws Exception
+  @Test(timeout=10000)
+  public void testRemoteCommandRequestNoResponse() throws Exception
   {
     SecureTCPTestServer s = null;
 
@@ -544,7 +547,8 @@ public class BeehiveCommandCheckServiceTest
    *
    * @throws Exception    if test fails
    */
-  @Test public void testRemoteControllerID() throws Exception
+  @Test(timeout=10000)
+  public void testRemoteControllerID() throws Exception
   {
     SecureTCPTestServer s1 = null;
     SecureTCPTestServer s2 = null;
@@ -653,7 +657,8 @@ public class BeehiveCommandCheckServiceTest
    *
    * @throws Exception  if test fails
    */
-  @Test public void testInitiateProxy() throws Exception
+  @Test(timeout=10000)
+  public void testInitiateProxy() throws Exception
   {
     SecureTCPTestServer s = null;
     SecureTCPTestServer s2 = null;
