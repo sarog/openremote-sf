@@ -38,6 +38,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.nio.charset.Charset;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.ArrayList;
@@ -878,7 +879,7 @@ public class Deployer
           username, (getSystemUser() + ".key").toCharArray()
       );
 
-      return encodeKey(username, credentials);
+      return new String(credentials, Charset.forName("UTF-8"));
     }
 
     catch (PasswordManager.PasswordNotFoundException e)
