@@ -580,6 +580,11 @@ public class BeehiveCommandCheckServiceTest
 
       s1.start();
 
+      // Create an HTTP response for remote command check
+
+      ArrayList<ControllerCommandDTO> list = new ArrayList<ControllerCommandDTO>();
+      GenericResourceResultWithErrorMessage garbage = new GenericResourceResultWithErrorMessage(null, list);
+      String response2 = new JSONSerializer().include("result").serialize(garbage);
 
       // Set up a receiver for the remote command service URL path /commands/[CONTROLLER_ID]...
 
@@ -587,7 +592,7 @@ public class BeehiveCommandCheckServiceTest
       completed.acquire();
 
       HttpReceiver receiver2 = new NotifyingReceiver(completed);
-      receiver2.addResponse(HttpReceiver.Method.GET, "/commands/" + CONTROLLER_ID, response);
+      receiver2.addResponse(HttpReceiver.Method.GET, "/commands/" + CONTROLLER_ID, response2);
       s2 = new SecureTCPTestServer(PORT_S2, privateKey, certificate, receiver2);
 
       s2.start();
