@@ -1,3 +1,8 @@
+ORCJAVA-495
+===========
+
+  - Do not encode password in communication with CCS/DDS
+
 Controller Pro 1.2.0
 ====================
 
