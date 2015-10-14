@@ -243,7 +243,7 @@ setBeehiveServiceConfigurations()
   # unless a service-specific override has been set...
 
   if [ -z "${BEEHIVE_BASE_URI}" ] ; then
-    BEEHIVE_BASE_URI="https://beehive.openremote.org"
+    BEEHIVE_BASE_URI="https://designer.openremote.com"
 
   elif [ -n "${PRINT_VALUES}" ] ; then
     printVariable BEEHIVE_BASE_URI
@@ -254,7 +254,7 @@ setBeehiveServiceConfigurations()
   # Remote Command Service Variables...
 
   if [ -z "${BEEHIVE_REMOTE_SERVICE_PATH}" ] ; then
-    BEEHIVE_REMOTE_SERVICE_PATH="remote"
+    BEEHIVE_REMOTE_SERVICE_PATH="ccs/rest/"
 
   elif [ -n "${PRINT_VALUES}" ] ; then
     printVariable BEEHIVE_REMOTE_SERVICE_PATH
@@ -273,7 +273,7 @@ setBeehiveServiceConfigurations()
   # Beehive Sync Service Variables...
 
   if [ -z "${BEEHIVE_SYNC_SERVICE_PATH}" ] ; then
-    BEEHIVE_SYNC_SERVICE_PATH="3.0/alpha5/rest/"
+    BEEHIVE_SYNC_SERVICE_PATH="rest/"
 
   elif [ -n "${PRINT_VALUES}" ] ; then
     printVariable BEEHIVE_SYNC_SERVICE_PATH
