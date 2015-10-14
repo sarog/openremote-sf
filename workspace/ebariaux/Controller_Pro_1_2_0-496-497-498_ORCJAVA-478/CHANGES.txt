@@ -3,6 +3,11 @@ ORCJAVA-496
 
   - Fixed: BeehiveCommandCheckService does not properly decode response received from Ack
 
+ORCJAVA-497
+===========
+
+  - Fixed: Multiple issues in BeehiveCommandCheckServiceTest
+
 Controller Pro 1.2.0
 ====================
 
