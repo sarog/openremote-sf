@@ -70,7 +70,11 @@ public class ControllerCommandDTO implements Serializable
   public void setCommandType(String commandType)
   {
     this.commandType = commandType;
-    this.commandTypeEnum = Type.fromLabel(commandType);
+    if (commandType == null) {
+      this.commandTypeEnum = null;
+    } else {
+      this.commandTypeEnum = Type.fromLabel(commandType);
+    }
   }
 
   public Map<String, String> getCommandParameter()
