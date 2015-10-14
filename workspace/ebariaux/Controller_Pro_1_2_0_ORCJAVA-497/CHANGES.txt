@@ -1,3 +1,8 @@
+ORCJAVA-497
+===========
+
+  - Fixed: Multiple issues in BeehiveCommandCheckServiceTest
+
 Controller Pro 1.2.0
 ====================
 
