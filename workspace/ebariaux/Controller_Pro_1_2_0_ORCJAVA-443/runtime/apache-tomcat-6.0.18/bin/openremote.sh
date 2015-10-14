@@ -273,7 +273,7 @@ setBeehiveServiceConfigurations()
   # Beehive Sync Service Variables...
 
   if [ -z "${BEEHIVE_SYNC_SERVICE_PATH}" ] ; then
-    BEEHIVE_SYNC_SERVICE_PATH="rest/"
+    BEEHIVE_SYNC_SERVICE_PATH="beehive/rest/"
 
   elif [ -n "${PRINT_VALUES}" ] ; then
     printVariable BEEHIVE_SYNC_SERVICE_PATH
