@@ -113,7 +113,7 @@
     <fileset dir = "${lib.dir}/jzmq" includes = "**/*.jar"/>
     <fileset dir = "${lib.dir}/openremote-logging-0.1.0" includes = "**/*.jar"/>
     <fileset dir = "${lib.dir}/openremote-security-0.2.0" includes = "**/*.jar"/>
-    <fileset dir = "${lib.dir}/object-model-0.1.0" includes = "**/*.jar"/>
+    <fileset dir = "${lib.dir}/object-model-0.2.0" includes = "**/*.jar"/>
   </path>
 
   <path id = "samsungtv.compile.path.id">
@@ -224,7 +224,7 @@
       <fileset dir = "${lib.dir}/openremote-security-0.2.0">
         <include name = "*.jar"/>
       </fileset>
-      <fileset dir = "${lib.dir}/object-model-0.1.0">
+      <fileset dir = "${lib.dir}/object-model-0.2.0">
         <include name = "*.jar"/>
       </fileset>
       <fileset dir = "${lib.dir}/bouncycastle-1.50">

@@ -288,6 +288,16 @@ public abstract class ServiceContext
 
     deployer.announceDeviceDiscovery(set);
   }
+  
+  public static void removeDeviceIdentifier(String deviceIdentifier)
+  {
+     Deployer deployer = getDeployer();
+
+     Set<String> set = new HashSet<String>();
+     set.add(deviceIdentifier);
+
+     deployer.removeDeviceDiscoveryIdentifiers(set);
+  }
 
   public static DenonAVRSerialConfiguration getDenonAVRSerialConfiguration()
   {
