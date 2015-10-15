@@ -13,6 +13,28 @@ ORCJAVA-495
 
   - Do not encode password in communication with CCS/DDS
 
+ORCJAVA-478
+===========
+
+ - Update Device Discovery to Object Model API (Juha Lindfors, Eric Bariaux)
+
+   Work-In-Progress
+
+ORCJAVA-496
+===========
+
+  - Fixed: BeehiveCommandCheckService does not properly decode response received from Ack
+
+ORCJAVA-497
+===========
+
+  - Fixed: Multiple issues in BeehiveCommandCheckServiceTest
+
+ORCJAVA-498
+===========
+
+  - Upgrade flexjson library to version 3.2
+
 Controller Pro 1.3.0
 ====================
 
