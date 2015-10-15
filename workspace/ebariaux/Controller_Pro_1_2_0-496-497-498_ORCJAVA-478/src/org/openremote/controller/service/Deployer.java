@@ -2139,9 +2139,7 @@ public class Deployer
         log.debug("checking for discovered devices...");
 
         if (!discoveredDevicesToAnnounce.isEmpty() || !discoveredDevicesIdentifiersToRemove.isEmpty()) {
-          //ChallengeResponse challengeResponse = null;
-          
-          ChallengeResponse challengeResponse = new ChallengeResponse(ChallengeScheme.HTTP_BASIC, "user", "user");
+          ChallengeResponse challengeResponse = null;
           
           String username = getUserName();
           if (username == null || username.equals("")) {
