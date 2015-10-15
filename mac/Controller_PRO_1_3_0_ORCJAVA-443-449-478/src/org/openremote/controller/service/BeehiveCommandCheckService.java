@@ -1078,9 +1078,10 @@ public class BeehiveCommandCheckService
         str = r.getText();
 
         GenericResourceResultWithErrorMessage res =
-            new JSONDeserializer<GenericResourceResultWithErrorMessage>()
-                .use(null, GenericResourceResultWithErrorMessage.class)
-                .use("result", String.class).deserialize(str);
+              new JSONDeserializer<GenericResourceResultWithErrorMessage>()
+                  .use(null, GenericResourceResultWithErrorMessage.class)
+                  .use("result", ArrayList.class)
+                  .use("result.values", ControllerCommandDTO.class).deserialize(str);
 
         if (res.getErrorMessage() != null)
         {

@@ -210,7 +210,8 @@ public class BeehiveCommandCheckServiceTest
    *
    * @throws Exception    if test fails
    */
-  @Test public void testRemoteCommandRequest() throws Exception
+  @Test(timeout=10000)
+  public void testRemoteCommandRequest() throws Exception
   {
     SecureTCPTestServer s = null;
 
@@ -304,7 +305,8 @@ public class BeehiveCommandCheckServiceTest
    *
    * @throws Exception    if test fails
    */
-  @Test public void testRemoteCommandRequestLoop() throws Exception
+  @Test(timeout=10000)
+  public void testRemoteCommandRequestLoop() throws Exception
   {
     SecureTCPTestServer s = null;
 
@@ -455,7 +457,8 @@ public class BeehiveCommandCheckServiceTest
    *
    * @throws Exception    if test fails
    */
-  @Test public void testRemoteCommandRequestNoResponse() throws Exception
+  @Test(timeout=10000)
+  public void testRemoteCommandRequestNoResponse() throws Exception
   {
     SecureTCPTestServer s = null;
 
@@ -544,7 +547,8 @@ public class BeehiveCommandCheckServiceTest
    *
    * @throws Exception    if test fails
    */
-  @Test public void testRemoteControllerID() throws Exception
+  @Test(timeout=10000)
+  public void testRemoteControllerID() throws Exception
   {
     SecureTCPTestServer s1 = null;
     SecureTCPTestServer s2 = null;
@@ -576,6 +580,11 @@ public class BeehiveCommandCheckServiceTest
 
       s1.start();
 
+      // Create an HTTP response for remote command check
+
+      ArrayList<ControllerCommandDTO> list = new ArrayList<ControllerCommandDTO>();
+      GenericResourceResultWithErrorMessage garbage = new GenericResourceResultWithErrorMessage(null, list);
+      String response2 = new JSONSerializer().include("result").serialize(garbage);
 
       // Set up a receiver for the remote command service URL path /commands/[CONTROLLER_ID]...
 
@@ -583,7 +592,7 @@ public class BeehiveCommandCheckServiceTest
       completed.acquire();
 
       HttpReceiver receiver2 = new NotifyingReceiver(completed);
-      receiver2.addResponse(HttpReceiver.Method.GET, "/commands/" + CONTROLLER_ID, response);
+      receiver2.addResponse(HttpReceiver.Method.GET, "/commands/" + CONTROLLER_ID, response2);
       s2 = new SecureTCPTestServer(PORT_S2, privateKey, certificate, receiver2);
 
       s2.start();
@@ -653,7 +662,8 @@ public class BeehiveCommandCheckServiceTest
    *
    * @throws Exception  if test fails
    */
-  @Test public void testInitiateProxy() throws Exception
+  @Test(timeout=10000)
+  public void testInitiateProxy() throws Exception
   {
     SecureTCPTestServer s = null;
     SecureTCPTestServer s2 = null;
@@ -683,7 +693,7 @@ public class BeehiveCommandCheckServiceTest
       list.add(cmd);
 
       GenericResourceResultWithErrorMessage garbage = new GenericResourceResultWithErrorMessage(null, list);
-      String response = new JSONSerializer().include("result").serialize(garbage);
+      String response = new JSONSerializer().include("result").include("result.commandParameter").serialize(garbage);
 
 
       // Attach a HTTP receiver that responds to https://localhost:[PORT]/commands/[CONTROLLER_ID]...
