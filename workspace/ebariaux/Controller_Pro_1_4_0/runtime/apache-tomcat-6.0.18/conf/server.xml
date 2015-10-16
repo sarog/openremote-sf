@@ -52,7 +52,7 @@
          APR (HTTP/AJP) Connector: /docs/apr.html
     -->
     <Connector executor="HTTP-ThreadPool"
-               port="8080" protocol="HTTP/1.1" 
+               port="8688" protocol="HTTP/1.1" 
                connectionTimeout="20000" 
                redirectPort="8443" />
 
