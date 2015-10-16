@@ -4,6 +4,7 @@ Controller Pro 1.4.0
 Bug Fixes:
 
   - Fixed: BeehiveCommandCheckService does not properly decode response received from Ack (ORCJAVA-496)
+  - Fixed: Multiple issues in BeehiveCommandCheckServiceTest (ORCJAVA-497)
 
 Controller Pro 1.3.0
 ====================
