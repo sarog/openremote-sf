@@ -22,17 +22,13 @@ package org.openremote.controller.utils;
 
 import java.net.Inet6Address;
 import java.net.InetAddress;
-import java.net.InterfaceAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.Enumeration;
-import java.util.Locale;
 
 import org.apache.log4j.Logger;
 import org.openremote.controller.ControllerConfiguration;
-
-import sun.java2d.loops.MaskBlit;
 
 /**
  * This class is used to provide utility method about network.
