@@ -693,7 +693,7 @@ public class BeehiveCommandCheckServiceTest
       list.add(cmd);
 
       GenericResourceResultWithErrorMessage garbage = new GenericResourceResultWithErrorMessage(null, list);
-      String response = new JSONSerializer().include("result").serialize(garbage);
+      String response = new JSONSerializer().include("result").include("result.commandParameter").serialize(garbage);
 
 
       // Attach a HTTP receiver that responds to https://localhost:[PORT]/commands/[CONTROLLER_ID]...
