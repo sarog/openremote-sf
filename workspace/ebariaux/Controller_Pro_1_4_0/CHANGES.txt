@@ -1,6 +1,9 @@
 Controller Pro 1.4.0
 ====================
 
+New Features:
+  - Upgrade flexjson library to version 3.2 (ORCJAVA-498)
+
 Bug Fixes:
 
   - Fixed: BeehiveCommandCheckService does not properly decode response received from Ack (ORCJAVA-496)
