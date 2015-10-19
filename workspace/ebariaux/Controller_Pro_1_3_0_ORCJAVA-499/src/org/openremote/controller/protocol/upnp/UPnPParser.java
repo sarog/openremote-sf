@@ -21,12 +21,12 @@ package org.openremote.controller.protocol.upnp;
 
 import java.io.*;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+
 import org.cybergarage.xml.*;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
-import org.xml.sax.InputSource;
-
-import com.sun.org.apache.xerces.internal.parsers.DOMParser;
 
 /**
  * Parser to go from an UPnP exchanged XML to the cyberlink UPnP stack format.
@@ -96,12 +96,12 @@ public class UPnPParser extends org.cybergarage.xml.Parser {
 		org.cybergarage.xml.Node root = null;
 
 		try {
-			DOMParser parser = new DOMParser();
-			InputSource inSrc = new InputSource(inStream);
-			parser.parse(inSrc);
+	      DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+	      factory.setNamespaceAware(false);
+         DocumentBuilder builder = factory.newDocumentBuilder();
+	      Document doc = builder.parse(inStream);
 
-			Document doc = parser.getDocument();
-			org.w3c.dom.Element docElem = doc.getDocumentElement();
+	      org.w3c.dom.Element docElem = doc.getDocumentElement();
 
 			if (docElem != null) {
 				root = parse(root, docElem);
