@@ -34,6 +34,11 @@ ORCJAVA-498
 ===========
 
   - Upgrade flexjson library to version 3.2
+	
+ORCJAVA-501
+===========
+
+  - Support remote command to trigger online sync	
 
 Controller Pro 1.3.0
 ====================
