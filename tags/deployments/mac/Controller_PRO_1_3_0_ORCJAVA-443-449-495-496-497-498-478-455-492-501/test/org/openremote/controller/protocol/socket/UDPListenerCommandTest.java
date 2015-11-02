@@ -148,7 +148,7 @@ public class UDPListenerCommandTest {
       private String lastUpdate;
       
       public SensorMock() {
-         super("Mock", 1, null, new EventProducer() {}, null, EnumSensorType.CUSTOM);
+         super("Mock", 1, null, new EventProducer() {}, 1, null, EnumSensorType.CUSTOM);
       }
       
       @SuppressWarnings("rawtypes")
