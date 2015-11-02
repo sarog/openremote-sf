@@ -100,7 +100,7 @@ public class TelnetCommandBuilderTest
 
       TelnetCommand cmd = getCommand("localhost", SERVER_PORT, "null|sendtest1");
 
-      s1 = new SwitchSensor("switch on", SENSOR_ID, cache, cmd);
+      s1 = new SwitchSensor("switch on", SENSOR_ID, cache, cmd, 1);
 
       cache.registerSensor(s1);
       s1.start();
@@ -143,7 +143,7 @@ public class TelnetCommandBuilderTest
 
       TelnetCommand cmd = getCommand("localhost", SERVER_PORT, "Foo|sendtest2");
 
-      s2 = new SwitchSensor("switch 2 on", SENSOR_ID, cache, cmd);
+      s2 = new SwitchSensor("switch 2 on", SENSOR_ID, cache, cmd, 1);
 
       cache.registerSensor(s2);
       s2.start();
@@ -195,7 +195,7 @@ public class TelnetCommandBuilderTest
 
       TelnetCommand cmd = getCommand("localhost", SERVER_PORT, "null|insensitive");
 
-      s2 = new SwitchSensor("switch case insensitive", SENSOR_ID, cache, cmd);
+      s2 = new SwitchSensor("switch case insensitive", SENSOR_ID, cache, cmd, 1);
 
       cache.registerSensor(s2);
       s2.start();
@@ -239,7 +239,7 @@ public class TelnetCommandBuilderTest
 
       TelnetCommand cmd = getCommand("localhost", SERVER_PORT, "null|one");
 
-      s2 = new SwitchSensor("switch one", SENSOR_ID2, cache, cmd);
+      s2 = new SwitchSensor("switch one", SENSOR_ID2, cache, cmd, 1);
 
       cache.registerSensor(s2);
       s2.start();
@@ -252,7 +252,7 @@ public class TelnetCommandBuilderTest
 
       cmd = getCommand("localhost", SERVER_PORT, "null|zero");
 
-      s1 = new SwitchSensor("switch zero", SENSOR_ID1, cache, cmd);
+      s1 = new SwitchSensor("switch zero", SENSOR_ID1, cache, cmd, 1);
 
       cache.registerSensor(s1);
       s1.start();
@@ -307,7 +307,7 @@ public class TelnetCommandBuilderTest
 
       TelnetCommand cmd = getCommand("localhost", SERVER_PORT, "Na-na|sendtest3");
 
-      s3 = new SwitchSensor("switch 3 on", SENSOR_ID, cache, cmd);
+      s3 = new SwitchSensor("switch 3 on", SENSOR_ID, cache, cmd, 1);
 
       cache.registerSensor(s3);
       s3.start();
@@ -362,7 +362,7 @@ public class TelnetCommandBuilderTest
 
       TelnetCommand cmd = getCommand("localhost", SERVER_PORT, "LongDelay|sendtest4", WAIT_FOR_TIME_OUT);
 
-      s4 = new SwitchSensor("switch 4 on", SENSOR_ID, cache, cmd);
+      s4 = new SwitchSensor("switch 4 on", SENSOR_ID, cache, cmd, 1);
 
       cache.registerSensor(s4);
       s4.start();
@@ -428,7 +428,7 @@ public class TelnetCommandBuilderTest
 
       TelnetCommand cmd = getCommand("localhost", SERVER_PORT, "null|sendtest5", WAIT_FOR_TIME_OUT);
 
-      s5 = new SwitchSensor("switch 5 on", SENSOR_ID, cache, cmd);
+      s5 = new SwitchSensor("switch 5 on", SENSOR_ID, cache, cmd, 1);
 
       cache.registerSensor(s5);
       s5.start();

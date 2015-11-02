@@ -104,6 +104,7 @@ public abstract class Component {
             Integer.MIN_VALUE,
             null,
             new EventProducer() {},
+            Integer.MIN_VALUE,
             new HashMap<String, String>(0),
             EnumSensorType.CUSTOM
       );
