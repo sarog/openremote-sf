@@ -61,17 +61,17 @@ public class RangeSensor extends Sensor
 
   
 
-  public RangeSensor(String name, int sensorID, StatusCache cache, EventProducer eventProducer, int min, int max)
+  public RangeSensor(String name, int sensorID, StatusCache cache, EventProducer eventProducer, int commandID, int min, int max)
   {
-    this(name, sensorID, EnumSensorType.RANGE, eventProducer, cache, min, max, true);
+    this(name, sensorID, EnumSensorType.RANGE, eventProducer, commandID, cache, min, max, true);
 
   }
 
   protected RangeSensor(String name, int sensorID, EnumSensorType type,
-                        EventProducer producer, StatusCache cache,
+                        EventProducer producer, int commandID, StatusCache cache,
                         int min, int max, boolean setDefaultProps)
   {
-    super(name, sensorID, cache, producer, createDefaultProperties(setDefaultProps, min, max), type);
+    super(name, sensorID, cache, producer, commandID, createDefaultProperties(setDefaultProps, min, max), type);
 
     if (min > max)
       throw new IllegalArgumentException("min " + min + " is larger than max " + max);
