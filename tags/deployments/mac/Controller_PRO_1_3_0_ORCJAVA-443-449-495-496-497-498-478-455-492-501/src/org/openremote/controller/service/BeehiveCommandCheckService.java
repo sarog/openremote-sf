@@ -988,6 +988,7 @@ public class BeehiveCommandCheckService
 
             String password = deployer.getPassword(username);
             deployer.deployFromOnline(username, password);
+            ackCommand(controllerCommand.getOid());
           } catch (PasswordException e) {
              log.error("Unable to retrieve password for beehive command service API call. Skipped...", e);
           } catch (ConfigurationException e) {
