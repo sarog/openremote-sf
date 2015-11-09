@@ -48,6 +48,7 @@ import org.openremote.controller.exception.ConfigurationException;
 import org.openremote.controller.exception.ConnectionException;
 import org.openremote.controller.exception.OpenRemoteException;
 import org.openremote.controller.proxy.ControllerProxy;
+import org.openremote.controller.utils.HttpUtils;
 import org.openremote.controller.utils.Logger;
 import org.openremote.controllercommand.domain.ControllerCommandDTO;
 import org.openremote.rest.GenericResourceResultWithErrorMessage;
@@ -622,14 +623,9 @@ public class BeehiveCommandCheckService
         connection.setRequestProperty("User-Agent", "OpenRemote Controller");  // TODO : add version
         connection.setRequestProperty("Accept", "application/json");
 
-        String encodedPwd = deployer.getPassword(username);
-
-        String base64Pwd = new String(Base64.encodeBase64((username + ":" + encodedPwd).getBytes()));
-
         connection.addRequestProperty(
             Constants.HTTP_AUTHORIZATION_HEADER,
-            Constants.HTTP_BASIC_AUTHORIZATION + base64Pwd
-        );
+            HttpUtils.generateHttpBasicAuthorizationHeader(username, deployer.getPassword(username)));
 
         log.debug(
             "Connecting user ''{0}'' to ''{1}'' \n  Connection Timeout : {2} \n  Response Timeout : {3}",
