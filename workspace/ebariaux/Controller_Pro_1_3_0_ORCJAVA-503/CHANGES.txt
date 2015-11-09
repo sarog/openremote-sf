@@ -1,3 +1,8 @@
+ORCJAVA-503
+===========
+
+  - Never send md5 encoded password to backend
+
 Controller Pro 1.3.0
 ====================
 
