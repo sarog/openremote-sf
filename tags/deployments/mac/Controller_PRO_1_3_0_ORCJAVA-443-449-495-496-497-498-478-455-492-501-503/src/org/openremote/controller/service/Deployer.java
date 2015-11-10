@@ -47,7 +47,6 @@ import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.FileUtils;
 import org.jdom.Attribute;
 import org.jdom.Element;
@@ -83,6 +82,7 @@ import org.openremote.controller.exception.XMLParsingException;
 import org.openremote.controller.model.XMLMapping;
 import org.openremote.controller.model.sensor.Sensor;
 import org.openremote.controller.statuscache.StatusCache;
+import org.openremote.controller.utils.HttpUtils;
 import org.openremote.controller.utils.Logger;
 import org.openremote.model.DeviceDiscovery;
 import org.openremote.rest.GenericResourceResultWithErrorMessage;
@@ -1858,7 +1858,7 @@ public class Deployer
         http.setRequestMethod("GET");
 
         http.addRequestProperty(Constants.HTTP_AUTHORIZATION_HEADER,
-                                Constants.HTTP_BASIC_AUTHORIZATION + encode(username, credentials));
+              HttpUtils.generateHttpBasicAuthorizationHeader(username, credentials));
 
         http.connect();
 
@@ -2184,27 +2184,8 @@ public class Deployer
         );
       }
     }
-
-    // TODO
-    //
-    //
-    private String encode(String username, String password)
-    {
-      Md5PasswordEncoder encoder = new Md5PasswordEncoder();
-
-      String encodedPwd = encoder.encodePassword(new String(password), username);
-
-      if (username == null || encodedPwd == null)
-      {
-        return null;
-      }
-
-      return new String(Base64.encodeBase64((username + ":" + encodedPwd).getBytes()));
-    }
-
   }
-
-
+  
   /**
    * Handles the announcement of the controller via it's MAC address to Beehive.<br>
    * Once a user has linked this controller to an account and the returned ControllerDTO contains<br>
