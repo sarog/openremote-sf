@@ -48,6 +48,7 @@ import org.openremote.controller.exception.ConfigurationException;
 import org.openremote.controller.exception.ConnectionException;
 import org.openremote.controller.exception.OpenRemoteException;
 import org.openremote.controller.proxy.ControllerProxy;
+import org.openremote.controller.service.Deployer.PasswordException;
 import org.openremote.controller.utils.Logger;
 import org.openremote.controllercommand.domain.ControllerCommandDTO;
 import org.openremote.rest.GenericResourceResultWithErrorMessage;
@@ -974,6 +975,29 @@ public class BeehiveCommandCheckService
             deployer.unlinkController();
 
             break;
+            
+        case DOWNLOAD_DESIGN:
+        {
+          try {
+            String username = deployer.getUserName();
+            if (username == null || username.equals(""))
+            {
+              log.error("Unable to retrieve username for beehive command service API call. Skipped...");
+              break;
+            }
+
+            String password = deployer.getPassword(username);
+            deployer.deployFromOnline(username, password);
+            ackCommand(controllerCommand.getOid());
+          } catch (PasswordException e) {
+             log.error("Unable to retrieve password for beehive command service API call. Skipped...", e);
+          } catch (ConfigurationException e) {
+             log.error("Synchronizing controller with online account failed : {0}", e, e.getMessage());
+          } catch (ConnectionException e) {
+            log.error("Synchronizing controller with online account failed : {0}", e, e.getMessage());
+          }
+          break;
+        }
 
         default:
             log.error("ControllerCommand not implemented yet: " + controllerCommand.getCommandType());
