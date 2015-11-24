@@ -3,6 +3,7 @@ Controller Pro 1.4.0
 
 New Features:
   - Upgrade flexjson library to version 3.2 (ORCJAVA-498)
+  - Support remote command to trigger online sync (ORCJAVA-501)
 
 Bug Fixes:
 
