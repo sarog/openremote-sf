@@ -8,6 +8,7 @@ Bug Fixes:
 
   - Fixed: BeehiveCommandCheckService does not properly decode response received from Ack (ORCJAVA-496)
   - Fixed: Multiple issues in BeehiveCommandCheckServiceTest (ORCJAVA-497)
+  - Do not encode password in communication with CCS/DDS (ORCJAVA-495)
 
 Controller Pro 1.3.0
 ====================

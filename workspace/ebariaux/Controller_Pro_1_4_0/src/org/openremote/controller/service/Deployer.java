@@ -950,7 +950,7 @@ public class Deployer
              "User credentials could not be retrieved, please synchronize the controller with your "+
              "OpenRemote Designer/Beehive account first.");
     }
-    return encodeKey(username, credentials);
+    return new String(credentials, Charset.forName("UTF-8"));
   }
 
 
