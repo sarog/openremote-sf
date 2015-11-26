@@ -1,3 +1,8 @@
+ORCJAVA-504
+===========
+
+  - Start the BeehiveCommandCheckService thread even if no configuration is loaded
+
 Controller Pro 1.3.0
 ====================
 
