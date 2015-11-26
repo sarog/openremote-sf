@@ -1017,6 +1017,7 @@ public class Deployer
    */
   private void startup() throws ControllerDefinitionNotFoundException
   {
+     try {
     ModelBuilder.SchemaVersion version = detectVersion();
 
     log.info(
@@ -1057,7 +1058,7 @@ public class Deployer
 
     Map<String, String> props = getConfigurationProperties();
     controllerConfig.setConfigurationProperties(props);
-
+     } finally {
     if (beehiveCommandCheckService != null)
     {
       beehiveCommandCheckService.stop();
@@ -1067,6 +1068,7 @@ public class Deployer
     beehiveCommandCheckService.start(this);
 
     log.info("Startup complete.");
+     }
   }
 
 
