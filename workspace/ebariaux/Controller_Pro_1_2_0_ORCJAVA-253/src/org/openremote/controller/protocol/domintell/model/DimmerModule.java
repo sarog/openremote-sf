@@ -61,7 +61,7 @@ public class DimmerModule extends DomintellModule implements Dimmer {
 
    @Override
    public void setLevel(Integer output, int level) {
-      gateway.sendCommand(moduleType + address + "-" + Integer.toString(output) + "%D" + StringUtils.right("00" + Integer.toString(level) , 2));
+      gateway.sendCommand(moduleType + address + "-" + Integer.toString(output) + "%D" + Integer.toString(level));
    }
    
    // Feedback method from HomeWorksDevice ---------------------------------------------------------
