@@ -1,6 +1,6 @@
 /*
  * OpenRemote, the Home of the Digital Home.
- * Copyright 2008-2011, OpenRemote Inc.
+ * Copyright 2008-2015, OpenRemote Inc.
  *
  * See the contributors.txt file in the distribution for a
  * full listing of individual contributors.
@@ -171,7 +171,7 @@ public class LoggerTest
   {
     Logger log = Logger.getLogger(Constants.CONTROLLER_ROOT_LOG_CATEGORY + ".test");
 
-    log.info(null);
+    log.info((String)null);
 
     log.info(null, new Object[] {null, null});
 
