@@ -11,6 +11,7 @@ Bug Fixes:
   - Fixed: Multiple issues in BeehiveCommandCheckServiceTest (ORCJAVA-497)
   - Do not encode password in communication with CCS/DDS (ORCJAVA-495)
   - Never send md5 encoded password to backend (ORCJAVA-503)
+  - Remove warnings when compiling under JDK7/8 (ORCJAVA-499)
 
 Controller Pro 1.3.0
 ====================
