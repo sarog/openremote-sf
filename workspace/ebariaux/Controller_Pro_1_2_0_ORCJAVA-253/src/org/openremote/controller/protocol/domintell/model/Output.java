@@ -20,6 +20,9 @@
  */
 package org.openremote.controller.protocol.domintell.model;
 
+/**
+ * @author <a href="mailto:eric@openremote.org">Eric Bariaux</a>
+ */
 public interface Output {
 
    public void on(Integer output);

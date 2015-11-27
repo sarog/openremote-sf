@@ -22,6 +22,9 @@ package org.openremote.controller.protocol.domintell;
 
 import org.openremote.controller.protocol.domintell.model.DomintellModule;
 
+/**
+ * @author <a href="mailto:eric@openremote.org">Eric Bariaux</a>
+ */
 @SuppressWarnings("serial")
 public class DomintellModuleException extends Exception {
 

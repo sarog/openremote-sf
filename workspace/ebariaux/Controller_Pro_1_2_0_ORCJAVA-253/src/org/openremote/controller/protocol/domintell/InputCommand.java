@@ -30,6 +30,9 @@ import org.openremote.controller.protocol.domintell.model.DomintellModule;
 import org.openremote.controller.protocol.domintell.model.Input;
 import org.openremote.controller.protocol.domintell.model.InputModule;
 
+/**
+ * @author <a href="mailto:eric@openremote.org">Eric Bariaux</a>
+ */
 public class InputCommand extends DomintellCommand implements ExecutableCommand, EventListener {
 
    /**

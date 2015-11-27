@@ -22,6 +22,9 @@ package org.openremote.controller.protocol.domintell;
 
 import org.apache.commons.lang.StringUtils;
 
+/**
+ * @author <a href="mailto:eric@openremote.org">Eric Bariaux</a>
+ */
 public class DomintellAddress {
 
    private int address;

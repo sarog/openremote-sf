@@ -22,6 +22,9 @@ package org.openremote.controller.protocol.domintell.model;
 
 import org.openremote.controller.protocol.domintell.TemperatureMode;
 
+/**
+ * @author <a href="mailto:eric@openremote.org">Eric Bariaux</a>
+ */
 public interface Temperature {
    
    public void setSetPoint(Float setPoint);

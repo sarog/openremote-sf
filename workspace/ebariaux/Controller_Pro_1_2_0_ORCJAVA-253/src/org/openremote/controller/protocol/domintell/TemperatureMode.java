@@ -20,6 +20,9 @@
  */
 package org.openremote.controller.protocol.domintell;
 
+/**
+ * @author <a href="mailto:eric@openremote.org">Eric Bariaux</a>
+ */
 public enum TemperatureMode {
 
    ABSENCE (1),
