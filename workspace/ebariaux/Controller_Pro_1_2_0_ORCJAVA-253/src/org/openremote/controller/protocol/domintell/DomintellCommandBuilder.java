@@ -98,28 +98,27 @@ public class DomintellCommandBuilder implements CommandBuilder {
 
   public DomintellCommandBuilder()
   {
-
   }
-
-
   
    // Implements EventBuilder ----------------------------------------------------------------------
 
    /**
-    * Parses the Lutron HomeWorks command XML snippets and builds a
-    * corresponding Lutron HomeWorks command instance.
+    * Parses the Domintell command XML snippets and builds a
+    * corresponding Domintell command instance.
     * <p>
     * 
     * The expected XML structure is:
     * 
     * <pre>
     * @code
-    * <command protocol = "lutron_homeworks" >
+    * <command protocol = "domintell" >
+    *   <property name = "module_type" value = ""/>
     *   <property name = "address" value = ""/>
     *   <property name = "command" value = ""/>
-    *   <property name = "scene" value = ""/>
-    *   <property name = "key" value = ""/>
+    *   <property name = "output" value = ""/>
     *   <property name = "level" value = ""/>
+    *   <property name = "set_point" value = ""/>
+    *   <property name = "temp_mode" value = ""/>
     * </command>
     * }
     * </pre>
@@ -127,10 +126,10 @@ public class DomintellCommandBuilder implements CommandBuilder {
     * Additional properties not listed here are ignored.
     * 
     * @throws NoSuchCommandException
-    *             if the Lutron HomeWorks command instance cannot be
+    *             if the Domintell command instance cannot be
     *             constructed from the XML snippet for any reason
     * 
-    * @return an immutable Lutron HomeWorks command instance with known
+    * @return an immutable Domintell command instance with known
     *         configured properties set
     */
    @Override
