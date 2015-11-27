@@ -1017,56 +1017,58 @@ public class Deployer
    */
   private void startup() throws ControllerDefinitionNotFoundException
   {
-    ModelBuilder.SchemaVersion version = detectVersion();
+    try {
+      ModelBuilder.SchemaVersion version = detectVersion();
 
-    log.info(
-        "\n\n" +
-        "--------------------------------------------------------------------\n\n" +
-        "  DEPLOYING NEW CONTROLLER RUNTIME...\n\n" +
-        "--------------------------------------------------------------------\n"
-    );
+      log.info(
+          "\n\n" +
+          "--------------------------------------------------------------------\n\n" +
+          "  DEPLOYING NEW CONTROLLER RUNTIME...\n\n" +
+          "--------------------------------------------------------------------\n"
+      );
 
-    switch (version)
-    {
-      case VERSION_3_0:
+      switch (version)
+      {
+        case VERSION_3_0:
 
-        modelBuilder = builders.get(ModelBuilder.SchemaVersion.VERSION_3_0);
+          modelBuilder = builders.get(ModelBuilder.SchemaVersion.VERSION_3_0);
 
-        break;
+          break;
 
-      case VERSION_2_0:
+        case VERSION_2_0:
 
-        modelBuilder = builders.get(ModelBuilder.SchemaVersion.VERSION_2_0);
+          modelBuilder = builders.get(ModelBuilder.SchemaVersion.VERSION_2_0);
 
-        break;
+          break;
 
-      default:
+        default:
 
-        throw new Error("Unrecognized schema version " + version);
+          throw new Error("Unrecognized schema version " + version);
+      }
+
+      // NOTE:  the schema 2.0 builder auto-starts all the sensors it locates in the
+      //        controller.xml definition
+      //
+      // TODO: ORCJAVA-188
+      //        generalizing the sensor start mechanism through a lifecycle interface --
+      //        the builder should register the sensors and leave the lifecycle management
+      //        to the managing framework
+
+      modelBuilder.buildModel();
+
+      Map<String, String> props = getConfigurationProperties();
+      controllerConfig.setConfigurationProperties(props);
+    } finally {
+      if (beehiveCommandCheckService != null)
+      {
+        beehiveCommandCheckService.stop();
+      }
+
+      beehiveCommandCheckService = new BeehiveCommandCheckService(controllerConfig);
+      beehiveCommandCheckService.start(this);
+
+      log.info("Startup complete.");
     }
-
-    // NOTE:  the schema 2.0 builder auto-starts all the sensors it locates in the
-    //        controller.xml definition
-    //
-    // TODO: ORCJAVA-188
-    //        generalizing the sensor start mechanism through a lifecycle interface --
-    //        the builder should register the sensors and leave the lifecycle management
-    //        to the managing framework
-
-    modelBuilder.buildModel();
-
-    Map<String, String> props = getConfigurationProperties();
-    controllerConfig.setConfigurationProperties(props);
-
-    if (beehiveCommandCheckService != null)
-    {
-      beehiveCommandCheckService.stop();
-    }
-
-    beehiveCommandCheckService = new BeehiveCommandCheckService(controllerConfig);
-    beehiveCommandCheckService.start(this);
-
-    log.info("Startup complete.");
   }
 
 
