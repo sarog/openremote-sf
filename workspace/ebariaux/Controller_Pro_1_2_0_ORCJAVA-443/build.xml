@@ -135,6 +135,14 @@
     <fileset dir = "${lib.dir}/bouncycastle-1.50" includes = "**/*.jar"/>
   </path>
 
+  <!--
+	 | Properties used to define configuration in config.properties when running test suites.
+	 +-->
+	<property name = "openremote.sync.service.uri" value = "http://designer.openremote.com/beehive/rest/"/>
+	<property name = "openremote.remote.command.service.uri" value = "https://designer.openremote.com/ccs/rest"/>
+	<property name = "openremote.controller.id" value = "1"/>
+	<property name = "openremote.device.discovery.service.uri" value = "http://designer.openremote.com/dds/rest/"/>
+		
 
 
   <!-- =======================================================================================
@@ -462,6 +470,10 @@
             classpathref = "test.path.id"
             dir = "${testcontainer.vm.work.dir}"
             fork = "true">
+						<sysproperty key = "openremote.sync.service.uri" value = "${openremote.sync.service.uri}"/>
+						<sysproperty key = "openremote.remote.command.service.uri" value = "${openremote.remote.command.service.uri}"/>
+						<sysproperty key = "openremote.controller.id" value = "${openremote.controller.id}"/>
+						<sysproperty key = "openremote.device.discovery.service.uri" value = "${openremote.device.discovery.service.uri}"/>
       </java>
 
 
@@ -618,6 +630,11 @@
            includeantruntime = "true"
            showoutput = "false"
            logfailedtests = "true">
+
+					<sysproperty key = "openremote.sync.service.uri" value = "${openremote.sync.service.uri}"/>
+					<sysproperty key = "openremote.remote.command.service.uri" value = "${openremote.remote.command.service.uri}"/>
+					<sysproperty key = "openremote.controller.id" value = "${openremote.controller.id}"/>
+					<sysproperty key = "openremote.device.discovery.service.uri" value = "${openremote.device.discovery.service.uri}"/>
 
       <sysproperty key = "ant.home" value = "${ant.home}" />
 
