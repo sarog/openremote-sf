@@ -428,8 +428,7 @@ public class DomintellGateway {
                 // TODO
               }*/
           } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            log.error("Error receiving packet from Domintell system", e);
             break;
           }
         } while (!isInterrupted());
