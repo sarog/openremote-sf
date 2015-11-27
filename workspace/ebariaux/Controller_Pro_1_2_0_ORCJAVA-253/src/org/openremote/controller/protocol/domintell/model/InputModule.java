@@ -25,6 +25,9 @@ import org.openremote.controller.protocol.domintell.DomintellAddress;
 import org.openremote.controller.protocol.domintell.DomintellCommandBuilder;
 import org.openremote.controller.protocol.domintell.DomintellGateway;
 
+/**
+ * @author <a href="mailto:eric@openremote.org">Eric Bariaux</a>
+ */
 public class InputModule extends DomintellModule implements Input {
 
    /**

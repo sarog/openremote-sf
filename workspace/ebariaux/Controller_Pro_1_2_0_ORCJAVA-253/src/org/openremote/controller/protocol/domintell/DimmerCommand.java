@@ -31,6 +31,9 @@ import org.openremote.controller.protocol.domintell.model.Dimmer;
 import org.openremote.controller.protocol.domintell.model.DimmerModule;
 import org.openremote.controller.protocol.domintell.model.DomintellModule;
 
+/**
+ * @author <a href="mailto:eric@openremote.org">Eric Bariaux</a>
+ */
 public class DimmerCommand extends DomintellCommand implements ExecutableCommand, EventListener {
 
    /**

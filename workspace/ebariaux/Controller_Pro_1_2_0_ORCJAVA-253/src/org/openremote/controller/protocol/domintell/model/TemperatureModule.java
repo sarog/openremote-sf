@@ -30,6 +30,9 @@ import org.openremote.controller.protocol.domintell.DomintellCommandBuilder;
 import org.openremote.controller.protocol.domintell.DomintellGateway;
 import org.openremote.controller.protocol.domintell.TemperatureMode;
 
+/**
+ * @author <a href="mailto:eric@openremote.org">Eric Bariaux</a>
+ */
 public class TemperatureModule extends DomintellModule implements Temperature {
 
    /**

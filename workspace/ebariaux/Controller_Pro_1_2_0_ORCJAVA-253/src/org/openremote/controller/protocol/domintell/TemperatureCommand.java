@@ -33,6 +33,9 @@ import org.openremote.controller.protocol.domintell.model.DomintellModule;
 import org.openremote.controller.protocol.domintell.model.Temperature;
 import org.openremote.controller.protocol.domintell.model.TemperatureModule;
 
+/**
+ * @author <a href="mailto:eric@openremote.org">Eric Bariaux</a>
+ */
 public class TemperatureCommand extends DomintellCommand implements ExecutableCommand, EventListener {
 
    /**

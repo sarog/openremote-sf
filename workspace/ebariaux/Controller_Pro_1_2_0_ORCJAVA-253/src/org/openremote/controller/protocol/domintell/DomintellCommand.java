@@ -33,9 +33,7 @@ import org.openremote.controller.model.sensor.Sensor;
 import org.openremote.controller.protocol.domintell.model.DomintellModule;
 
 /**
- * 
  * @author <a href="mailto:eric@openremote.org">Eric Bariaux</a>
- *
  */
 public abstract class DomintellCommand implements Command {
 

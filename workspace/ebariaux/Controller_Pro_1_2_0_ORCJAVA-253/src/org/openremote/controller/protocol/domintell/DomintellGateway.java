@@ -41,6 +41,9 @@ import org.openremote.controller.protocol.domintell.model.RelayModule;
 import org.openremote.controller.protocol.domintell.model.TemperatureModule;
 import org.openremote.controller.protocol.MessageQueueWithPriorityAndTTL;
 
+/**
+ * @author <a href="mailto:eric@openremote.org">Eric Bariaux</a>
+ */
 public class DomintellGateway {
 
    // Class Members --------------------------------------------------------------------------------

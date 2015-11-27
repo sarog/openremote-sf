@@ -30,6 +30,9 @@ import org.openremote.controller.protocol.domintell.model.DomintellModule;
 import org.openremote.controller.protocol.domintell.model.Output;
 import org.openremote.controller.protocol.domintell.model.RelayModule;
 
+/**
+ * @author <a href="mailto:eric@openremote.org">Eric Bariaux</a>
+ */
 public class OutputCommand extends DomintellCommand implements ExecutableCommand, EventListener {
    
    /**
