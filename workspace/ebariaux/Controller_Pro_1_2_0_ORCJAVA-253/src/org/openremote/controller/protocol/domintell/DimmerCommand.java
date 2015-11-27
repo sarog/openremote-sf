@@ -51,8 +51,9 @@ public class DimmerCommand extends DomintellCommand implements ExecutableCommand
         throw new NoSuchCommandException("Address is required for any Domintell command");
       }
 
-      
-      // TODO: output is mandatory
+      if (output == null) {
+         throw new NoSuchCommandException("Output is required for a Domintell Dimmer command");
+      }
       
       if ("FADE".equalsIgnoreCase(name) && level == null) {
          throw new NoSuchCommandException("Level is required for a dimmer Fade command");
