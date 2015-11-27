@@ -20,7 +20,6 @@
  */
 package org.openremote.controller.protocol.domintell.model;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.openremote.controller.protocol.domintell.DomintellAddress;
 import org.openremote.controller.protocol.domintell.DomintellCommandBuilder;
