@@ -63,7 +63,7 @@ public class StringCommand extends AMXNICommand implements ExecutableCommand, Ev
                throw new NoSuchCommandException("Invalid regular expression (" + statusFilter + ") for STRING_READ command");
             }
          } else {
-            log.warn("A regular expression is only used for COMAMND_READ commands, ignoring it");
+            log.warn("A regular expression is only used for COMMAND_READ commands, ignoring it");
          }
       }
 
