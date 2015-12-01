@@ -1,3 +1,8 @@
+ORCJAVA-253
+===========
+
+  - Add Domintell protocol support
+
 Controller Pro 1.2.0
 ====================
 
