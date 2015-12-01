@@ -200,6 +200,14 @@ public class AMXNIGateway {
                writerThread = new AMXWriterThread(socket.getOutputStream());
                writerThread.start();
                log.info("Writer thread asked to start");
+               
+               // Request all known devices to update their sensor values               
+               for (HashMap<Class<? extends AMXNIDevice>, AMXNIDevice> devices : deviceCache.values()) {
+                  for (AMXNIDevice device : devices.values()) {
+                     device.requestUpdate();
+                  }
+               }
+               
                // Wait for the read thread to die, this would indicate the connection was dropped
                while (readerThread != null) {
                   readerThread.join(1000);
