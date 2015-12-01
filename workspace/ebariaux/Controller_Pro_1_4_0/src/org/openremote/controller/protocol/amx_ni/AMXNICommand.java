@@ -201,4 +201,13 @@ public abstract class AMXNICommand implements Command {
       }
    }
 
+   /**
+    * Request up to date values for sensors of given device.
+    * 
+    * @param device AMXNIDevice to request updates for
+    */
+   public void requestSensorsUpdate(AMXNIDevice device) {
+     // No specific implementation here, subclasses implement as appropriate for them
+   }
+   
 }

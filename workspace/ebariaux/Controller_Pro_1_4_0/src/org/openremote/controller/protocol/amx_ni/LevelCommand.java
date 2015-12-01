@@ -27,6 +27,7 @@ import org.openremote.controller.exception.NoSuchCommandException;
 import org.openremote.controller.model.sensor.Sensor;
 import org.openremote.controller.protocol.EventListener;
 import org.openremote.controller.protocol.amx_ni.model.AMXNIDevice;
+import org.openremote.controller.protocol.amx_ni.model.AMXNIDeviceChannels;
 import org.openremote.controller.protocol.amx_ni.model.AMXNIDeviceLevels;
 import org.openremote.controller.utils.Logger;
 
@@ -164,4 +165,12 @@ public class LevelCommand extends AMXNICommand implements ExecutableCommand, Eve
            }
        }
     }
+    
+    @Override
+    public void requestSensorsUpdate(AMXNIDevice device) {
+       if (device instanceof AMXNIDeviceLevels) { 
+         ((AMXNIDeviceLevels)device).queryLevelStatus(level);
+       }
+    }
+
 }
