@@ -25,6 +25,7 @@ import java.util.List;
 
 import org.openremote.controller.protocol.amx_ni.AMXNICommand;
 import org.openremote.controller.protocol.amx_ni.AMXNIGateway;
+import org.openremote.controller.protocol.amx_ni.ChannelCommand;
 
 /**
  * Abstract parent class of all "devices".
@@ -50,7 +51,7 @@ public abstract class AMXNIDevice {
    /**
     * Commands we should update when our status changes
     */
-   private List<AMXNICommand> commands;
+   protected List<AMXNICommand> commands;
 
    // Constructors ---------------------------------------------------------------------------------
 
@@ -99,5 +100,14 @@ public abstract class AMXNIDevice {
       for (AMXNICommand command : commands) {
          command.updateSensors(this);
       }
+   }
+   
+   /**
+    * Request up to date values for all known sensors (via known commands)
+    */
+   public void requestUpdate() {
+     for (AMXNICommand command : commands) {
+        command.requestSensorsUpdate(this);
+     }
    }
 }
