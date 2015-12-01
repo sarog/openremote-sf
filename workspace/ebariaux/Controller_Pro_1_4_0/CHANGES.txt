@@ -6,6 +6,7 @@ New Features:
   - Support remote command to trigger online sync (ORCJAVA-501)
   - Start the BeehiveCommandCheckService thread even if no configuration is loaded (ORCJAVA-504)
   - Add Domintell protocol support (ORCJAVA-253)
+  - Parameterize common Beehive connection parameters in config.properties (ORCJAVA-443)
 
 Bug Fixes:
 
