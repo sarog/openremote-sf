@@ -5,6 +5,7 @@ New Features:
   - Upgrade flexjson library to version 3.2 (ORCJAVA-498)
   - Support remote command to trigger online sync (ORCJAVA-501)
   - Start the BeehiveCommandCheckService thread even if no configuration is loaded (ORCJAVA-504)
+  - Add Domintell protocol support (ORCJAVA-253)
 
 Bug Fixes:
 

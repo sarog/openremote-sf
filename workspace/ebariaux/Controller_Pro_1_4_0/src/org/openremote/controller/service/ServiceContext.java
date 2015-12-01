@@ -22,9 +22,11 @@ package org.openremote.controller.service;
 
 import org.openremote.controller.AMXNIConfig;
 import org.openremote.controller.Constants;
+import org.openremote.controller.Constants;
 import org.openremote.controller.ControllerConfiguration;
 import org.openremote.controller.DenonAVRSerialConfiguration;
 import org.openremote.controller.EnOceanConfiguration;
+import org.openremote.controller.DomintellConfig;
 import org.openremote.controller.LutronHomeWorksConfig;
 import org.openremote.controller.MarantzAVRConfig;
 import org.openremote.controller.OpenRemoteRuntime;
@@ -32,8 +34,12 @@ import org.openremote.controller.RoundRobinConfiguration;
 import org.openremote.controller.VelbusConfiguration;
 import org.openremote.controller.ZWaveConfiguration;
 import org.openremote.controller.net.IPAutoDiscoveryServer;
+import org.openremote.controller.RoundRobinConfiguration;
+import org.openremote.controller.command.CommandBuilder;
+import org.openremote.controller.net.IPAutoDiscoveryServer;
 import org.openremote.controller.net.RoundRobinTCPServer;
 import org.openremote.controller.net.RoundRobinUDPServer;
+import org.openremote.controller.DenonAVRSerialConfiguration;
 import org.openremote.controller.statuscache.StatusCache;
 import org.openremote.controller.utils.Logger;
 
@@ -100,6 +106,7 @@ public abstract class ServiceContext
     VELBUS_CONFIGURATION("velbusConfig"),                     // TODO : To be removed, see ORCJAVA-183
     MARANTZ_AVR_CONFIGURATION("marantzAVRConfig"),            // TODO : To be removed, see ORCJAVA-183
     AMX_NI_CONFIGURATION("AMXNIConfig"),                      // TODO : To be removed, see ORCJAVA-183
+    DOMINTELL_CONFIGURATION("domintellConfig"),               // TODO : To be removed, see ORCJAVA-183
     DEVICE_STATE_CACHE("statusCache"),                        // TODO : Deprecated, see ORCJAVA-197
     COMPONENT_CONTROL_SERVICE("controlCommandService"),       // TODO : should be retrieved through deployer interface
     DENONAVRSERIAL_CONFIGURATION("denonAVRSerialConfiguration"), // TODO : To be removed, see ORCJAVA-183
@@ -189,6 +196,25 @@ public abstract class ServiceContext
     {
       throw new Error(
           "Lutron HomeWorks Configuration service has had an incompatible change.", e
+      );
+    }
+  }
+  
+  /**
+   * TODO :
+   *   This is temporary and should go away with configuration refactoring as part of the
+   *   deployment unit, see ORCJAVA-183 : http://jira.openremote.org/browse/ORCJAVA-183
+   */
+  public static DomintellConfig getDomintellConfiguration()
+  {
+    try
+    {
+      return (DomintellConfig)getInstance().getService(ServiceName.DOMINTELL_CONFIGURATION);
+    }
+    catch (ClassCastException e)
+    {
+      throw new Error(
+          "Domintell service has had an incompatible change.", e
       );
     }
   }
