@@ -261,7 +261,7 @@ public class BeehiveCommandCheckService
             {
               List<ControllerCommandDTO> commands = resolveResult(res.getResult());
 
-              if (!commands.isEmpty())
+              if (commands != null && !commands.isEmpty())
               {
                 executeCommand(commands.get(0));
               }
