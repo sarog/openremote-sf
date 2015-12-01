@@ -153,4 +153,10 @@ public class ChannelCommand extends AMXNICommand implements ExecutableCommand, E
        }
     }
 
+    @Override
+    public void requestSensorsUpdate(AMXNIDevice device) {
+       if (device instanceof AMXNIDeviceChannels) { 
+         ((AMXNIDeviceChannels)device).queryChannelStatus(channel);
+       }
+    }
 }
