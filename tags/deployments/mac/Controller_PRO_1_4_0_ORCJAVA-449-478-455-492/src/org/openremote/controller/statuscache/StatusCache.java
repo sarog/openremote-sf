@@ -32,6 +32,8 @@ import org.openremote.controller.exception.ResourceNotFoundException;
 import org.openremote.controller.model.sensor.Sensor;
 import org.openremote.controller.model.Command;
 import org.openremote.controller.protocol.Event;
+import org.openremote.controller.service.DeployerCommandListener;
+import org.openremote.controller.service.DeployerSensorListener;
 import org.openremote.controller.utils.Logger;
 
 /**
@@ -43,7 +45,7 @@ import org.openremote.controller.utils.Logger;
  * @author @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
  * @author Javen Zhang
  */
-public class StatusCache
+public class StatusCache implements DeployerCommandListener, DeployerSensorListener
 {
 
   // Class Members --------------------------------------------------------------------------------
@@ -110,6 +112,32 @@ public class StatusCache
   }
 
 
+  // Implements DeployerCommandListener -----------------------------------------------------------
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override public void onCommandsDeployed(Set<Command> commands)
+  {
+    // Initialize the status cache's event context so commands can be used directly
+    // from within scripts and rules...
+
+    initializeEventContext(commands);
+  }
+
+
+  // Implements DeployerSensorListener ------------------------------------------------------------
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override public void onSensorsDeployed(Set<Sensor> sensors)
+  {
+    for (Sensor sensor : sensors)
+    {
+      registerSensor(sensor);
+    }
+  }
 
 
   // Public Instance Methods ----------------------------------------------------------------------
@@ -356,7 +384,10 @@ public class StatusCache
     eventProcessorChain.createCommandFacade(commands);
   }
 
-
+  public Integer sensorIDFromName(String sensorName)
+  {
+    return sensorMap.getSensorID(sensorName);
+  }
 
   // Private Instance Methods ---------------------------------------------------------------------
 
@@ -464,6 +495,10 @@ public class StatusCache
       return currentState.get(id);
     }
 
+    private Integer getSensorID(String sensorName)
+    {
+      return nameIdIndex.get(sensorName);
+    }
 
     private void update(Event event)
     {

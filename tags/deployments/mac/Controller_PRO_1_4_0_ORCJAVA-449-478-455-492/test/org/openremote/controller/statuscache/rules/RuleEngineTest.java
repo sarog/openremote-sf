@@ -230,7 +230,7 @@ public class RuleEngineTest
     // Should get its source modified by EventMod.drl...
 
     Range range = new Range(123, "test level mod", 30, 0, 1000);
-    cache.registerSensor(new RangeSensor("test level mod", 123, cache, new TestCommand(), 0, 1000));
+    cache.registerSensor(new RangeSensor("test level mod", 123, cache, new TestCommand(), 1, 0, 1000));
     
 
     cache.update(range);
@@ -257,7 +257,7 @@ public class RuleEngineTest
     // the next three should get modified by DTableTest.csv...
 
     range = new Range(555, "test level mod 555", 101, 0, 10000);
-    cache.registerSensor(new RangeSensor("test level mod 555", 555, cache, new TestCommand(), 0, 10000));
+    cache.registerSensor(new RangeSensor("test level mod 555", 555, cache, new TestCommand(), 1, 0, 10000));
     
     cache.update(range);
 
@@ -277,7 +277,7 @@ public class RuleEngineTest
 
 
     range = new Range(666, "test level mod 666", 1, 1, 10000);
-    cache.registerSensor(new RangeSensor("test level mod 666", 666, cache, new TestCommand(), 1, 10000));
+    cache.registerSensor(new RangeSensor("test level mod 666", 666, cache, new TestCommand(), 1, 1, 10000));
 
     cache.update(range);
 
@@ -302,7 +302,7 @@ public class RuleEngineTest
 
 
     range = new Range(777, "test level mod 777", 10, -100, 100);
-    cache.registerSensor(new RangeSensor("test level mod 777", 777, cache, new TestCommand(), -100, 100));
+    cache.registerSensor(new RangeSensor("test level mod 777", 777, cache, new TestCommand(), 1, -100, 100));
     
     cache.update(range);
 
@@ -383,7 +383,7 @@ public class RuleEngineTest
 
     Level level = new Level(123, "test level mod", 30);
 
-    cache.registerSensor(new LevelSensor("test level mod", 123, cache, new TestCommand()));
+    cache.registerSensor(new LevelSensor("test level mod", 123, cache, new TestCommand(), 1));
     
     cache.update(level);
 
@@ -777,7 +777,7 @@ public class RuleEngineTest
 
 
     Switch sw2 = new Switch(444, "switch444", "off", Switch.State.OFF);
-    cache.registerSensor(new SwitchSensor("switch444", 444, cache, new TestCommand()));
+    cache.registerSensor(new SwitchSensor("switch444", 444, cache, new TestCommand(), 1));
     
     cache.update(sw2);
 

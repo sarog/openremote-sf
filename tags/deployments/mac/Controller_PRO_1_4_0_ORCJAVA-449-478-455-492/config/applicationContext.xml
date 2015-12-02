@@ -50,7 +50,7 @@
             <value>classpath:zwave.properties</value>
             <value>classpath:velbus.properties</value>
             <value>classpath:domintell.properties</value>
-          </list>
+        </list>
       </property>
   </bean>
 
@@ -161,7 +161,15 @@
     <constructor-arg ref = "deployer"/>
     <constructor-arg ref = "componentFactory"/>
   </bean>
-  
+
+  <bean id = "commandService"
+        class = "org.openremote.controller.service.impl.CommandServiceImpl">
+  </bean>
+
+  <bean id = "deviceService"
+        class = "org.openremote.controller.service.impl.DeviceServiceImpl">
+  </bean>
+
   <bean id="denonAVRSerialConfiguration" class="org.openremote.controller.DenonAVRSerialConfiguration">
    	<property name="connectionType" value="${denonAVRSerial.connectionType}" />
    	<property name="comPort" value="${denonAVRSerial.comPort}" />
@@ -192,7 +200,12 @@
       <constructor-arg ref="statusCache"/>
     </bean>
 
-  
+    <bean id = "statusCommandByNameService"
+          class = "org.openremote.controller.service.impl.StatusCommandByNameServiceImpl">
+
+      <constructor-arg ref="statusCache"/>
+    </bean>
+
     <!-- service for listening the status of device -->
     <bean id = "statusPollingService"
           class = "org.openremote.controller.service.impl.StatusPollingServiceImpl">
@@ -201,7 +214,13 @@
       <property name = "statusCache" ref="statusCache"/>
       <property name = "changedStatusTable" ref = "changedStatusTable"/>
     </bean>
-    
+
+    <bean id = "statusPollingByNameService"
+          class = "org.openremote.controller.service.impl.StatusPollingByNameServiceImpl">
+
+      <constructor-arg ref="statusCache"/>
+    </bean>
+
     <bean id = "changedStatusTable" class="org.openremote.controller.statuscache.ChangedStatusTable" />
 
 
@@ -252,7 +271,26 @@
     <constructor-arg ref = "sensorBuilder"/>
     <constructor-arg ref = "commandBuilder"/>
     <constructor-arg ref = "commandFactory"/>
-    
+
+    <property name = "commandListeners">
+        <list>
+            <ref bean="statusCache"/>
+            <ref bean="commandService"/>
+            <ref bean="statusCommandByNameService"/>
+            <ref bean="statusPollingByNameService"/>
+            <ref bean="deviceService"/>
+        </list>
+    </property>
+
+    <property name = "sensorListeners">
+        <list>
+            <ref bean="statusCache"/>
+            <ref bean="statusCommandByNameService"/>
+            <ref bean="statusPollingByNameService"/>
+            <ref bean="deviceService"/>
+        </list>
+    </property>
+
   </bean>
 
   <bean id = "schema30" class = "org.openremote.controller.deployer.Version30ModelBuilder"/>
