@@ -20,6 +20,7 @@
  */
 package org.openremote.controller.service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
@@ -248,6 +249,9 @@ public class DeployerTest
 
     Version20ModelBuilder builder =
         new Version20ModelBuilder(cache, config, sensorBuilder, new Version20CommandBuilder(cf), cf);
+    List<DeployerSensorListener> listeners = new ArrayList<DeployerSensorListener>();
+    listeners.add(cache);
+    builder.setSensorListeners(listeners);
 
     Map<String, ModelBuilder> modelBuilders = new HashMap<String, ModelBuilder>();
     modelBuilders.put(ModelBuilder.SchemaVersion.VERSION_2_0.toString(), builder);
