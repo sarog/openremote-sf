@@ -22,7 +22,8 @@ package org.openremote.controller.service;
 
 import org.openremote.controller.AMXNIConfig;
 import org.openremote.controller.Constants;
-import org.openremote.controller.Constants;
+import java.util.HashSet;
+import java.util.Set;
 import org.openremote.controller.ControllerConfiguration;
 import org.openremote.controller.DenonAVRSerialConfiguration;
 import org.openremote.controller.EnOceanConfiguration;
@@ -42,6 +43,9 @@ import org.openremote.controller.net.RoundRobinUDPServer;
 import org.openremote.controller.DenonAVRSerialConfiguration;
 import org.openremote.controller.statuscache.StatusCache;
 import org.openremote.controller.utils.Logger;
+
+import org.openremote.model.DeviceDiscovery;
+
 
 /**
  * This class defines an abstract service context without compile time links to any particular
@@ -313,6 +317,28 @@ public abstract class ServiceContext
           "Deployer service has had an incompatible change.", e
       );
     }
+  }
+
+  // Temporary implementation of API that should be offered via device provider interface
+  // instead -- added here for now until such API can be provided.
+  public static void addDevice(DeviceDiscovery discovery)
+  {
+    Deployer deployer = getDeployer();
+
+    Set<DeviceDiscovery> set = new HashSet<DeviceDiscovery>();
+    set.add(discovery);
+
+    deployer.announceDeviceDiscovery(set);
+  }
+  
+  public static void removeDeviceIdentifier(String deviceIdentifier)
+  {
+     Deployer deployer = getDeployer();
+
+     Set<String> set = new HashSet<String>();
+     set.add(deviceIdentifier);
+
+     deployer.removeDeviceDiscoveryIdentifiers(set);
   }
 
   public static DenonAVRSerialConfiguration getDenonAVRSerialConfiguration()

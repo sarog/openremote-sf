@@ -61,5 +61,6 @@
 	<classpathentry kind="lib" path="lib/openremote-security-0.2.0/openremote-security-0.2.0.jar"/>
 	<classpathentry kind="lib" path="lib/core/restlet-jse-2.2.1/org.restlet.ext.json.jar"/>
 	<classpathentry kind="lib" path="lib/core/restlet-jse-2.2.1/org.restlet.jar"/>
+	<classpathentry kind="lib" path="lib/object-model-0.2.0/openremote-object-model-0.2.0_WIP.jar"/>
 	<classpathentry kind="output" path="web/WEB-INF/classes"/>
 </classpath>

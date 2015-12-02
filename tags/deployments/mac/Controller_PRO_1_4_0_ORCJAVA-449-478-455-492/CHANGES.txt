@@ -1,3 +1,15 @@
+ORCJAVA-478
+===========
+
+ - Update Device Discovery to Object Model API (Juha Lindfors, Eric Bariaux)
+
+   Work-In-Progress
+
+ORCJAVA-449
+===========
+
+  - Replace RXTX library with nrjavaserial library (Rainer Hitz)
+
 Controller Pro 1.4.0
 ====================
 
@@ -17,7 +29,6 @@ Bug Fixes:
   - Fixed: Re-connection issues with AMX protocol (ORCJAVA-456)
   - Fixed: Potential NPE in BeehiveCommandCheckService (ORCJAVA-505)
 
->>>>>>> .merge-right.r11037
 Controller Pro 1.3.0
 ====================
 
