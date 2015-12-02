@@ -64,9 +64,9 @@ public class SensorTest
     EventProducer ep1 = new TestEventProducer1();
     EventProducer ep2 = new TestEventProducer2();
 
-    Sensor s1 = new RangeSensor("range", 1, cache, ep1, -50, 50);
-    Sensor s2 = new LevelSensor("level", 1, cache, ep2);
-    Sensor s3 = new RangeSensor("range", 1, cache, ep1, -20, 20);
+    Sensor s1 = new RangeSensor("range", 1, cache, ep1, 1, -50, 50);
+    Sensor s2 = new LevelSensor("level", 1, cache, ep2, 1);
+    Sensor s3 = new RangeSensor("range", 1, cache, ep1, 1, -20, 20);
 
     // there should be only one sensor with the same id which is the only one that matters in
     // equals comparison...
@@ -88,7 +88,7 @@ public class SensorTest
 
     // And different ID should not be equals...
 
-    Sensor s4 = new RangeSensor("range", 2, cache, ep1, -50, 50);
+    Sensor s4 = new RangeSensor("range", 2, cache, ep1, 1, -50, 50);
 
     Assert.assertFalse(s1.equals(s4));
     Assert.assertFalse(s4.equals(s1));
@@ -106,7 +106,7 @@ public class SensorTest
   {
     try
     {
-      Sensor s1 = new SwitchSensor("switch", 4, cache, null);
+      Sensor s1 = new SwitchSensor("switch", 4, cache, null, 1);
 
       Assert.fail("should not reach here");
     }
@@ -117,7 +117,7 @@ public class SensorTest
 
     try
     {
-      Sensor s1 = new RangeSensor("range", 54, cache, null, 0, 0);
+      Sensor s1 = new RangeSensor("range", 54, cache, null, 1, 0, 0);
 
       Assert.fail("should not reach here");
     }
@@ -128,7 +128,7 @@ public class SensorTest
 
     try
     {
-      Sensor s1 = new StateSensor("state", 455, cache, null, null);
+      Sensor s1 = new StateSensor("state", 455, cache, null, 1, null);
 
       Assert.fail("should not reach here");
     }
@@ -143,14 +143,14 @@ public class SensorTest
    */
   @Test public void testSensorInitialization()
   {
-    Sensor s1 = new SwitchSensor("switch", 9, cache, new EventProducer() {});
+    Sensor s1 = new SwitchSensor("switch", 9, cache, new EventProducer() {}, 1);
 
     Assert.assertTrue(s1.getSensorID() == 9);
     Assert.assertTrue(s1.getName().equals("switch"));
     Assert.assertTrue(s1.getProperties().size() == 0);
 
 
-    RangeSensor s2 = new RangeSensor("range", 99, cache, new EventProducer() {}, 0, 0);
+    RangeSensor s2 = new RangeSensor("range", 99, cache, new EventProducer() {}, 1, 0, 0);
 
     Assert.assertTrue(s2.getSensorID() == 99);
     Assert.assertTrue(s2.getMaxValue() == 0);
@@ -163,7 +163,7 @@ public class SensorTest
     states.addState("one");
     states.addState("two");
 
-    Sensor s3 = new StateSensor("state", 444, cache, new EventProducer() {}, states);
+    Sensor s3 = new StateSensor("state", 444, cache, new EventProducer() {}, 1, states);
 
     Assert.assertTrue(s3.getSensorID() == 444);
     Assert.assertTrue(s3.getName().equals("state"));
@@ -174,7 +174,7 @@ public class SensorTest
     Assert.assertTrue(s3.getProperties().values().contains("two"));
 
     
-    LevelSensor s4 = new LevelSensor("level", 993, cache, new EventProducer() {});
+    LevelSensor s4 = new LevelSensor("level", 993, cache, new EventProducer() {}, 1);
 
     Assert.assertTrue(s4.getSensorID() == 993);
     Assert.assertTrue(s4.getName().equals("level"));
@@ -192,7 +192,7 @@ public class SensorTest
   @Test public void testSensorReadWithDefaultPolling() throws Exception
   {
     SwitchRead readCommand = new SwitchRead("switch", 84);
-    Sensor s1 = new SwitchSensor("switch", 84, cache, readCommand);
+    Sensor s1 = new SwitchSensor("switch", 84, cache, readCommand, 1);
 
     cache.registerSensor(s1);
     s1.start();
@@ -206,7 +206,7 @@ public class SensorTest
     assertWithinRange(ReadCommand.POLLING_INTERVAL, readCommand.getPolledInterval(), 5);
 
     RangeRead readCommand2 = new RangeRead("range", 33, 0, 1);
-    Sensor s2 = new RangeSensor("range", 33, cache, readCommand2, 0, 1);
+    Sensor s2 = new RangeSensor("range", 33, cache, readCommand2, 1, 0, 1);
 
     cache.registerSensor(s2);
     s2.start();
@@ -226,12 +226,12 @@ public class SensorTest
    */
   @Test public void testPollingVsListener()
   {
-    Sensor s1 = new SwitchSensor("switch", 4555, cache, new Listener(4555));
+    Sensor s1 = new SwitchSensor("switch", 4555, cache, new Listener(4555), 1);
 
     Assert.assertTrue(s1.isEventListener());
     Assert.assertFalse(s1.isPolling());
 
-    Sensor s2 = new SwitchSensor("switch", 9933, cache, new SwitchRead("switch", 9933));
+    Sensor s2 = new SwitchSensor("switch", 9933, cache, new SwitchRead("switch", 9933), 1);
 
     Assert.assertTrue(s2.isPolling());
     Assert.assertFalse(s2.isEventListener());
@@ -244,7 +244,7 @@ public class SensorTest
   @Test public void testReadCommandWithPollingInterval() throws Exception
   {
     SwitchReadPolling readCommand = new SwitchReadPolling("switchPoll100", 100, 100);
-    Sensor s1 = new SwitchSensor("switchPoll100", 100, cache, readCommand);
+    Sensor s1 = new SwitchSensor("switchPoll100", 100, cache, readCommand, 1);
     cache.registerSensor(s1);
     s1.start();
     
@@ -258,7 +258,7 @@ public class SensorTest
     assertWithinRange(100, readCommand.getPolledInterval(), 5);
     
     readCommand = new SwitchReadPolling("switchPoll777", 777, 777);
-    Sensor s2 = new SwitchSensor("switchPoll777", 777, cache, readCommand);
+    Sensor s2 = new SwitchSensor("switchPoll777", 777, cache, readCommand, 1);
     cache.registerSensor(s2);
     s2.start();
 
@@ -279,7 +279,7 @@ public class SensorTest
   @Test public void testReadCommandWithInvalidPollingInterval() throws Exception
   {
     SwitchReadPolling readCommand = new SwitchReadPolling("switchPoll0", 100, 0);
-    Sensor s1 = new SwitchSensor("switchPoll0", 100, cache, readCommand);
+    Sensor s1 = new SwitchSensor("switchPoll0", 100, cache, readCommand, 1);
     cache.registerSensor(s1);
     s1.start();
     
@@ -293,7 +293,7 @@ public class SensorTest
     assertWithinRange(ReadCommand.POLLING_INTERVAL, readCommand.getPolledInterval(), 5);
     
     readCommand = new SwitchReadPolling("switchPoll0", 777, -10);
-    Sensor s2 = new SwitchSensor("switchPoll0", 777, cache, readCommand);
+    Sensor s2 = new SwitchSensor("switchPoll0", 777, cache, readCommand, 1);
     cache.registerSensor(s2);
     s2.start();
 
