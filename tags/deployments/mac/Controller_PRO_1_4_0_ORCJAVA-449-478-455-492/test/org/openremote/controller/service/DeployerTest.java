@@ -20,6 +20,7 @@
  */
 package org.openremote.controller.service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
@@ -248,6 +249,9 @@ public class DeployerTest
 
     Version20ModelBuilder builder =
         new Version20ModelBuilder(cache, config, sensorBuilder, new Version20CommandBuilder(cf), cf);
+    List<DeployerSensorListener> listeners = new ArrayList<DeployerSensorListener>();
+    listeners.add(cache);
+    builder.setSensorListeners(listeners);
 
     Map<String, ModelBuilder> modelBuilders = new HashMap<String, ModelBuilder>();
     modelBuilders.put(ModelBuilder.SchemaVersion.VERSION_2_0.toString(), builder);
@@ -382,10 +386,10 @@ public class DeployerTest
     StatusCache cache = new StatusCache();
     Deployer d = createDeployer(deployerName, cache);
 
-    Sensor s1 = new SwitchSensor("Sensor 1", 1, cache, new TestEventListener());
-    Sensor s2 = new RangeSensor("Sensor 2", 2, cache, new TestEventListener(), 0, 10);
-    Sensor s3 = new LevelSensor("Sensor 3", 3, cache, new TestEventListener());
-    Sensor s4 = new StateSensor("Sensor 4", 4, cache, new TestEventListener(),
+    Sensor s1 = new SwitchSensor("Sensor 1", 1, cache, new TestEventListener(), 1);
+    Sensor s2 = new RangeSensor("Sensor 2", 2, cache, new TestEventListener(), 1, 0, 10);
+    Sensor s3 = new LevelSensor("Sensor 3", 3, cache, new TestEventListener(), 1);
+    Sensor s4 = new StateSensor("Sensor 4", 4, cache, new TestEventListener(), 1,
                                 new StateSensor.DistinctStates());
 
     cache.registerSensor(s1);
