@@ -223,7 +223,6 @@ public class StatusPollingRESTServlet extends RESTAPI {
         return;
       }
 
-      String url = request.getRequestURL().toString();
       String regexp = "\\/(.*?)\\/(.*)";
       Pattern pattern = Pattern.compile(regexp);
       Matcher matcher = pattern.matcher(request.getPathInfo());
