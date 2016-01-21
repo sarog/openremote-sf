@@ -22,33 +22,35 @@ package org.openremote.controller.rest;
 
 import org.jdom.*;
 import org.jdom.input.SAXBuilder;
+
+import java.io.IOException;
+import java.io.StringReader;
 import java.text.SimpleDateFormat;
+import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.StringTokenizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import org.openremote.controller.Constants;
+import org.openremote.controller.model.sensor.Sensor;
+import org.openremote.controller.statuscache.StatusCache;
+import org.openremote.controller.utils.Logger;
 import org.openremote.controller.exception.ControlCommandException;
 import org.openremote.controller.exception.ControllerException;
 import org.openremote.controller.exception.ControllerRESTAPIException;
 import org.openremote.controller.exception.NoSuchComponentException;
-import org.openremote.controller.model.sensor.Sensor;
-import org.openremote.controller.service.ServiceContext;
 import org.openremote.controller.service.StatusPollingByNameService;
 import org.openremote.controller.service.StatusPollingService;
+import org.openremote.controller.service.ServiceContext;
 import org.openremote.controller.spring.SpringContext;
-import org.openremote.controller.statuscache.StatusCache;
-import org.openremote.controller.utils.Logger;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.io.StringReader;
-import java.text.SimpleDateFormat;
-import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * This servlet implements the REST API '/rest/polling/{device_id}/{sensor_id},{sensor_id}' and
