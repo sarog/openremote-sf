@@ -109,6 +109,7 @@ public abstract class ServiceContext
     DOMINTELL_CONFIGURATION("domintellConfig"),               // TODO : To be removed, see ORCJAVA-183
     DEVICE_STATE_CACHE("statusCache"),                        // TODO : Deprecated, see ORCJAVA-197
     COMPONENT_CONTROL_SERVICE("controlCommandService"),       // TODO : should be retrieved through deployer interface
+    COMMAND_SERVICE("commandService"),                        // TODO : should be retrieved through deployer interface
     DENONAVRSERIAL_CONFIGURATION("denonAVRSerialConfiguration"), // TODO : To be removed, see ORCJAVA-183
     ENOCEAN_CONFIGURATION("enoceanConfig");                   // TODO : To be removed, see ORCJAVA-183
 
@@ -385,6 +386,27 @@ public abstract class ServiceContext
     {
       throw new Error(
           "Component control service implementation has had an incompatible change.", e
+      );
+    }
+  }
+
+  /**
+   * TODO :
+   *   currently used to access from REST servlet implementations -- should expose a single
+   *   (deployer?) reference in WAR application context that enables reference access to
+   *   other services as necessary
+   */
+  public static CommandService getCommandService()
+  {
+    try
+    {
+      return (CommandService)getInstance().getService(ServiceName.COMMAND_SERVICE);
+    }
+
+    catch (ClassCastException e)
+    {
+      throw new Error(
+          "Command service implementation has had an incompatible change.", e
       );
     }
   }
