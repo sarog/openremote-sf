@@ -22,17 +22,20 @@ package org.openremote.controller.protocol.alarm;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.TimeZone;
 
 import org.apache.log4j.Logger;
 import org.openremote.controller.component.LevelSensor;
 import org.openremote.controller.component.RangeSensor;
 import org.openremote.controller.model.sensor.Sensor;
 import org.openremote.controller.model.sensor.StateSensor;
+import org.openremote.controller.protocol.alarm.AlarmCommand.Action;
 import org.springframework.util.StringUtils;
 
 /**
@@ -87,6 +90,7 @@ class Alarm {
    private Map<String, List<Sensor>> sensorMap = new HashMap<String, List<Sensor>>();
    private Map<String, Object> propMap = new HashMap<String, Object>();
    private boolean initialised = false;
+   Calendar time = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
    
    Alarm(String name, List<AlarmCommandRef> commands, String cronExpression, boolean enabled)
    {
@@ -128,39 +132,46 @@ class Alarm {
       }
       
       if (incrementalChange) {
-         mins = this.mins + mins;
          int sign = mins >= 0 ? 1 : -1;
          mins = Math.abs(mins);
          int minHours = (int)Math.floor(((double)mins)/60);
-         mins = mins % 60;
+         mins = (mins % 60) * sign;
          hours += (minHours * sign);
-         hours = this.hours + hours;
          
-         if (sign == -1 && mins > 0) {
-            hours--;
-            mins = 60-mins;
-         }
-         
-         if (hours < 0) {
-            hours = 24-hours;
-         }
+         time.set(Calendar.MINUTE, this.mins);
+         time.set(Calendar.HOUR_OF_DAY, this.hours);
+         time.add(Calendar.MINUTE, mins);
+         time.add(Calendar.HOUR_OF_DAY, hours);
+         mins = time.get(Calendar.MINUTE);
+         hours = time.get(Calendar.HOUR_OF_DAY);
+      } else {
+         // Sanity check hours and mins
+         hours = Math.min(23, Math.max(0, hours));
+         mins = Math.min(60, Math.max(0, mins));         
       }
-      
-      // Sanity check hours and mins
-      hours = Math.min(23, Math.max(0, hours));
-      mins = Math.min(60, Math.max(0, mins));
-      
+                  
       // Update the alarm
       this.hours = hours;
       this.mins = mins;      
       cronExpression[1] = Integer.toString(mins);
       cronExpression[2] = Integer.toString(hours);
       
-      // Get prop name
-      String propName = AlarmCommand.Action.TIME.getAttributeName();
-      
       // Notify the sensors
-      updatePropAndSensors(propName, getTime());
+      // Find all sensorMap keys with 'TIME_' prefix 
+      for (String propName : propMap.keySet()) {
+         if (propName.startsWith("TIME:")) {
+            String[] timeInfo = propName.split(":");
+            int offset = Integer.parseInt(timeInfo[1]);
+            time.set(Calendar.MINUTE, mins);
+            time.set(Calendar.HOUR_OF_DAY, hours);
+            
+            if (offset != 0) {
+               time.add(Calendar.MINUTE, offset);
+            }
+            
+            updatePropAndSensors(propName, String.format("%02d:%02d", time.get(Calendar.HOUR_OF_DAY), time.get(Calendar.MINUTE)));
+         }
+      }
    }
    
    synchronized void setDay(Day day, boolean enabled) {
@@ -210,11 +221,16 @@ class Alarm {
          
          sensors.add(sensor);
          
-         // If sensor is anything but enabled status then initialise the time and DOW
-         if (!initialised && command.getAction() != AlarmCommand.Action.ENABLED_STATUS) {
+         // Add prop map property if needed
+         if (!propMap.containsKey(propertyName)) {
+            propMap.put(propertyName, "N/A");
+         }
+
+         // Keep initialising so that prop map values are updated as sensors are created
+         if (command.getAction() != AlarmCommand.Action.ENABLED_STATUS) {
             initialise();
          }
-         
+
          // Update the value of the sensor with value from cache
          Object currentValue = propMap.get(propertyName);
          updateSensor(sensor, currentValue != null ? currentValue.toString() : "N/A"); 
@@ -248,10 +264,6 @@ class Alarm {
       
       return str;
    }
-
-   private String getTime() {
-      return String.format("%02d:%02d", hours, mins);
-   }
    
    private String getAttributeName(AlarmCommand command) {
       String name = null;
@@ -263,6 +275,17 @@ class Alarm {
 
             // Add DOW SUFFIX
             name += "_" + command.getArgs()[0];
+            break;
+         case TIME_STATUS:
+            int offset = 0;
+            if (command.getArgs() != null && command.getArgs().length == 1) {
+               try {
+                  offset = Integer.parseInt(command.getArgs()[0].replace("+", ""));                  
+               } catch (NumberFormatException e) {
+                  log.error("Alarm Command 'TIME_STATUS' invalid offset value, must be an integer of minutes");
+               }
+            }
+            name = command.getAction().getAttributeName() + ":" + offset;
             break;
          default:
             name = command.getAction().getAttributeName();

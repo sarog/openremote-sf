@@ -126,7 +126,7 @@ public class AlarmCommandBuilder implements CommandBuilder {
          throw new CommandBuildException("Alarm command is not valid");
       }
       
-      if (commandValue != null) {
+      if (commandValue != null && !commandValue.isEmpty()) {
          args = commandValue.split(":");
          
          for (int i=0; i< args.length; i++) {
