@@ -1,3 +1,8 @@
+Controller Pro 1.4.1
+====================
+
+  - Fixed: openremote.sh launch script fails on certain environments (ORCJAVA-509)
+
 Controller Pro 1.4.0
 ====================
 
