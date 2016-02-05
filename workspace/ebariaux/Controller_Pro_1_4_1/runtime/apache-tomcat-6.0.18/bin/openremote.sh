@@ -223,7 +223,8 @@ printVariable()
     echo "Configured Variable Values:"
   fi
 
-  echo "  $1 = ${!1}"
+  eval variable_value=\$$1
+  echo "  $1 = $variable_value"
 }
 
 ##
