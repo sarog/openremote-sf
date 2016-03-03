@@ -25,11 +25,15 @@ package org.openremote.controller.protocol.alarm;
  *
  */
 class AlarmCommandRef {
+   String deviceName;
    String commandName;
+   String commandParameter;
    int commandDelay;
    
-   AlarmCommandRef(String commandName, int commandDelay) {
+   AlarmCommandRef(String deviceName, String commandName, String commandParameter, int commandDelay) {
+      this.deviceName = deviceName;
       this.commandName = commandName;
+      this.commandParameter = commandParameter;
       this.commandDelay = commandDelay;
    }
 }

@@ -21,6 +21,7 @@
 package org.openremote.controller.protocol.alarm;
 
 import org.apache.log4j.Logger;
+import org.openremote.controller.exception.ControllerRESTAPIException;
 import org.openremote.controller.service.CommandService;
 import org.openremote.controller.service.ServiceContext;
 import org.quartz.Job;
@@ -64,7 +65,12 @@ public class AlarmJob implements Job {
          }
          
          log.debug("ALARM '" + alarm.name + "' SEND COMMAND '" + commandName + "'");
-         commandService.execute(commandName, null);
+         
+         try {
+            commandService.execute(commandRef.deviceName, commandName, commandRef.commandParameter);
+         } catch (ControllerRESTAPIException e) {
+            log.error("ALARM '" + alarm.name + "' SEND COMMAND '" + commandName + "' FAILED", e);
+         }
       }
    }
 }

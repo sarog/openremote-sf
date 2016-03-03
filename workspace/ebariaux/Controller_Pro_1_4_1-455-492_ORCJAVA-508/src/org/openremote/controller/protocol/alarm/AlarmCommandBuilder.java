@@ -263,18 +263,28 @@ public class AlarmCommandBuilder implements CommandBuilder {
                   
                   for (int k=0; k<commandNodes.getLength(); k++) {
                      Node commandNode = commandNodes.item(k);
+                     String deviceName = null;
                      String commandName = null;
+                     String commandParameter = null;
                      int commandDelay = 0;
                      
                      if (commandNode.getNodeName().equalsIgnoreCase("commandRef")) {
                         NamedNodeMap commandAttributes = commandNode.getAttributes();
-                        commandName = commandAttributes.getNamedItem("name").getNodeValue();
-                        commandDelay = Integer.parseInt(commandAttributes.getNamedItem("delay").getNodeValue());
-                        commandDelay = Math.max(0, commandDelay);
+                        Node deviceNode = commandAttributes.getNamedItem("device");
+                        Node nameNode = commandAttributes.getNamedItem("name");
+                        Node parameterNode = commandAttributes.getNamedItem("parameter");
+                        Node delayNode = commandAttributes.getNamedItem("delay");
+                        deviceName = deviceNode != null ? deviceNode.getNodeValue() : null;
+                        commandName = nameNode != null ? nameNode.getNodeValue() : null;
+                        commandParameter = parameterNode != null ? parameterNode.getNodeValue() : null;
+                        if (delayNode != null) {
+                           commandDelay = Integer.parseInt(delayNode.getNodeValue());
+                           commandDelay = Math.max(0, commandDelay);
+                        }
                      }
                      
-                     if (commandName != null && !commandName.equals("")) {
-                        AlarmCommandRef commandRef = new AlarmCommandRef(commandName, commandDelay);
+                     if (deviceName != null && !deviceName.equals("") && commandName != null && !commandName.equals("")) {
+                        AlarmCommandRef commandRef = new AlarmCommandRef(deviceName, commandName, commandParameter, commandDelay);
                         commands.add(commandRef);
                      }
                   }
