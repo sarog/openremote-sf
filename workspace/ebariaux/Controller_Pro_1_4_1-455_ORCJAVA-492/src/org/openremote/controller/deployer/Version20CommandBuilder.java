@@ -20,6 +20,7 @@
  */
 package org.openremote.controller.deployer;
 
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.List;
 import java.util.HashMap;
@@ -57,7 +58,9 @@ public class Version20CommandBuilder implements DeviceProtocolBuilder
 
       Map<String, String> properties = getCommandProperties(propertyElements);
 
-      return new Command(commandFactory, commandID, protocolType, properties);
+      List<String> tags = getTags(propertyElements);
+
+      return new Command(commandFactory, commandID, protocolType, properties, tags);
     }
 
     catch (NumberFormatException e)
@@ -82,6 +85,24 @@ public class Version20CommandBuilder implements DeviceProtocolBuilder
     }
 
     return properties;
+  }
+
+  private List<String> getTags(List<Element> propertyElements)
+  {
+    List<String> tags = new ArrayList<String>();
+
+    for (Element property : propertyElements)
+    {
+      String name = property.getAttribute("name").getValue();
+      String value = property.getAttribute("value").getValue();
+
+      if (Command.COMMAND_TAG_PROPERTY.equals(name))
+      {
+        tags.add(value);
+      }
+    }
+
+    return tags;
   }
 
   /**

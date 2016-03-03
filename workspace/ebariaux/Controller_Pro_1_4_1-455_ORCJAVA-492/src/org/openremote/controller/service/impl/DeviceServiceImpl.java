@@ -1,39 +1,40 @@
 /*
  * OpenRemote, the Home of the Digital Home.
  *
- * Copyright 2008-2014, OpenRemote Inc. All rights reserved.
+ * Copyright 2008-2015, OpenRemote Inc. All rights reserved.
  *
  * The content of this file is available under commercial licensing only. It is *not* distributed
  * with any open source license. Please contact www.openremote.com for licensing.
  */
 package org.openremote.controller.service.impl;
 
-import org.openremote.controller.exception.ControllerRESTAPIException;
+import org.openremote.controller.Constants;
 import org.openremote.controller.model.Command;
 import org.openremote.controller.model.sensor.Sensor;
 import org.openremote.controller.service.DeployerCommandListener;
 import org.openremote.controller.service.DeployerSensorListener;
-import org.openremote.controller.service.StatusPollingByNameService;
-import org.openremote.controller.statuscache.StatusCache;
+import org.openremote.controller.service.DeviceService;
+import org.openremote.controller.utils.Logger;
 
-import javax.servlet.http.HttpServletResponse;
 import java.util.*;
 
 /**
- * Service interface implementation that is used when polling sensor values by sensor names.
- *
- * @author <a href="mailto:rainer@openremote.org">Rainer Hitz</a>
+ * Service interface implementation that is used to retrieve device information.
  */
-public class StatusPollingByNameServiceImpl implements StatusPollingByNameService,
-    DeployerCommandListener, DeployerSensorListener
+public class DeviceServiceImpl implements DeviceService, DeployerCommandListener, DeployerSensorListener
 {
 
-  // Private Instance Fields ----------------------------------------------------------------------
+  // Class Members --------------------------------------------------------------------------------
 
   /**
-   * Sensor value cache.
+   * Logging category for runtime execution of commands.
    */
-  private final StatusCache statusCache;
+  private final static Logger log = Logger.getLogger(
+      Constants.RUNTIME_COMMAND_EXECUTION_LOG_CATEGORY
+  );
+
+
+  // Private Instance Fields ------------------------------------------------------------------------------
 
   private final Map<String, Map<Integer, Map<Integer,Command>>>deviceName2DeviceID2CmdID2CmdMap =
       new HashMap<String, Map<Integer, Map<Integer, Command>>>();
@@ -41,155 +42,133 @@ public class StatusPollingByNameServiceImpl implements StatusPollingByNameServic
   private final Map<String, Map<Integer, Map<String, List<Sensor>>>> deviceName2DeviceID2SensorName2SensorsMap =
       new HashMap<String, Map<Integer, Map<String, List<Sensor>>>>();
 
+  private final Map<Integer, String> deviceID2NameMap = new HashMap<Integer, String>();
+
   private final Set<Sensor> sensorSet = new HashSet<Sensor>();
 
-  private final Map<String, List<Sensor>> sensorMap = new HashMap<String, List<Sensor>>();
+  private final Map<String, List<Sensor>> sensorName2SensorsMap = new HashMap<String, List<Sensor>>();
 
 
-  // Constructors ---------------------------------------------------------------------------------
-
-  /**
-   * Constructs a service instance.
-   *
-   * @param statusCache  sensor value cache.
-   */
-  public StatusPollingByNameServiceImpl(StatusCache statusCache)
-  {
-    this.statusCache = statusCache;
-  }
-
-
-  // Implements StatusPollingByNameService --------------------------------------------------------
+  // Implements DeviceService ---------------------------------------------------------------------
 
   /**
    * {@inheritDoc}
    */
-  @Override public synchronized Map<String, Integer> getSensorIDsFromNames(Set<String> sensorNames) throws ControllerRESTAPIException
+  @Override public synchronized List<Integer> getDeviceIDs()
   {
-    Map<String, Integer> idMap = new HashMap<String, Integer>(sensorNames.size());
+    List<Integer> deviceIDs = new ArrayList<Integer>();
 
-    for (String curSensorName : sensorNames)
+    for (String curDeviceName : deviceName2DeviceID2CmdID2CmdMap.keySet())
     {
-      List<Sensor> sensorList = sensorMap.get(curSensorName);
-
-      if (sensorList == null)
+      for (Integer curDeviceID : deviceName2DeviceID2CmdID2CmdMap.get(curDeviceName).keySet())
       {
-        throw new ControllerRESTAPIException(
-            HttpServletResponse.SC_NOT_FOUND, // 404
-            ControllerRESTAPIException.ERROR_CODE_SENSOR_NOT_FOUND,
-            "The command call was rejected by the controller because an addressed sensor could not be found.",
-            "Unknown sensor '" + curSensorName + "'."
-        );
+        deviceIDs.add(curDeviceID);
       }
-
-      if (sensorList.size() > 1)
-      {
-        throw new ControllerRESTAPIException(
-            HttpServletResponse.SC_CONFLICT, // 409
-            ControllerRESTAPIException.ERROR_CODE_SENSOR_AMBIGUITY,
-            "The command call was rejected by the controller because of an ambiguity error.",
-            "Sensor name ambiguity error - a sensor with the name '" + curSensorName +
-            "' exists more than once."
-        );
-      }
-
-      Sensor sensor = sensorList.get(0);
-
-      idMap.put(curSensorName, sensor.getSensorID());
     }
 
-    return idMap;
+    return deviceIDs;
   }
 
   /**
    * {@inheritDoc}
    */
-  @Override public synchronized Map<String, Integer> getSensorIDsFromNames(String deviceName, Set<String> sensorNames) throws ControllerRESTAPIException
+  @Override public String getDeviceName(int deviceID)
   {
-    Map<Integer, Map<String, List<Sensor>>> deviceID2SensorName2SensorsMap =
-        deviceName2DeviceID2SensorName2SensorsMap.get(deviceName);
+    return deviceID2NameMap.get(deviceID);
+  }
 
-    if (deviceID2SensorName2SensorsMap == null)
+  /**
+   * {@inheritDoc}
+   */
+  @Override public synchronized List<Integer> getDeviceIDs(String deviceName)
+  {
+    List<Integer> cmdIDs = null;
+
+    Map<Integer, Map<Integer,Command>> deviceID2CmdID2CmdMap =
+        deviceName2DeviceID2CmdID2CmdMap.get(deviceName);
+
+    if (deviceID2CmdID2CmdMap != null)
     {
-      throw new ControllerRESTAPIException(
-          HttpServletResponse.SC_NOT_FOUND, // 404
-          ControllerRESTAPIException.ERROR_CODE_DEVICE_NOT_FOUND,
-          "The command call was rejected by the controller because the addressed device could not be found.",
-          "Unknown device '" + deviceName + "'."
+      cmdIDs = new ArrayList<Integer>(
+          deviceID2CmdID2CmdMap.keySet()
       );
     }
 
-    if (deviceID2SensorName2SensorsMap.keySet().size() > 1)
+    if (cmdIDs == null)
     {
-      throw new ControllerRESTAPIException(
-          HttpServletResponse.SC_CONFLICT, // 409
-          ControllerRESTAPIException.ERROR_CODE_DEVICE_AMBIGUITY,
-          "The command call was rejected by the controller because of an ambiguity error.",
-          "Device name ambiguity error - a device with the name '" + deviceName +
-          "' exists more than once."
+      cmdIDs = new ArrayList<Integer>();
+    }
+
+    return cmdIDs;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override public synchronized List<Command> getCommands(int deviceID)
+  {
+    List<Command> commands = null;
+
+    String deviceName = deviceID2NameMap.get(deviceID);
+
+    if (deviceName != null)
+    {
+      Map<Integer,Command> cmdID2CmdMap = deviceName2DeviceID2CmdID2CmdMap
+                                                          .get(deviceName)
+                                                          .get(deviceID);
+
+      commands = new ArrayList<Command>(
+          cmdID2CmdMap.values()
       );
     }
 
-    Map<String, List<Sensor>> sensorName2SensorsMap =
-        deviceID2SensorName2SensorsMap.get(
-            deviceID2SensorName2SensorsMap.keySet().toArray()[0]
-        );
-
-
-    Map<String, Integer> idMap = new HashMap<String, Integer>(sensorNames.size());
-
-    for (String curSensorName : sensorNames)
+    if (commands == null)
     {
-      List<Sensor> sensorList = sensorName2SensorsMap.get(curSensorName);
-
-      if (sensorList == null)
-      {
-        throw new ControllerRESTAPIException(
-            HttpServletResponse.SC_NOT_FOUND, // 404
-            ControllerRESTAPIException.ERROR_CODE_SENSOR_NOT_FOUND,
-            "The command call was rejected by the controller because an addressed sensor could not be found.",
-            "Unknown sensor '" + curSensorName + "'."
-        );
-      }
-
-      if (sensorList.size() > 1)
-      {
-        throw new ControllerRESTAPIException(
-            HttpServletResponse.SC_CONFLICT, // 409
-            ControllerRESTAPIException.ERROR_CODE_SENSOR_AMBIGUITY,
-            "The command call was rejected by the controller because of an ambiguity error.",
-            "Sensor name ambiguity error - a sensor with the name '" + curSensorName +
-            "' exists more than once."
-        );
-      }
-
-      Sensor sensor = sensorList.get(0);
-
-      idMap.put(curSensorName, sensor.getSensorID());
+      commands = new ArrayList<Command>();
     }
 
-    return idMap;
+    return commands;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override public synchronized List<Sensor> getSensors(int deviceID)
+  {
+    List<Sensor> sensors = new ArrayList<Sensor>();
+
+    String deviceName = deviceID2NameMap.get(deviceID);
+
+    if (deviceName != null && deviceName2DeviceID2SensorName2SensorsMap.get(deviceName) != null)
+    {
+      Map<String, List<Sensor>> sensorName2SensorsMap = deviceName2DeviceID2SensorName2SensorsMap
+                                                                                  .get(deviceName)
+                                                                                  .get(deviceID);
+
+      for (List<Sensor> curSensorList : sensorName2SensorsMap.values())
+      {
+        sensors.addAll(curSensorList);
+      }
+    }
+
+    return sensors;
   }
 
 
   // Implements DeployerCommandListener -----------------------------------------------------------
 
-  /**
-   * {@inheritDoc}
-   */
   @Override public synchronized void onCommandsDeployed(Set<Command> commands)
   {
+    updateDeviceIDMap(commands);
+
     updateDevice2CommandMap(commands);
 
     updateDevice2SensorMap(this.sensorSet);
   }
 
 
-  // Implements DeployerSensorListener -----------------------------------------------------------
+  // Implements DeployerSensorListener ------------------------------------------------------------
 
-  /**
-   * {@inheritDoc}
-   */
   @Override public synchronized void onSensorsDeployed(Set<Sensor> sensors)
   {
     this.sensorSet.clear();
@@ -200,12 +179,45 @@ public class StatusPollingByNameServiceImpl implements StatusPollingByNameServic
     updateDevice2SensorMap(sensors);
   }
 
-
   // Private Instance Methods ---------------------------------------------------------------------
+
+  private void updateDeviceIDMap(Set<Command> commands)
+  {
+    deviceID2NameMap.clear();
+
+    for (Command curCmd : commands)
+    {
+      String deviceName = curCmd.getProperty(
+          Command.COMMAND_DEVICE_NAME_PROPERTY
+      );
+      String deviceIDAsString = curCmd.getProperty(
+          Command.COMMAND_DEVICE_ID_PROPERTY
+      );
+
+      Integer deviceID = null;
+
+      try
+      {
+        deviceID = Integer.parseInt(deviceIDAsString);
+      }
+
+      catch(NumberFormatException e)
+      {
+        continue;
+      }
+
+      if ("".equals(deviceName))
+      {
+        continue;
+      }
+
+      deviceID2NameMap.put(deviceID, deviceName);
+    }
+  }
 
   private void updateSensorMap(Set<Sensor> sensors)
   {
-    sensorMap.clear();
+    sensorName2SensorsMap.clear();
 
     for (Sensor curSensor : sensors)
     {
@@ -216,12 +228,12 @@ public class StatusPollingByNameServiceImpl implements StatusPollingByNameServic
         continue;
       }
 
-      if (sensorMap.get(sensorName) == null)
+      if (sensorName2SensorsMap.get(sensorName) == null)
       {
-        sensorMap.put(sensorName, new ArrayList<Sensor>());
+        sensorName2SensorsMap.put(sensorName, new ArrayList<Sensor>());
       }
 
-      List<Sensor> sensorList = sensorMap.get(sensorName);
+      List<Sensor> sensorList = sensorName2SensorsMap.get(sensorName);
 
       sensorList.add(curSensor);
     }
@@ -301,11 +313,6 @@ public class StatusPollingByNameServiceImpl implements StatusPollingByNameServic
       }
 
       String deviceName = getDeviceNameFromDeviceID(deviceID);
-
-      if (deviceName == null)
-      {
-        continue;
-      }
 
       if (deviceName2DeviceID2SensorName2SensorsMap.get(deviceName) == null)
       {
