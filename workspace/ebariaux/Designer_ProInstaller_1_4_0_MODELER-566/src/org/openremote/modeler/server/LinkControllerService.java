@@ -65,12 +65,12 @@ public class LinkControllerService extends BaseGWTSpringController implements Li
   @Override
   public void deleteController(long oid) throws ControllerManagementException
   {
-    User currentUser = userService.getCurrentUser();
+    UserService.UsernamePassword usernamePassword = userService.getCurrentUsernamePassword();
     ClientResource cr = null;
     String str = "";
     try {
       cr = new ClientResource(configuration.getUserAccountServiceRESTRootUrl() + "controller/"+oid);
-      cr.setChallengeResponse(ChallengeScheme.HTTP_BASIC, currentUser.getUsername(), currentUser.getPassword());
+      cr.setChallengeResponse(ChallengeScheme.HTTP_BASIC, usernamePassword.getUsername(), usernamePassword.getPassword());
       Representation result = cr.delete();
       try
       {
@@ -97,12 +97,12 @@ public class LinkControllerService extends BaseGWTSpringController implements Li
   @Override
   public ArrayList<ControllerDTO> getLinkedControllerDTOs() throws ControllerManagementException
   {
-    User currentUser = userService.getCurrentUser();
+    UserService.UsernamePassword usernamePassword = userService.getCurrentUsernamePassword();
     ClientResource cr = null;
     String str = "";
     try {
       cr = new ClientResource(configuration.getUserAccountServiceRESTRootUrl() + "controller/find");
-      cr.setChallengeResponse(ChallengeScheme.HTTP_BASIC, currentUser.getUsername(), currentUser.getPassword());
+      cr.setChallengeResponse(ChallengeScheme.HTTP_BASIC, usernamePassword.getUsername(), usernamePassword.getPassword());
       Representation r = cr.get();
       try
       {
@@ -130,12 +130,12 @@ public class LinkControllerService extends BaseGWTSpringController implements Li
   @Override
   public ControllerDTO linkController(String macAddress) throws ControllerManagementException
   {
-    User currentUser = userService.getCurrentUser();
+    UserService.UsernamePassword usernamePassword = userService.getCurrentUsernamePassword();
     ClientResource cr = null;
     String str = "";
     try {
       cr = new ClientResource(configuration.getUserAccountServiceRESTRootUrl() + "controller/find/" + macAddress);
-      cr.setChallengeResponse(ChallengeScheme.HTTP_BASIC, currentUser.getUsername(), currentUser.getPassword());
+      cr.setChallengeResponse(ChallengeScheme.HTTP_BASIC, usernamePassword.getUsername(), usernamePassword.getPassword());
       Representation r = cr.get();
       try
       {
@@ -162,13 +162,14 @@ public class LinkControllerService extends BaseGWTSpringController implements Li
     }
     ControllerDTO controllerToLink = tempList.get(0);
     controllerToLink.setLinked(true);
+    User currentUser = userService.getCurrentUser();
     controllerToLink.setAccount(new AccountDTO(currentUser.getAccount().getOid()));
     
     cr = null;
     str = "";
     try {
       cr = new ClientResource(configuration.getUserAccountServiceRESTRootUrl() + "controller");
-      cr.setChallengeResponse(ChallengeScheme.HTTP_BASIC, currentUser.getUsername(), currentUser.getPassword());
+      cr.setChallengeResponse(ChallengeScheme.HTTP_BASIC, usernamePassword.getUsername(), usernamePassword.getPassword());
       Representation rep = new JsonRepresentation(new JSONSerializer().exclude("*.class").deepSerialize(controllerToLink));
       Representation r = cr.put(rep);
       try

@@ -173,9 +173,9 @@ public class FileUploadController extends MultiActionController implements BeanF
       HttpClient client = new HttpClient();
       
       client.getParams().setAuthenticationPreemptive(true);
-      User user = userService.getCurrentUser();
-      Credentials defaultCredentials = new UsernamePasswordCredentials(user.getUsername(), user.getPassword());
-
+      UserService.UsernamePassword usernamePassword = userService.getCurrentUsernamePassword();
+      Credentials defaultCredentials = new UsernamePasswordCredentials(usernamePassword.getUsername(), usernamePassword.getPassword());
+      
       URL url = new URL(configuration.getIrServiceRESTRootUrl());
       client.getState().setCredentials(new AuthScope(url.getHost(), url.getPort(), AuthScope.ANY_REALM), defaultCredentials);
         

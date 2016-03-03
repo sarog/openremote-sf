@@ -102,11 +102,11 @@ public class IRServiceController extends BaseGWTSpringController implements IRRP
   }
 
   public void unregisterFile(String prontoHandle) {
-    User currentUser = userService.getCurrentUser();
+    UserService.UsernamePassword usernamePassword = userService.getCurrentUsernamePassword();
     ClientResource cr = null;
     try {
     	cr = new ClientResource(configuration.getIrServiceRESTRootUrl() + "ProntoFile/" + prontoHandle);
-        cr.setChallengeResponse(ChallengeScheme.HTTP_BASIC, currentUser.getUsername(), currentUser.getPassword());
+        cr.setChallengeResponse(ChallengeScheme.HTTP_BASIC, usernamePassword.getUsername(), usernamePassword.getPassword());
         cr.delete();
     } finally {
       if (cr != null) {
@@ -116,13 +116,13 @@ public class IRServiceController extends BaseGWTSpringController implements IRRP
   }
 
   private Object restCallToIRService(String url, JSONDeserializer<GenericResourceResultWithErrorMessage> deserializer) throws IRServiceException {
-    User currentUser = userService.getCurrentUser();
+    UserService.UsernamePassword usernamePassword = userService.getCurrentUsernamePassword();
     ClientResource cr = null;
     String str = "";
 
     try {
       cr = new ClientResource(url);
-	  cr.setChallengeResponse(ChallengeScheme.HTTP_BASIC, currentUser.getUsername(), currentUser.getPassword());
+	  cr.setChallengeResponse(ChallengeScheme.HTTP_BASIC, usernamePassword.getUsername(), usernamePassword.getPassword());
 	  Representation r = cr.get();
 	  str = r.getText();
     } catch (IOException e) {
