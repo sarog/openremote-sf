@@ -20,21 +20,36 @@
  */
 package org.openremote.controller.rest;
 
-import java.io.IOException;
+import org.apache.log4j.Logger;
+import org.jdom.Document;
+import org.jdom.Element;
+import org.jdom.output.Format;
+import org.jdom.output.XMLOutputter;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.openremote.controller.Constants;
+import org.openremote.controller.exception.ControllerRESTAPIException;
+import org.openremote.controller.rest.support.json.JSONTranslator;
+
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.ServletException;
-
-import org.openremote.controller.Constants;
-import org.openremote.controller.rest.support.json.JSONTranslator;
-import org.apache.log4j.Logger;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * This superclass contains the common implementation elements for the OpenRemote Controller
  * HTTP/REST API.
  *
  * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
+ * @author <a href="mailto:rainer@openremote.org">Rainer Hitz</a>
  */
 public abstract class RESTAPI extends HttpServlet
 {
@@ -248,7 +263,298 @@ public abstract class RESTAPI extends HttpServlet
     sendResponse(request, response, composeXMLErrorDocument(errorCode, message));
   }
 
+  /**
+   * Formats the sensor values in the form of XML or JSON data and and sends the
+   * data as the content of the HTTP response. <p>
+   *
+   * The sensor data format is as follows:
+   *
+   * <h2>XML Sensor Value Response</h2>
+   *
+   * <pre>
+   * {@code
+   * HTTP/1.1 200 OK
+   * Content-Type: application/xml;charset=UTF-8
+   *
+   * <?xml version="1.0" encoding="UTF-8"?>
+   * <sensors>
+   *   <sensor name="TV_Power">on</sensor>
+   *   <sensor name="DVD_Power">off</sensor>
+   * </sensors>
+   * }
+   * </pre>
+   *
+   * <h2>JSON Sensor Value Response</h2>
+   *
+   * <pre>
+   * {@code
+   * HTTP/1.1 200 OK
+   * Content-Type: application/json;charset=UTF-8
+   *
+   * [
+   *   {
+   *     "name" = "DVD_Power",
+   *     "value" = "off"
+   *   },
+   *   {
+   *     "name" = "TV_Power",
+   *     "value" = "on"
+   *   }
+   * ]
+   *}
+   * </pre>
+   *
+   * @param request   the HTTP request.
+   *
+   * @param response  the HTTP response.
+   *
+   * @param valueMap  map that contains the sensor names and sensor values
+   *
+   * @throws org.openremote.controller.exception.ControllerRESTAPIException  if an exception occurred while sending the sensor
+   *                                     value HTTP response content
+   */
+  protected void sendSensorValueResponse(HttpServletRequest request, HttpServletResponse response,
+                                         Map<String, String> valueMap) throws ControllerRESTAPIException
+  {
+    ResponseType responseType = (ResponseType)request.getAttribute("responseType");
+    boolean isJSON = (responseType == ResponseType.APPLICATION_JSON);
+
+    if (isJSON)
+    {
+      sendJSONReponse(response, valueMap);
+    }
+
+    else
+    {
+      sendXMLReponse(response, valueMap);
+    }
+  }
+
+  /**
+   * Sends the HTTP error response. <p>
+   *
+   * The format of the HTTP error response is as follows:
+   *
+   * <h2>XML Error Response</h2>
+   *
+   * <pre>
+   * {@code
+   * HTTP/1.1 400 Bad Request
+   * Content-Type: application/xml;charset=UTF-8
+   *
+   * <?xml version="1.0" encoding="UTF-8"?>
+   * <error>
+   *   <status>400</status>
+   *   <code>...</code>
+   *   <message>...</message>
+   *   <developerMessage>...</developerMessage>
+   * </error>
+   * }
+   * </pre>
+   *
+   * <h2>JSON Error Response</h2>
+   *
+   * <pre>
+   * {@code
+   * HTTP/1.1 400 Bad Request
+   * Content-Type: application/json;charset=UTF-8
+   *
+   * {
+   *   "status" = "400"
+   *   "code" = "..."
+   *   "message" = "..."
+   *   "developerMessage" = "..."
+   * }
+   * }
+   * </pre>
+   *
+   * @param exc       the exception that contains error information
+   *
+   * @param request   the HTTP request.
+   *
+   * @param response  the HTTP response.
+   */
+  protected void sendErrorResponse(ControllerRESTAPIException exc,
+                                   HttpServletRequest request, HttpServletResponse response)
+  {
+    ResponseType responseType = (ResponseType)request.getAttribute("responseType");
+    boolean isJSON = (responseType == ResponseType.APPLICATION_JSON);
+
+    String errorStr = null;
+    Exception newException = null;
+
+    try
+    {
+      errorStr = isJSON ? exc.toJSON() : exc.toXML();
+
+      response.setStatus(exc.getStatusCode());
+
+      PrintWriter writer = response.getWriter();
+
+      writer.print(errorStr);
+      writer.flush();
+    }
+
+    catch (IOException e)
+    {
+      newException = e;
+    }
+
+    catch(JSONException e)
+    {
+      newException = e;
+    }
+
+    if (newException != null)
+    {
+      String queryString = request.getQueryString() != null ?
+          request.getQueryString() : "";
+
+      String requestURL = request.getRequestURL() +
+          (queryString.length() > 0 ? "?" : "") + queryString;
+
+      logger.error(
+          "Failed to send error response for REST API call '" + requestURL + "' : " +
+          newException.getMessage()
+      );
+    }
+  }
+
+  /**
+   * Extracts the sensor names from the HTTP query string. <p>
+   *
+   * The format of the HTTP query string is as follows:
+   *
+   * <pre>
+   * {@code
+   * GET /rest/polling/a8d9c1?name={sensor_name}&name={sensor_name} HTTP/1.1
+   * Host: 192.168.1.1
+   * Accept: application/json
+   * }
+   * </pre>
+   *
+   * @param request  the HTTP request.
+   *
+   * @return  returns the names of all sensors that are requested
+   */
+  protected Set<String> sensorNamesFromQueryString(HttpServletRequest request)
+  {
+    Set<String> sensorNameSet = null;
+
+    Map<String, String[]> paramMap = request.getParameterMap();
+
+    if (paramMap.containsKey("name"))
+    {
+      String[] sensorNameArray = paramMap.get("name");
+
+      sensorNameSet = new HashSet<String>(Arrays.asList(sensorNameArray));
+    }
+
+    else
+    {
+      sensorNameSet = new HashSet<String>(0);
+    }
+
+    return sensorNameSet;
+  }
 
 
+  // Private Instance Methods ---------------------------------------------------------------------
+
+  private void sendJSONReponse(HttpServletResponse response, Map<String, String> valueMap)
+      throws ControllerRESTAPIException
+  {
+    JSONArray arr = new JSONArray();
+    String jsonStr = null;
+
+    try
+    {
+      for (String curSensorName : valueMap.keySet())
+      {
+        JSONObject obj = new JSONObject();
+
+        obj.put("name", curSensorName);
+        obj.put("value", valueMap.get(curSensorName));
+
+        arr.put(obj);
+      }
+
+      int INDENT_FACTOR = 2;
+      jsonStr = arr.toString(INDENT_FACTOR);
+    }
+
+    catch (JSONException e)
+    {
+      throw new ControllerRESTAPIException(
+          HttpServletResponse.SC_INTERNAL_SERVER_ERROR, // 500
+          ControllerRESTAPIException.ERROR_CODE_INTERNAL_CONTROLLER_ERROR,
+          "Internal controller error.",
+          "Failed to create JSON HTTP response content : '" +
+          e.getMessage() + "'."
+      );
+    }
+
+    try
+    {
+      PrintWriter writer = response.getWriter();
+
+      writer.print(jsonStr);
+      writer.flush();
+    }
+
+    catch(IOException e)
+    {
+      throw new ControllerRESTAPIException(
+          HttpServletResponse.SC_INTERNAL_SERVER_ERROR, // 500
+          ControllerRESTAPIException.ERROR_CODE_INTERNAL_CONTROLLER_ERROR,
+          "Internal controller error.",
+          "IOException while writing JSON HTTP response content  : '"
+          + e.getMessage() + "'."
+      );
+    }
+  }
+
+  private void sendXMLReponse(HttpServletResponse response, Map<String, String> valueMap)
+      throws ControllerRESTAPIException
+  {
+    Document doc = new Document();
+
+    Element root = new Element("sensors");
+    doc.addContent(root);
+
+    for (String curSensorName : valueMap.keySet())
+    {
+      Element ele = new Element("sensor");
+      root.addContent(ele);
+
+      ele.setAttribute("name", curSensorName);
+      ele.setText(valueMap.get(curSensorName));
+    }
+
+    XMLOutputter outputter = new XMLOutputter(Format.getPrettyFormat());
+
+    StringWriter stringWriter = new StringWriter();
+
+    try
+    {
+      outputter.output(doc, stringWriter);
+
+      PrintWriter printWriter = response.getWriter();
+
+      printWriter.print(stringWriter.toString());
+      printWriter.flush();
+    }
+
+    catch(IOException e)
+    {
+      throw new ControllerRESTAPIException(
+          HttpServletResponse.SC_INTERNAL_SERVER_ERROR, // 500
+          ControllerRESTAPIException.ERROR_CODE_INTERNAL_CONTROLLER_ERROR,
+          "Internal controller error.",
+          "IOException while writing XML HTTP response content  : '"
+          + e.getMessage() + "'."
+      );
+    }
+  }
 }
 
