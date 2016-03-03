@@ -399,6 +399,21 @@ If it's true, controller will auto-detect its groupmembers with multicast.
     </config>
   </category>
 
+  <category name="alarm">
+    <description>
+        <![CDATA[
+          Configuration for the Alarm protocol
+        ]]>
+    </description>
+    <config name="protocol.alarm.classname" value="org.openremote.controller.protocol.alarm.AlarmCommandBuilder">
+      <hint>
+          <![CDATA[
+           Alarm CommandBuilder class. This entry should not be changed.
+          ]]>
+        </hint>
+    </config>
+  </category>
+
   <category name="vera"> 
     <description> 
         <![CDATA[ 
