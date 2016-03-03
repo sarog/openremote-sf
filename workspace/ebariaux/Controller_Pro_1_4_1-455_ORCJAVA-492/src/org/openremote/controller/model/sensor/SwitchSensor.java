@@ -78,10 +78,13 @@ public class SwitchSensor extends StateSensor
    * @param producer
    *          the protocol handler that backs this sensor either with a read command
    *          or event listener implementation
+   *
+   * @param commandID
+   *          controller unique identifier of related command
    */
-  public SwitchSensor(String name, int sensorID, StatusCache cache, EventProducer producer)
+  public SwitchSensor(String name, int sensorID, StatusCache cache, EventProducer producer, int commandID)
   {
-    this(name, sensorID, cache, producer, createSwitchStates());
+    this(name, sensorID, cache, producer, commandID, createSwitchStates());
   }
 
 
@@ -105,12 +108,15 @@ public class SwitchSensor extends StateSensor
    *          the protocol handler that backs this sensor either with a read command
    *          or event listener implementation
    *
+   * @param commandID
+   *          controller unique identifier of related command
+   *
    * @param states
    *          state string mappings for the default 'on' and 'off' values
    */
-  public SwitchSensor(String name, int sensorID, StatusCache cache, EventProducer producer, DistinctStates states)
+  public SwitchSensor(String name, int sensorID, StatusCache cache, EventProducer producer, int commandID, DistinctStates states)
   {
-    super(name, sensorID, cache, EnumSensorType.SWITCH, producer, states, false);
+    super(name, sensorID, cache, EnumSensorType.SWITCH, producer, commandID, states, false);
   }
 
 

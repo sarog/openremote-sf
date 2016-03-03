@@ -45,6 +45,7 @@ import org.openremote.controller.exception.XMLParsingException;
 import org.openremote.controller.model.Command;
 import org.openremote.controller.model.sensor.Sensor;
 import org.openremote.controller.service.DeployerCommandListener;
+import org.openremote.controller.service.DeployerSensorListener;
 import org.openremote.controller.statuscache.StatusCache;
 import org.openremote.controller.utils.PathUtil;
 
@@ -343,7 +344,14 @@ public class Version20ModelBuilder extends AbstractModelBuilder
    */
   private List<DeployerCommandListener> commandListeners =
       new CopyOnWriteArrayList<DeployerCommandListener>();
-  
+
+  /**
+   * Listeners that get notified with the list of new sensors when a new configuration
+   * was deployed.
+   */
+  private List<DeployerSensorListener> sensorListeners =
+      new CopyOnWriteArrayList<DeployerSensorListener>();
+
   // Constructors -------------------------------------------------------------------------------
 
   /**
@@ -396,7 +404,7 @@ public class Version20ModelBuilder extends AbstractModelBuilder
     // make sure we pass our reference back to the sensor builder to use (mandatory)...
 
     sensorBuilder.setModelBuilder(this);
-    
+
 
     if (deviceProtocolBuilder == null)
     {
@@ -405,14 +413,14 @@ public class Version20ModelBuilder extends AbstractModelBuilder
 
     this.deviceProtocolBuilder = deviceProtocolBuilder;
 
-    
+
     if (commandFactory == null)
     {
       throw new IllegalArgumentException("Must include a reference to a command factory.");
     }
 
     this.commandFactory = commandFactory;
-    
+
 
     // TODO : see ORCJAVA-183
 
@@ -504,6 +512,17 @@ public class Version20ModelBuilder extends AbstractModelBuilder
   public void setCommandListeners(List<DeployerCommandListener> listeners)
   {
     this.commandListeners.addAll(listeners);
+  }
+
+  /**
+   * Sets the listeners that get notified when a new configuration was deployed.
+   *
+   * @param listeners  listeners that get notified with the list of new sensors when
+   *                   a new configuration was deployed.
+   */
+  public void setSensorListeners(List<DeployerSensorListener> listeners)
+  {
+    this.sensorListeners.addAll(listeners);
   }
 
 
@@ -681,14 +700,17 @@ public class Version20ModelBuilder extends AbstractModelBuilder
 
     Set<Sensor> sensors = buildSensorObjectModelFromXML();
 
+    for (DeployerSensorListener curListener : sensorListeners)
+    {
+      curListener.onSensorsDeployed(sensors);
+    }
+
     // TODO :
     //   Should register as lifecycle component and let deployer manage the lifecycle method
     //   calls, see ORCJAVA-188
 
     for (Sensor sensor : sensors)
     {
-      deviceStateCache.registerSensor(sensor);
-
       sensor.start();
     }
   }
@@ -714,7 +736,7 @@ public class Version20ModelBuilder extends AbstractModelBuilder
 
     for (DeployerCommandListener curListener : commandListeners)
     {
-      curListener.processNewCommands(commands);
+      curListener.onCommandsDeployed(commands);
     }
   }
 

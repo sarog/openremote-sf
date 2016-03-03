@@ -342,7 +342,7 @@ public class HttpGetCommandBuilderTest
   @Test public void tesSwitchOnStatus() throws Exception
   {
      ReadCommand cmd = (ReadCommand) getHttpCommand(HTTP_SERVER_URL + "/response/on", "1m");
-     Sensor s1 = new SwitchSensor("switch", 1, cache, cmd);
+     Sensor s1 = new SwitchSensor("switch", 1, cache, cmd, 1);
      s1.start();
      String returnValue = getSensorValueFromCache(1);
      Assert.assertTrue(returnValue.equals("on"));
@@ -354,7 +354,7 @@ public class HttpGetCommandBuilderTest
   @Test public void testSwitchOffStatus() throws Exception
   {
      ReadCommand cmd = (ReadCommand) getHttpCommand(HTTP_SERVER_URL + "/response/off", "2m");
-     Sensor s1 = new SwitchSensor("switch", 2, cache, cmd);
+     Sensor s1 = new SwitchSensor("switch", 2, cache, cmd, 1);
      s1.start();
      String returnValue = getSensorValueFromCache(2);
      Assert.assertTrue(returnValue.equals("off"));
@@ -366,7 +366,7 @@ public class HttpGetCommandBuilderTest
   @Test public void testReadRangeStatus() throws Exception
   {
      ReadCommand cmd = (ReadCommand) getHttpCommand(HTTP_SERVER_URL + "/response/50", "3m");
-     Sensor s2 = new RangeSensor("range1", 3, cache, cmd, 0, 100);
+     Sensor s2 = new RangeSensor("range1", 3, cache, cmd, 1, 0, 100);
      s2.start();
      String returnValue = getSensorValueFromCache(3);
      Assert.assertTrue(returnValue.equals("50"));
@@ -378,7 +378,7 @@ public class HttpGetCommandBuilderTest
   @Test public void testReadRangeStatusOutOfLowerBounds() throws Exception
   {
      ReadCommand cmd = (ReadCommand) getHttpCommand(HTTP_SERVER_URL + "/response/10", "4m");
-     Sensor s2 = new RangeSensor("range2", 4, cache, cmd, 50, 100);
+     Sensor s2 = new RangeSensor("range2", 4, cache, cmd, 1, 50, 100);
      s2.start();
      String returnValue = getSensorValueFromCache(4);
      Assert.assertTrue(returnValue.equals("50"));
@@ -390,7 +390,7 @@ public class HttpGetCommandBuilderTest
   @Test public void testReadRangeStatusOutOfUpperBounds() throws Exception
   {
      ReadCommand cmd = (ReadCommand) getHttpCommand(HTTP_SERVER_URL + "/response/200", "10s");
-     Sensor s2 = new RangeSensor("range3", 5, cache, cmd, 50, 100);
+     Sensor s2 = new RangeSensor("range3", 5, cache, cmd, 1, 50, 100);
      s2.start();
      String returnValue = getSensorValueFromCache(5);
      Assert.assertTrue(returnValue.equals("100"));
@@ -405,7 +405,7 @@ public class HttpGetCommandBuilderTest
     StateSensor.DistinctStates states = new StateSensor.DistinctStates();
     states.addStateMapping("this_is_on", "111");
     ReadCommand cmd = (ReadCommand) getHttpCommand(HTTP_SERVER_URL + "/response/this_is_on", "12s");
-    Sensor s2 = new StateSensor("state1", 6, cache, cmd, states);
+    Sensor s2 = new StateSensor("state1", 6, cache, cmd, 1, states);
     s2.start();
     String returnValue = getSensorValueFromCache(6);
     Assert.assertTrue(returnValue.equals("111"));
@@ -420,7 +420,7 @@ public class HttpGetCommandBuilderTest
     StateSensor.DistinctStates states = new StateSensor.DistinctStates();
     states.addStateMapping("this_is_on", "111");
     ReadCommand cmd = (ReadCommand) getHttpCommand(HTTP_SERVER_URL + "/response/no_match", "1m");
-    Sensor s2 = new StateSensor("state2", 7, cache, cmd, states);
+    Sensor s2 = new StateSensor("state2", 7, cache, cmd, 1, states);
     s2.start();
     String returnValue = getSensorValueFromCache(7);
     Assert.assertTrue(returnValue.equals("N/A"));
@@ -432,7 +432,7 @@ public class HttpGetCommandBuilderTest
   @Test public void testReadLevelStatus() throws Exception
   {
      ReadCommand cmd = (ReadCommand) getHttpCommand(HTTP_SERVER_URL + "/response/20", "1m");
-     Sensor s2 = new LevelSensor("level1", 8, cache, cmd);
+     Sensor s2 = new LevelSensor("level1", 8, cache, cmd, 1);
      s2.start();
      String returnValue = getSensorValueFromCache(8);
      Assert.assertTrue(returnValue.equals("20"));
@@ -444,7 +444,7 @@ public class HttpGetCommandBuilderTest
   @Test public void testReadLevelStatusOutOfLowerBounds() throws Exception
   {
      ReadCommand cmd = (ReadCommand) getHttpCommand(HTTP_SERVER_URL + "/response/-10", "1m");
-     Sensor s2 = new LevelSensor("level2", 9, cache, cmd);
+     Sensor s2 = new LevelSensor("level2", 9, cache, cmd, 1);
      s2.start();
      String returnValue = getSensorValueFromCache(9);
      Assert.assertTrue(returnValue.equals("0"));
@@ -456,7 +456,7 @@ public class HttpGetCommandBuilderTest
   @Test public void testReadLevelStatusOutOfUpperBounds() throws Exception
   {
      ReadCommand cmd = (ReadCommand) getHttpCommand(HTTP_SERVER_URL + "/response/120", "1m");
-     Sensor s2 = new LevelSensor("level3", 10, cache, cmd);
+     Sensor s2 = new LevelSensor("level3", 10, cache, cmd, 1);
      s2.start();
      String returnValue = getSensorValueFromCache(10);
      Assert.assertTrue(returnValue.equals("100"));
