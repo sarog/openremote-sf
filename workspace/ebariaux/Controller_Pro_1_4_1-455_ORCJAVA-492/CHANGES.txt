@@ -1,3 +1,8 @@
+ORCJAVA-492
+===========
+
+  - Controller API extension - v2
+
 ORCJAVA-455
 ===========
 
