@@ -679,11 +679,12 @@ public class ResourceServiceImpl implements ResourceService
 
   @Deprecated private void addAuthentication(AbstractHttpMessage httpMessage)
   {
+    UserService.UsernamePassword usernamePassword = userService.getCurrentUsernamePassword();
+
     httpMessage.setHeader(
         Constants.HTTP_BASIC_AUTH_HEADER_NAME,
         Constants.HTTP_BASIC_AUTH_HEADER_VALUE_PREFIX +
-            encode(userService.getCurrentUser().getUsername() + ":" +
-            userService.getCurrentUser().getPassword())
+            encode(usernamePassword.getUsername() + ":" + usernamePassword.getPassword())
     );
   }
 

@@ -84,7 +84,7 @@ public class DeviceDiscoveryService extends BaseGWTSpringController implements D
   @Override
   public ArrayList<DiscoveredDeviceDTO> loadDevices(boolean onlyNew) throws DeviceDiscoveryException
   {
-    User currentUser = userService.getCurrentUser();
+    UserService.UsernamePassword usernamePassword = userService.getCurrentUsernamePassword();
     String url = configuration.getDeviceDiscoveryServiceRESTRootUrl() + "discoveredDevices";
     if (onlyNew) {
       url += "?used=false";
@@ -93,7 +93,7 @@ public class DeviceDiscoveryService extends BaseGWTSpringController implements D
     String str = "";
     try {
       cr = new ClientResource(url);
-      cr.setChallengeResponse(ChallengeScheme.HTTP_BASIC, currentUser.getUsername(), currentUser.getPassword());
+      cr.setChallengeResponse(ChallengeScheme.HTTP_BASIC, usernamePassword.getUsername(), usernamePassword.getPassword());
       Representation r = cr.get();
       try
       {
@@ -120,7 +120,7 @@ public class DeviceDiscoveryService extends BaseGWTSpringController implements D
   @Override
   public void deleteDevices(ArrayList<DiscoveredDeviceDTO> devicesToDelete) throws DeviceDiscoveryException
   {
-    User currentUser = userService.getCurrentUser();
+    UserService.UsernamePassword usernamePassword = userService.getCurrentUsernamePassword();
     for (DiscoveredDeviceDTO device: devicesToDelete)
     {
       String url = configuration.getDeviceDiscoveryServiceRESTRootUrl() + "discoveredDevices/" + device.getOid();
@@ -128,7 +128,7 @@ public class DeviceDiscoveryService extends BaseGWTSpringController implements D
       String str = "";
       try {
         cr = new ClientResource(url);
-        cr.setChallengeResponse(ChallengeScheme.HTTP_BASIC, currentUser.getUsername(), currentUser.getPassword());
+        cr.setChallengeResponse(ChallengeScheme.HTTP_BASIC, usernamePassword.getUsername(), usernamePassword.getPassword());
         Representation result = cr.delete();
         try
         {
@@ -191,13 +191,13 @@ public class DeviceDiscoveryService extends BaseGWTSpringController implements D
 
   public void markDeviceAsUsed(DiscoveredDeviceDTO deviceToUpdate) throws DeviceDiscoveryException
   {
-    User currentUser = userService.getCurrentUser();
+    UserService.UsernamePassword usernamePassword = userService.getCurrentUsernamePassword();
     String url = configuration.getDeviceDiscoveryServiceRESTRootUrl() + "discoveredDevices/" + deviceToUpdate.getOid();
     ClientResource cr = null;
     String str = "";
     try {
       cr = new ClientResource(url);
-      cr.setChallengeResponse(ChallengeScheme.HTTP_BASIC, currentUser.getUsername(), currentUser.getPassword());
+      cr.setChallengeResponse(ChallengeScheme.HTTP_BASIC, usernamePassword.getUsername(), usernamePassword.getPassword());
       deviceToUpdate.setUsed(true);
       Representation rep = new JsonRepresentation(new JSONSerializer().exclude("*.class").deepSerialize(deviceToUpdate));
       Representation result = cr.put(rep);
