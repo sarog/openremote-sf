@@ -1,3 +1,8 @@
+ORCJAVA-455
+===========
+
+  - Controller API extension
+
 Controller Pro 1.4.1
 ====================
 
