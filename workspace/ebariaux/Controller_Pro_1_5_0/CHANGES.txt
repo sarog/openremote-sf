@@ -1,12 +1,10 @@
-ORCJAVA-492
-===========
+Controller Pro 1.5.0
+====================
 
-  - Controller API extension - v2
+New Features:
 
-ORCJAVA-455
-===========
-
-  - Controller API extension
+  - Controller API extension (ORCJAVA-455)
+  - Controller API extension - v2 (ORCJAVA-492)
 
 Controller Pro 1.4.1
 ====================
@@ -32,7 +30,6 @@ Bug Fixes:
   - Fixed: Re-connection issues with AMX protocol (ORCJAVA-456)
   - Fixed: Potential NPE in BeehiveCommandCheckService (ORCJAVA-505)
 
->>>>>>> .merge-right.r11037
 Controller Pro 1.3.0
 ====================
 
