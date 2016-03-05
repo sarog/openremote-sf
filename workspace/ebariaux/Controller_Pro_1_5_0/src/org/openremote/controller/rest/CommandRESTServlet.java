@@ -16,7 +16,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.openremote.controller.Constants;
 import org.openremote.controller.exception.ControllerRESTAPIException;
-import org.openremote.controller.exception.NoSuchCommandException;
 import org.openremote.controller.service.CommandService;
 import org.openremote.controller.service.ServiceContext;
 import org.openremote.controller.utils.Logger;
@@ -27,6 +26,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.Map;
+import java.util.StringTokenizer;
 
 /**
  * This servlet implements the REST API '/rest/commands?name={command_name}'
@@ -123,11 +123,16 @@ public class CommandRESTServlet extends RESTAPI
    */
   @Override protected void handleRequest(HttpServletRequest request, HttpServletResponse response)
   {
+    // [HTTP POST] /rest/devices/{device_name}/commands?name={command_name}
+
+    String deviceName = null;
     String cmdName  = null;
     String cmdParam = null;
 
     try
     {
+      deviceName = deviceNameFromRequest(request);
+
       cmdName  = cmdNameFromQueryString(request);
 
       if (isContentType(request, Constants.MIME_APPLICATION_JSON))
@@ -140,20 +145,7 @@ public class CommandRESTServlet extends RESTAPI
         cmdParam = cmdParamFromXMLBody(request);
       }
 
-      try
-      {
-        commandService.execute(cmdName, cmdParam);
-      }
-
-      catch(NoSuchCommandException exc)
-      {
-        throw new ControllerRESTAPIException(
-            HttpServletResponse.SC_NOT_FOUND, // 404
-            ControllerRESTAPIException.ERROR_CODE_COMMAND_NOT_FOUND,
-            "Unknown command '" + cmdName + "'.",
-            "Unknown command '" + cmdName + "'."
-        );
-      }
+      commandService.execute(deviceName, cmdName, cmdParam);
 
       response.setStatus(
           HttpServletResponse.SC_NO_CONTENT // 204
@@ -179,6 +171,23 @@ public class CommandRESTServlet extends RESTAPI
 
   // Private Instance Methods ---------------------------------------------------------------------
 
+  private String deviceNameFromRequest(HttpServletRequest request)
+  {
+    String deviceName = "";
+
+    if (DeviceRESTServlet.isDeviceRequest(request, 2, "commands"))
+    {
+      // PathInfo : /{device_name}/commands
+
+      String pathInfo = request.getPathInfo();
+
+      StringTokenizer st = new StringTokenizer(pathInfo, "/");
+      deviceName = st.nextToken();
+    }
+
+    return deviceName;
+  }
+
   private String cmdNameFromQueryString(HttpServletRequest request) throws ControllerRESTAPIException
   {
     String cmdName = null;
@@ -202,8 +211,8 @@ public class CommandRESTServlet extends RESTAPI
           HttpServletResponse.SC_BAD_REQUEST, // 400
           ControllerRESTAPIException.ERROR_CODE_INVALID_HTTP_QUERY_STRING,
           "The command call was rejected by the controller because of an invalid format.",
-          "Invalid URL format -- expected format '/rest/commands?name={command_name}', got '" +
-          request.getServletPath() + (queryString.length() > 0 ? "?" : "") + queryString + "'."
+          "Invalid URL format -- expected format '/rest/devices/{device_name}/commands?name={command_name}', got '" +
+          request.getServletPath() + request.getPathInfo() + (queryString.length() > 0 ? "?" : "") + queryString + "'."
       );
     }
 

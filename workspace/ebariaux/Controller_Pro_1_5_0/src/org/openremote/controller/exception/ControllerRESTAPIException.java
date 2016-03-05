@@ -29,6 +29,11 @@ public class ControllerRESTAPIException extends Exception
   // Constants ------------------------------------------------------------------------------------
 
   /**
+   * Common error code that indicates that the URL couldn't be recognized as a valid URL.
+   */
+  public static final int ERROR_CODE_INVALID_URL = 40400;
+
+  /**
    * Error code that indicates that the REST API call failed because the URL does not contain
    * the ID of the device that has sent the request. <p>
    *
@@ -86,6 +91,36 @@ public class ControllerRESTAPIException extends Exception
    * query string could not be found on the controller.
    */
   public static final int ERROR_CODE_COMMAND_NOT_FOUND = 40404;
+
+  /**
+   * Error code that indicates that the REST API call failed because the device name
+   * of the HTTP request is unknown.
+   */
+  public static final int ERROR_CODE_DEVICE_NOT_FOUND = 40405;
+
+  /**
+   * Error code that indicates that the REST API call failed because at least one sensor
+   * name of the HTTP query string is unknown.
+   */
+  public static final int ERROR_CODE_SENSOR_NOT_FOUND = 40406;
+
+  /**
+   * Error code that indicates that the REST API call failed because the referenced
+   * command name of the HTTP query string has been used more than once.
+   */
+  public static final int ERROR_CODE_COMMAND_AMBIGUITY = 40410;
+
+  /**
+   * Error code that indicates that the REST API call failed because the referenced
+   * device name of the HTTP request has been used more than once.
+   */
+  public static final int ERROR_CODE_DEVICE_AMBIGUITY = 40411;
+
+  /**
+   * Error code that indicates that the REST API call failed because one referenced
+   * sensor name of the HTTP query string has been used more than once.
+   */
+  public static final int ERROR_CODE_SENSOR_AMBIGUITY = 40412;
 
   /**
    * Error code that indicates that the REST API call failed because of an internal controller
