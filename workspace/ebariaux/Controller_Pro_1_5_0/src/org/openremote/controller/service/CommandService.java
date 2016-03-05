@@ -8,6 +8,7 @@
  */
 package org.openremote.controller.service;
 
+import org.openremote.controller.exception.ControllerRESTAPIException;
 import org.openremote.controller.exception.NoSuchCommandException;
 
 /**
@@ -21,11 +22,14 @@ public interface CommandService
   /**
    * Executes an OpenRemote controller command by the command name.
    *
+   * @param deviceName    name of the device.
+   *
    * @param commandName   command name.
    *
    * @param commandParam  command parameter, <tt>null</tt> if not available.
    *
    * @throws NoSuchCommandException  if the command could not be found
    */
-  void execute(String commandName, String commandParam) throws NoSuchCommandException;
+  void execute(String deviceName, String commandName, String commandParam)
+      throws ControllerRESTAPIException;
 }

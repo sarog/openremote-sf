@@ -39,10 +39,11 @@ public class LevelSensor extends RangeSensor
    * @param name
    * @param sensorID
    * @param producer
+   * @param commandID
    */
-  public LevelSensor(String name, int sensorID, StatusCache cache, EventProducer producer)
+  public LevelSensor(String name, int sensorID, StatusCache cache, EventProducer producer, int commandID)
   {
-    super(name, sensorID, EnumSensorType.LEVEL, producer, cache, 0, 100, false);
+    super(name, sensorID, EnumSensorType.LEVEL, producer, commandID, cache, 0, 100, false);
   }
 
 

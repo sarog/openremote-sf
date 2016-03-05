@@ -8,6 +8,8 @@
  */
 package org.openremote.controller.service;
 
+import org.openremote.controller.exception.ControllerRESTAPIException;
+
 import java.util.Map;
 import java.util.Set;
 
@@ -23,9 +25,26 @@ public interface StatusPollingByNameService
    *
    * @param   sensorNames  sensor names
    *
-   * @return  map that contains the sensor ID for each sensor name. Note that if a
-   *          sensor with the given name does not exist, the map contains null
-   *          as sensor ID
+   * @return  map that contains the sensor ID for each sensor name.
+   *
+   * @throws ControllerRESTAPIException  if a sensor cannot be found or if a sensor
+   *                                     name has been used more than once
    */
-  public Map<String, Integer> getSensorIDsFromNames(Set<String> sensorNames);
+  public Map<String, Integer> getSensorIDsFromNames(Set<String> sensorNames)
+      throws ControllerRESTAPIException;
+
+  /**
+   * Converts sensor names that are device specific to sensor ID's.
+   *
+   * @param   deviceName   device name
+   *
+   * @param   sensorNames  sensor names
+   *
+   * @return  map that contains the sensor ID for each sensor name.
+   *
+   * @throws ControllerRESTAPIException  if the device or a sensor cannot be found or if a device name or sensor
+   *                                     name has been used more than once
+   */
+  public Map<String, Integer> getSensorIDsFromNames(String deviceName, Set<String> sensorNames)
+      throws ControllerRESTAPIException;
 }

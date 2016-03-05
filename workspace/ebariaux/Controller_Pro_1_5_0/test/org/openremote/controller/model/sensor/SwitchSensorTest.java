@@ -60,7 +60,7 @@ public class SwitchSensorTest
   {
     final int SENSOR_ID = 1;
 
-    SwitchSensor s1 = new SwitchSensor("switch on", SENSOR_ID, cache, new SwitchReadCommand("switch on", SENSOR_ID, "on"));
+    SwitchSensor s1 = new SwitchSensor("switch on", SENSOR_ID, cache, new SwitchReadCommand("switch on", SENSOR_ID, "on"), 1);
 
     cache.registerSensor(s1);
     s1.start();
@@ -82,7 +82,7 @@ public class SwitchSensorTest
   {
     final int SENSOR_ID = 2;
 
-    SwitchSensor s1 = new SwitchSensor("switch off", SENSOR_ID, cache, new SwitchReadCommand("switch off", SENSOR_ID, "off"));
+    SwitchSensor s1 = new SwitchSensor("switch off", SENSOR_ID, cache, new SwitchReadCommand("switch off", SENSOR_ID, "off"), 1);
 
     cache.registerSensor(s1);
     s1.start();
@@ -106,7 +106,7 @@ public class SwitchSensorTest
   {
     final int SENSOR_ID = 3;
 
-    SwitchSensor s1 = new SwitchSensor("unknown", SENSOR_ID, cache, new SwitchReadCommand("unknown", SENSOR_ID, "foo"));
+    SwitchSensor s1 = new SwitchSensor("unknown", SENSOR_ID, cache, new SwitchReadCommand("unknown", SENSOR_ID, "foo"), 1);
 
     cache.registerSensor(s1);
     s1.start();
@@ -138,7 +138,7 @@ public class SwitchSensorTest
 
     final int SENSOR_ID = 4;
 
-    SwitchSensor s1 = new SwitchSensor("door sensor", SENSOR_ID, cache, new SwitchReadCommand("door sensor", SENSOR_ID, "on"), mapping);
+    SwitchSensor s1 = new SwitchSensor("door sensor", SENSOR_ID, cache, new SwitchReadCommand("door sensor", SENSOR_ID, "on"), 1,  mapping);
 
     cache.registerSensor(s1);
     s1.start();
@@ -157,7 +157,7 @@ public class SwitchSensorTest
 
     final int SENSOR_ID2 = 5;
 
-    SwitchSensor s2 = new SwitchSensor("door", SENSOR_ID2, cache, new SwitchReadCommand("door", SENSOR_ID2, "off"), mapping);
+    SwitchSensor s2 = new SwitchSensor("door", SENSOR_ID2, cache, new SwitchReadCommand("door", SENSOR_ID2, "off"), 1,  mapping);
 
     cache.registerSensor(s2);
     s2.start();
@@ -174,7 +174,7 @@ public class SwitchSensorTest
 
     final int SENSOR_ID3 = 6;
 
-    SwitchSensor s3 = new SwitchSensor("unknown", SENSOR_ID3, cache, new SwitchReadCommand("unknown", SENSOR_ID3, "bar"), mapping);
+    SwitchSensor s3 = new SwitchSensor("unknown", SENSOR_ID3, cache, new SwitchReadCommand("unknown", SENSOR_ID3, "bar"), 1,  mapping);
 
     cache.registerSensor(s3);
     s3.start();
@@ -198,7 +198,7 @@ public class SwitchSensorTest
   {
     final int SENSOR_ID = 7;
 
-    SwitchSensor s1 = new SwitchSensor("broken", SENSOR_ID, cache, new BrokenCommand());
+    SwitchSensor s1 = new SwitchSensor("broken", SENSOR_ID, cache, new BrokenCommand(), 1);
 
     cache.registerSensor(s1);
     s1.start();

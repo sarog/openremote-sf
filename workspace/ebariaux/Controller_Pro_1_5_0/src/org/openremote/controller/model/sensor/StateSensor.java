@@ -143,12 +143,15 @@ public class StateSensor extends Sensor
    *          the protocol handler that backs this sensor either with a read command
    *          or event listener implementation
    *
+   * @param commandID
+   *          controller unique identifier of related command
+   *
    * @param states
    *          distinct state values and their mappings this sensor will return
    */
-  public StateSensor(String name, int sensorID, StatusCache cache, EventProducer producer, DistinctStates states)
+  public StateSensor(String name, int sensorID, StatusCache cache, EventProducer producer, int commandID, DistinctStates states)
   {
-    this(name, sensorID, cache, EnumSensorType.CUSTOM, producer, states, true);
+    this(name, sensorID, cache, EnumSensorType.CUSTOM, producer, commandID, states, true);
   }
 
 
@@ -182,6 +185,9 @@ public class StateSensor extends Sensor
    *          the protocol handler that backs this sensor either with a read command
    *          or event listener implementation
    *
+   * @param commandID
+   *          controller unique identifier of related command
+   *
    * @param states
    *          distinct state values and their mappings this sensor will return
    *
@@ -191,9 +197,9 @@ public class StateSensor extends Sensor
    *          to inspect
    */
   protected StateSensor(String name, int sensorID, StatusCache cache, EnumSensorType type, EventProducer producer,
-                        DistinctStates states, boolean includeStatesAsProperties)
+                        int commandID, DistinctStates states, boolean includeStatesAsProperties)
   {
-    super(name, sensorID, cache, producer, statesAsProperties(includeStatesAsProperties, states), type);
+    super(name, sensorID, cache, producer, commandID, statesAsProperties(includeStatesAsProperties, states), type);
 
     if (states == null)
     {

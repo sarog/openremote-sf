@@ -50,7 +50,7 @@
             <value>classpath:zwave.properties</value>
             <value>classpath:velbus.properties</value>
             <value>classpath:domintell.properties</value>
-          </list>
+         </list>
       </property>
   </bean>
 
@@ -166,6 +166,10 @@
         class = "org.openremote.controller.service.impl.CommandServiceImpl">
   </bean>
 
+  <bean id = "deviceService"
+        class = "org.openremote.controller.service.impl.DeviceServiceImpl">
+  </bean>
+
   <bean id="denonAVRSerialConfiguration" class="org.openremote.controller.DenonAVRSerialConfiguration">
    	<property name="connectionType" value="${denonAVRSerial.connectionType}" />
    	<property name="comPort" value="${denonAVRSerial.comPort}" />
@@ -272,6 +276,18 @@
         <list>
             <ref bean="statusCache"/>
             <ref bean="commandService"/>
+            <ref bean="statusCommandByNameService"/>
+            <ref bean="statusPollingByNameService"/>
+            <ref bean="deviceService"/>
+        </list>
+    </property>
+
+    <property name = "sensorListeners">
+        <list>
+            <ref bean="statusCache"/>
+            <ref bean="statusCommandByNameService"/>
+            <ref bean="statusPollingByNameService"/>
+            <ref bean="deviceService"/>
         </list>
     </property>
 
