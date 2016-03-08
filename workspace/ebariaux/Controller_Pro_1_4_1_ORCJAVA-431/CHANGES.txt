@@ -1,3 +1,8 @@
+ORCJAVA-431
+===========
+
+  - Fixed: Test fixtures are bundle with controller distribution
+
 Controller Pro 1.4.1
 ====================
 
