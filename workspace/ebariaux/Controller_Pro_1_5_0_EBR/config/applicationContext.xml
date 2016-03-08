@@ -526,6 +526,7 @@ The needed classes have to be provided as a jar file and copied to lib folder.
     <property name = "eventProcessors">
     	<list>
     		<bean class = "org.openremote.controller.statuscache.rules.RuleEngine" />
+    		<bean class = "org.openremote.controller.statuscache.CSVDataLogger" />
     		<ref bean="rrd4jLogger"/>
      		
     	</list>
