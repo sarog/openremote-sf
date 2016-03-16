@@ -46,5 +46,10 @@ dependencies {
     providedCompile "javax.servlet:servlet-api:$servletVersion"
     providedCompile "javax.servlet.jsp:jsp-api:$jspVersion"
 
+    testCompile "org.bouncycastle:bcprov-jdk15on:$bouncycastleVersion"
+    testCompile "org.dbunit:dbunit:$dbunitVersion"
+    testCompile "httpunit:httpunit:$httpunitVersion"
+    testCompile "org.mortbay.jetty:jetty:$jettyVersion"
     testCompile "junit:junit:$junitVersion"
+		testCompile "org.mockito:mockito-core:$mockitoVersion"
 }
