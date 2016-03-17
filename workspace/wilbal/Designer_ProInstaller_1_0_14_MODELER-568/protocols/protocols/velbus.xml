@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+
+ OpenRemote, the Home of the Digital Home.
+ Copyright 2008-2015, OpenRemote Inc.
+
+ See the contributors.txt file in the distribution for a
+ full listing of individual contributors.
+
+ This is free software; you can redistribute it and/or modify it
+ under the terms of the GNU General Public License as
+ published by the Free Software Foundation; either version 3.0 of
+ the License, or (at your option) any later version.
+
+ This software is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+ You should have received a copy of the GNU General Public
+ License along with this software; if not, write to the Free
+ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+
+-->
+
+<!--
+ |  VELBUS protocol configuration for OpenRemote Designer.
+ |
+ |  Author: Rich Turner
+ +-->
+<openremote xmlns = "http://www.openremote.org"
+            xmlns:xsi = "http://www.w3.org/2001/XMLSchema-instance"
+            xsi:schemaLocation = "http://www.openremote.org protocol.xsd">
+
+  <protocol displayName="VELBUS" tagName="velbus">
+
+    <attr name = "address" label = "Module Address">
+      <validations>
+        <allowBlank>false</allowBlank>
+		<maxLength>3</maxLength>
+		<regex message="Module Address 1-255">\d+</regex>
+      </validations>
+    </attr>
+
+	<attr name="command" label="Command" options="ALARM,ALARM_STATUS,ALARM_TIME,ALARM_TIME_RELATIVE,ALARM_TYPE_STATUS,ALARM_TIME_STATUS,BLIND_POSITION,COUNTER_INSTANT_STATUS,COUNTER_STATUS,DIMMER_LEVEL,DIMMER_STATUS,DOWN,HALT,LANGUAGE,LED,LED_STATUS,LOCK,LOCK_STATUS,LONG_PRESS,MEMO_TEXT,OFF,ON,POSITION_STATUS,PRESS,PROGRAM,PROGRAM_STATUS,RELEASE,SETTING_STATUS,STATUS,SUNRISE_STATUS,SUNSET_STATUS,TEMP_MODE,TEMP_MODE_STATUS,TEMP_STATE_STATUS,TEMP_STATUS,TEMP_TARGET,TEMP_TARGET_RELATIVE,TEMP_TARGET_STATUS,TIME_UPDATE,UNLOCK,UP">
+		<validations>
+			<allowBlank>false</allowBlank>
+		</validations>
+	</attr>
+	
+	<attr name="value" label="Command Value">
+      <validations>
+        <allowBlank>true</allowBlank>
+      </validations>
+    </attr>
+	
+	<attr name="networkId" label="Velbus Network ID">
+      <validations>
+        <allowBlank>true</allowBlank>
+		<regex message="Network ID (if not supplied then first Network is used)">\d+</regex>
+      </validations>
+    </attr>	
+
+  </protocol>
+  
+</openremote>
+
