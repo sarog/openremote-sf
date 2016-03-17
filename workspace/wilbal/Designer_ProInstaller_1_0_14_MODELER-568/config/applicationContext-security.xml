@@ -11,6 +11,7 @@
         <security:intercept-url pattern="/download/*" access="ROLE_ADMIN"/>
         <security:intercept-url pattern="/Modeler.jsp" access="ROLE_MODELER,ROLE_DESIGNER,ROLE_ADMIN"/>
         <security:intercept-url pattern="/fileUploadController.htm" access="ROLE_MODELER,ROLE_DESIGNER"/>
+        <security:intercept-url pattern="/resources/css/loginPage.css" filters="none"/>
         <security:form-login login-page="/login.jsp" default-target-url="/Modeler.jsp" login-processing-url="/j_security_check" authentication-failure-url="/login.jsp?fail=true"/>
         <security:logout logout-success-url="/login.jsp" logout-url="/j_security_logout" invalidate-session="true"/>
         <security:remember-me key="or"/>
