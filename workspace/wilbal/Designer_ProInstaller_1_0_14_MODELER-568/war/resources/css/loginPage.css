@@ -7,10 +7,10 @@
 	margin:0;
 	padding:0;
 }
-html, body{
+/*html, body{
 	width: 100%;
 	height: 100%;
-}
+}*/
 body {
 	margin:0;
 	font-size:14px;
@@ -45,10 +45,11 @@ body {
 	background: #4E5A5A url("../image/bckg_img.png") no-repeat center center; 
 }
 .mainContainer{
-	margin:89px auto 0;
+	margin:89px auto;
 	width:1086px;
-	height:636px;
+	/*height:636px;*/
 	overflow:hidden;
+	background-color:rgba(193,215,46,0.85);
 }
 article#login{
 	display:inline-block;
@@ -119,6 +120,7 @@ article#login{
 	height:20px;
 	padding:14px 16px;
 	font-weight: 400;	
+	font-size: 14px;
 }
 [type="checkbox"]:not(:checked),
 [type="checkbox"]:checked {
@@ -146,8 +148,7 @@ article#login{
 [type="checkbox"]:checked + label:after {
   content: '\2714';
   position: absolute;
-  top: -3px; left: 4px;
-  font-size: 16px;
+  top: -1px; left: 3px;
   color: #4F5C5C;  
   transition: all .2s;
   -webkit-transition: all .2s;
@@ -230,8 +231,8 @@ article#login{
 section.sidebar{
 	display:inline-block;
 	width:28%;
-	height:469px;
-	background-color:rgba(193,215,46,0.85);
+	/*height:469px;*/
+	/*background-color:rgba(193,215,46,0.85);*/
 	vertical-align: top;
 	padding: 170px 45px 0 50px;
 	color:#fff;
@@ -261,7 +262,7 @@ section.sidebar{
 
 	.mainContainer{
 		width:683px;
-		height:939px;
+		/*height:939px;*/
 	}
 	article#login{
 		width:683px;
