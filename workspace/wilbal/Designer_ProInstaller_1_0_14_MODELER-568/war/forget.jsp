@@ -66,7 +66,7 @@
                 	 		please follow the instructions in the email to reset your password.</p>
             </c:if>
 		</div>
-	        <p class="copyright">Copyright &copy; 2008-<fmt:formatDate value="${now}"pattern="yyyy" /> 
+	        <p class="copyright">Copyright &copy; 2008-<fmt:formatDate value="${now}" pattern="yyyy"/> 
 	        <a href="http://www.openremote.org">OpenRemote</a>.</p>
 		  </div>
 		</div>
