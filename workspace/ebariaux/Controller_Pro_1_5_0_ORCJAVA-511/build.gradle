@@ -20,8 +20,11 @@ dependencies {
     compile files("lib/clink/clink170.jar")
     // TODO: replace with reference to Nexus
     compile files("lib/openremote-security-0.2.0/openremote-security-0.2.0.jar")
+    compile files("lib/openremote-logging-0.1.0/openremote-logging-0.1.0.jar")
     
+    compile "org.bouncycastle:bcprov-jdk15on:$bouncycastleVersion"
     compile "org.apache.commons:commons-exec:$commonsExecVersion"
+		compile "commons-fileupload:commons-fileupload:$commonsFileuploadVersion"
     compile "commons-io:commons-io:$commonsIoVersion"
     compile "commons-lang:commons-lang:$commonsLangVersion"
     compile "commons-net:commons-net:$commonsNetVersion"
@@ -46,7 +49,6 @@ dependencies {
     providedCompile "javax.servlet:servlet-api:$servletVersion"
     providedCompile "javax.servlet.jsp:jsp-api:$jspVersion"
 
-    testCompile "org.bouncycastle:bcprov-jdk15on:$bouncycastleVersion"
     testCompile "org.dbunit:dbunit:$dbunitVersion"
     testCompile "httpunit:httpunit:$httpunitVersion"
     testCompile "org.mortbay.jetty:jetty:$jettyVersion"
