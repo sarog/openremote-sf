@@ -51,10 +51,18 @@ body {
 	overflow:hidden;
 	background-color:rgba(193,215,46,0.85);
 }
+
+.forget{
+	margin:89px auto;
+	width:683px;
+	height:939px;
+	overflow:hidden;
+}
+
 article#login{
 	display:inline-block;
 	background-color:#fff;
-	width:63%;
+	width:683px;
 	vertical-align: top;
 	padding: 28px 0 0 0;
 }
@@ -117,7 +125,6 @@ article#login{
 	background-color:#EFEFEF;
 	border:none;
 	width:373px;
-	height:20px;
 	padding:14px 16px;
 	font-weight: 400;	
 	font-size: 14px;
@@ -230,7 +237,7 @@ article#login{
 
 section.sidebar{
 	display:inline-block;
-	width:28%;
+	width:300px;
 	/*height:469px;*/
 	/*background-color:rgba(193,215,46,0.85);*/
 	vertical-align: top;
