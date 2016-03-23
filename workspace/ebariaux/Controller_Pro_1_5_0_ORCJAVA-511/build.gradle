@@ -82,6 +82,7 @@ dependencies {
 }
 
 task controller(type: Zip, dependsOn: assemble) {
+    description 'Creates a zip distribution of the controller runtime, including Tomcat'
 
     from('runtime/apache-tomcat-6.0.18') {
 		    into project.name
