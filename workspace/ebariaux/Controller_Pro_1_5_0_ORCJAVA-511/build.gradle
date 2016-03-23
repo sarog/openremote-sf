@@ -86,8 +86,7 @@ task controller(type: Zip, dependsOn: assemble) {
     from('runtime/apache-tomcat-6.0.18') {
 		    into project.name
 		}
-		
-		with war {
-    		into "$project.name/webapps/controller"
+ 		into("$project.name/webapps/controller") {
+		    with war
 		}
 }
