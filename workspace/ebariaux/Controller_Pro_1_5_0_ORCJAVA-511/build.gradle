@@ -5,6 +5,10 @@ sourceCompatibility = 1.6
 targetCompatibility = 1.6
 version = projectVersion
 
+ext {
+    testWebApplicationFolder = 'build/testcontainer/war'
+}
+
 repositories {
     jcenter();
     mavenCentral()
@@ -79,6 +83,101 @@ dependencies {
     testCompile "org.mortbay.jetty:jetty:$jettyVersion"
     testCompile "junit:junit:$junitVersion"
 		testCompile "org.mockito:mockito-core:$mockitoVersion"
+}
+
+task prepareTestFolder(type: Copy, dependsOn: war) {
+    description 'Creates an exploded web application folder, with test specific configuration files and test fixtures included'
+    destinationDir = new File("$testWebApplicationFolder")
+    outputs.dir destinationDir
+    
+    with war
+    from('src/test/java') {
+        include '**/*.xml'
+        include '**/*.xls'
+        include '**/*.csv'
+        include '**/*.drl'
+        into ('WEB-INF/classes')
+    }
+    from('src/test/webapp') {
+        into ('WEB-INF/classes')
+    }   
+}
+
+war {
+   // Make sure configuration files from sources also make it to war
+   from('src/main/java') {
+      include '**/*.xml'
+      into ('WEB-INF/classes')
+    }
+}
+
+task startTestContainer(dependsOn: [prepareTestFolder, compileTestJava])
+
+startTestContainer.doFirst {
+    description 'Start embedded Jetty container with test configuration'
+    Properties props = new Properties()
+    props.load(new FileInputStream("$testWebApplicationFolder/WEB-INF/classes/config.properties"))
+
+    test.systemProperties = [
+        /*
+         * Let the unit test JVM know the 'resource.path' configuration property value of the
+         * test container's deployed controller.war
+         */
+        'testcontainer.vm.resource.path':  props['resource.path'],
+
+        /*
+         * These properties must be set to correctly resolve in the Spring configuration file.
+         * Eventually, this should not rely on a public server but be part of the local test setup.
+         */
+        'openremote.sync.service.uri' : 'http://designer.openremote.com/beehive/rest/',
+        'openremote.remote.command.service.uri' : 'http://designer.openremote.com/ccs/rest/',
+        'openremote.controller.id' : '1',
+        'openremote.device.discovery.service.uri' : 'http://designer.openremote.com/dds/rest/',
+
+        /*
+         * Pass a system property that gives tests that need access to the compiled
+         * test class directory (which contains fixture files) as an absolute file path
+         */
+        'classes.dir' : file("$testWebApplicationFolder/WEB-INF/classes").path
+     ] 
+
+    /*
+     * Set the test container VM work directory inside the war directory. This ensures
+     * relative paths from within test container war's config.properties are resolved
+     * within the testcontainer directory structure.
+     */
+    ant.java(fork: true,
+             spawn: true,
+             classname: 'org.openremote.controller.jetty.JettyStart',
+             classpath: (sourceSets.test.runtimeClasspath + files("$testWebApplicationFolder/WEB-INF/classes")).asPath,
+             dir: testWebApplicationFolder) {
+                sysproperty(key: 'openremote.sync.service.uri', value : 'http://designer.openremote.com/beehive/rest/')
+                sysproperty(key: 'openremote.remote.command.service.uri', value : 'http://designer.openremote.com/ccs/rest/')
+                sysproperty(key: 'openremote.controller.id', value : '1')
+                sysproperty(key: 'openremote.device.discovery.service.uri', value : 'http://designer.openremote.com/dds/rest/')
+    }
+}
+
+task stopTestContainer
+stopTestContainer.doFirst {
+    ant.java(classname : 'org.openremote.controller.jetty.JettyStop',
+             classpath : sourceSets.test.runtimeClasspath.asPath)
+}
+
+test.dependsOn startTestContainer
+test.finalizedBy stopTestContainer
+test {
+    /*
+     * Run JUnit VM with the same work directory as the test container war. Notice
+     * the tests themselves aren't actually running inside a container. This is
+     * temporary until the search paths for resources have been sorted out to not mix
+     * the test container and junit test resource files.
+     */
+    workingDir = new File(testWebApplicationFolder)
+    classpath = sourceSets.test.runtimeClasspath + files("$testWebApplicationFolder/WEB-INF/classes")
+    
+    scanForTestClasses = false
+    include '**/AllTests.class'
 }
 
 task controller(type: Zip, dependsOn: assemble) {
