@@ -22,21 +22,39 @@ dependencies {
     compile files("lib/openremote-security-0.2.0/openremote-security-0.2.0.jar")
     compile files("lib/openremote-logging-0.1.0/openremote-logging-0.1.0.jar")
     
+    compile "antlr:antlr:$antlrVersion"
+    compile "org.antlr:antlr-runtime:$antlrRuntimeVersion"
     compile "org.bouncycastle:bcprov-jdk15on:$bouncycastleVersion"
+    compile "org.bouncycastle:bcpkix-jdk15on:$bouncycastleVersion"
+    compile "commons-beanutils:commons-beanutils:$commonsBeanUtilsVersion"
     compile "org.apache.commons:commons-exec:$commonsExecVersion"
 		compile "commons-fileupload:commons-fileupload:$commonsFileuploadVersion"
     compile "commons-io:commons-io:$commonsIoVersion"
     compile "commons-lang:commons-lang:$commonsLangVersion"
     compile "commons-net:commons-net:$commonsNetVersion"
+
     compile "org.drools:drools-core:$droolsVersion"
     compile "org.drools:drools-api:$droolsVersion"
+    // We need a specific patched version of drools-compiler,
+    // make sure "std" version is not included by transitive dependencies
+    compile ("org.drools:drools-decisiontables:$droolsVersion") {
+      exclude module: 'drools-compiler'
+    }
+    compile ("org.drools:drools-templates:$droolsVersion") {
+      exclude module: 'drools-compiler'
+    }
+    compile files("lib/drools-5.1.1/drools-compiler-5.1.1_patched.jar")
+
+    compile "org.eclipse.jdt.core.compiler:ecj:$ecjVersion"
     compile "net.sf.flexjson:flexjson:$flexjsonVersion"
     compile "org.apache.httpcomponents:httpclient:$httpclientVersion"
+    compile "jaxen:jaxen:1.1-beta-9"
     compile "jdom:jdom:$jdomVersion"
     compile "org.owfs:jowfsclient:$jowfsclientVersion"
     compile "com.jayway.jsonpath:json-path:$jsonpathVersion"
     compile "org.zeromq:jzmq:$jzmqVersion" // Not sure what version we're using, seems older
     compile "log4j:log4j:$log4jVersion"
+    compile "org.mvel:mvel2:$mvel2Version"
     compile "org.quartz-scheduler:quartz:$quartzVersion"
     compile "org.restlet.jse:org.restlet:$restletVersion"
     compile "org.restlet.jse:org.restlet.ext.json:$restletVersion"
@@ -45,6 +63,13 @@ dependencies {
     
     compile "org.springframework:spring:$springVersion"
     compile "org.springframework.security:spring-security-core:$springSecurityVersion"
+
+
+    // These dependencies were in controller
+    // but not sure they're still required
+//    compile files("lib/json/json-20110113.jar")
+//    compile "jstl:jstl:1.1.2"
+//    compile taglibs:standard:1.1.2"
 
     providedCompile "javax.servlet:servlet-api:$servletVersion"
     providedCompile "javax.servlet.jsp:jsp-api:$jspVersion"
