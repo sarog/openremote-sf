@@ -7,6 +7,7 @@ version = projectVersion
 
 ext {
     testWebApplicationFolder = 'build/testcontainer/war'
+    testWebServerBase = 'https://designer-test.openremote.com'
 }
 
 repositories {
@@ -136,10 +137,10 @@ startTestContainer.doFirst {
          * These properties must be set to correctly resolve in the Spring configuration file.
          * Eventually, this should not rely on a public server but be part of the local test setup.
          */
-        'openremote.sync.service.uri' : 'http://designer.openremote.com/beehive/rest/',
-        'openremote.remote.command.service.uri' : 'http://designer.openremote.com/ccs/rest/',
+        'openremote.sync.service.uri' : "$testWebServerBase/beehive/rest/",
+        'openremote.remote.command.service.uri' : "$testWebServerBase/ccs/rest/",
         'openremote.controller.id' : '1',
-        'openremote.device.discovery.service.uri' : 'http://designer.openremote.com/dds/rest/',
+        'openremote.device.discovery.service.uri' : "$testWebServerBase/dds/rest/",
 
         /*
          * Pass a system property that gives tests that need access to the compiled
@@ -158,10 +159,10 @@ startTestContainer.doFirst {
              classname: 'org.openremote.controller.jetty.JettyStart',
              classpath: (sourceSets.test.runtimeClasspath + files("$testWebApplicationFolder/WEB-INF/classes")).asPath,
              dir: testWebApplicationFolder) {
-                sysproperty(key: 'openremote.sync.service.uri', value : 'http://designer.openremote.com/beehive/rest/')
-                sysproperty(key: 'openremote.remote.command.service.uri', value : 'http://designer.openremote.com/ccs/rest/')
+                sysproperty(key: 'openremote.sync.service.uri', value : "$testWebServerBase/beehive/rest/")
+                sysproperty(key: 'openremote.remote.command.service.uri', value : "$testWebServerBase/ccs/rest/")
                 sysproperty(key: 'openremote.controller.id', value : '1')
-                sysproperty(key: 'openremote.device.discovery.service.uri', value : 'http://designer.openremote.com/dds/rest/')
+                sysproperty(key: 'openremote.device.discovery.service.uri', value : "$testWebServerBase/dds/rest/")
     }
 }
 
