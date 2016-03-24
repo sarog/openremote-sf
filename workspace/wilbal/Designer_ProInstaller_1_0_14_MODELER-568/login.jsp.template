@@ -75,7 +75,7 @@
 				
 				<div id="accept">
 					<input type="submit" value="LOGIN" ><p>
-						<a href="" class="btn_account" >Don't have an account?</a>
+						<a class="btn_account" href = "http://www.openremote.com/professional-designer">Don't have an account?</a>
 						<a class = "forget_btn" href = "forget.jsp">Forgot password?</a>
 					</p>
 				</div>						
