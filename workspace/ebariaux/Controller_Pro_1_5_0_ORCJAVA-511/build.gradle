@@ -104,10 +104,18 @@ task prepareTestFolder(type: Copy, dependsOn: war) {
 }
 
 war {
-   // Make sure configuration files from sources also make it to war
-   from('src/main/java') {
-      include '**/*.xml'
-      into ('WEB-INF/classes')
+    // Make sure configuration files from sources also make it to war
+    from('src/main/java') {
+        include '**/*.xml'
+        into ('WEB-INF/classes')
+    }
+    
+    // Also copy native libraries, flattening source structure
+    into ('WEB-INF/lib/native') {
+        from fileTree('lib/rxtx').files
+        include '**/*.dll'
+        include '**/*.so'
+        include '**/*.jnilib'
     }
 }
 
