@@ -12,9 +12,9 @@ import org.openremote.modeler.client.Configuration;
 import org.openremote.modeler.domain.Device;
 import org.openremote.modeler.domain.DeviceCommand;
 import org.openremote.modeler.logging.LogFacade;
-import org.openremote.modeler.server.DeviceCommandController;
 import org.openremote.modeler.service.DeviceCommandService;
 import org.openremote.modeler.service.DeviceService;
+import org.openremote.modeler.service.UserService;
 import org.openremote.modeler.shared.dto.DeviceCommandDetailsDTO;
 import org.openremote.modeler.shared.ir.GenerateIRCommandsAction;
 import org.openremote.modeler.shared.ir.GenerateIRCommandsResult;
@@ -38,6 +38,8 @@ public class GenerateIRCommandsActionHandler implements ActionHandler<GenerateIR
   
   private DeviceService deviceService;
   private DeviceCommandService deviceCommandService;
+  private UserService userService;
+  
   private Configuration configuration;
   
   @Override
@@ -49,14 +51,9 @@ public class GenerateIRCommandsActionHandler implements ActionHandler<GenerateIR
     
     try {
       resource = new ClientResource(configuration.getIrServiceRESTRootUrl() + "GenerateDeviceCommands");
-	    
-	  Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-	  UserDetails userDetails = null;
-	  if (principal instanceof UserDetails) {
-	    userDetails = (UserDetails) principal;
-	    resource.setChallengeResponse(ChallengeScheme.HTTP_BASIC, userDetails.getUsername(), userDetails.getPassword());
-	  }
-	
+      UserService.UsernamePassword usernamePassword = userService.getCurrentUsernamePassword();
+	    resource.setChallengeResponse(ChallengeScheme.HTTP_BASIC, usernamePassword.getUsername(), usernamePassword.getPassword());
+
 	  Representation r = resource.post(new JsonRepresentation(new JSONSerializer().exclude("*.class").exclude("device").deepSerialize(action)));
 	
 	  try {
@@ -105,6 +102,11 @@ public class GenerateIRCommandsActionHandler implements ActionHandler<GenerateIR
 
   public void setDeviceCommandService(DeviceCommandService deviceCommandService) {
     this.deviceCommandService = deviceCommandService;
+  }
+  
+  public void setUserService(UserService userService)
+  {
+    this.userService = userService;
   }
 
   public void setConfiguration(Configuration configuration) {

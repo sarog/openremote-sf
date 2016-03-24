@@ -34,6 +34,13 @@ import org.openremote.useraccount.domain.UserDTO;
  */
 public interface UserService {
    
+  /**
+   * Gets the username and password for the currently logged in user.
+   * 
+   * @return Username and password for currently logged in user.
+   */
+  UsernamePassword getCurrentUsernamePassword();
+  
    void saveUser(User user);
    
    void updateUser(UserDTO user);
@@ -169,5 +176,35 @@ public interface UserService {
     * @param newPassword
     * @throws UserChangePasswordException
     */
-   void changePassword(String oldPassword, String newPassword) throws UserChangePasswordException;   
+   void changePassword(String oldPassword, String newPassword) throws UserChangePasswordException;
+   
+   
+   /**
+    * Class to hold username and password couple.
+    * 
+    * @author ebariaux
+    */
+   public class UsernamePassword {
+     
+     private String username;
+     private String password;
+     
+     public UsernamePassword(String username, String password)
+     {
+       super();
+       this.username = username;
+       this.password = password;
+     }
+
+     public String getUsername()
+     {
+       return username;
+     }
+
+     public String getPassword()
+     {
+       return password;
+     }
+     
+   }
 }
