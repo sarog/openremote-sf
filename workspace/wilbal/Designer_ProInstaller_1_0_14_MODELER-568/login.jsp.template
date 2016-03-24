@@ -84,7 +84,7 @@
 				<p>&copy;2008-2016 <a href="http://www.openremote.org">OpenRemote</a> -- Version @VERSION@ r@SVN_REVISION@ (@BUILD.DATE@ @VERSION.NAME@)</p>
 			</footer>
 		</article><section class="sidebar">
-				<h2>Update to the latest OpenRemote <br/>Professional Controller<br/> <span>ProInstaller_1.4.0</span>
+				<h2>Update to the latest OpenRemote <br/>Professional Controller<br/> <span>Version @CONTROLLER.VERSION@</span>
 				</h2>
 					<p>In order to use all the latest Designer features, make sure you have installed the latest OpenRemote Professional Controller.</p>
 					<p>You can access the latest version from the "Download Resources" menu, after you have logged in.</p>
