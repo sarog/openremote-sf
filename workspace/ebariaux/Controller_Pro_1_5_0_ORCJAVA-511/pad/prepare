@@ -1,9 +1,0 @@
-#!/bin/sh
-
-cd apr-1.4.6
-CFLAGS="-O2" ./configure
-make clean
-make 
-cd -
-
-cmake .
