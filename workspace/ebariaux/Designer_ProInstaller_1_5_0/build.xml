@@ -293,6 +293,7 @@
       <filterchain>
         <replacetokens>
           <token key = "VERSION" value = "${version}"/>
+					<token key = "CONTROLLER.VERSION" value = "${controller.version}"/>
           <token key = "BUILD.DATE" value = "${build.date}"/>
           <token key = "VERSION.NAME" value = "${version.name}"/>
         </replacetokens>
