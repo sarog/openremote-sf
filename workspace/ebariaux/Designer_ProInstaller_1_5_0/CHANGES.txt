@@ -4,6 +4,9 @@ Pro 1.5.0
 Fixes:
  - Do not encode password in communication with Beehive services (MODELER-566)
 
+New features:
+ - Add alarm protocol (MODELER-567)
+
 Pro 1.3.0
 =========
 
