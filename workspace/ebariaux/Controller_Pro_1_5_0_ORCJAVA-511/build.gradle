@@ -11,17 +11,12 @@ ext {
 }
 
 repositories {
-    jcenter();
-    mavenCentral()
+    // OR repository must be defined first so that specific version of drools-compiler is found
     maven {
         url "http://m2repo.openremote.com/content/groups/public/"
     }
-}
-
-configurations {
-    // We need a specific patched version of drools-compiler,
-    // make sure "std" version is not included by transitive dependencies
-    compile.exclude module: 'drools-compiler'
+    jcenter();
+    mavenCentral()
 }
 
 dependencies {
@@ -38,16 +33,22 @@ dependencies {
     compile "org.bouncycastle:bcpkix-jdk15on:$bouncycastleVersion"
     compile "commons-beanutils:commons-beanutils:$commonsBeanUtilsVersion"
     compile "org.apache.commons:commons-exec:$commonsExecVersion"
-		compile "commons-fileupload:commons-fileupload:$commonsFileuploadVersion"
+    compile "commons-fileupload:commons-fileupload:$commonsFileuploadVersion"
     compile "commons-io:commons-io:$commonsIoVersion"
     compile "commons-lang:commons-lang:$commonsLangVersion"
     compile "commons-net:commons-net:$commonsNetVersion"
 
+    compile ("org.drools:drools-compiler:$droolsVersion:patched")
     compile "org.drools:drools-core:$droolsVersion"
     compile "org.drools:drools-api:$droolsVersion"
-    compile ("org.drools:drools-decisiontables:$droolsVersion")
-    compile ("org.drools:drools-templates:$droolsVersion")
-    compile files("lib/drools-5.1.1/drools-compiler-5.1.1_patched.jar")
+    // We need a specific patched version of drools-compiler,
+    // make sure "std" version is not included by transitive dependencies
+    compile ("org.drools:drools-decisiontables:$droolsVersion") {
+      exclude module: 'drools-compiler'
+    }
+    compile ("org.drools:drools-templates:$droolsVersion") {
+      exclude module: 'drools-compiler'
+    }
 
     compile "org.eclipse.jdt.core.compiler:ecj:$ecjVersion"
     compile "net.sf.flexjson:flexjson:$flexjsonVersion"
