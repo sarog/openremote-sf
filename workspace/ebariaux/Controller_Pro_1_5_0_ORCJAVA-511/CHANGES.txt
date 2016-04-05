@@ -1,3 +1,8 @@
+ORCJAVA-511
+===========
+
+  - Convert build system to Gradle
+
 Controller Pro 1.5.0
 ====================
 
