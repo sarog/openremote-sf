@@ -10,6 +10,10 @@ ext {
     testWebServerBase = 'https://designer-test.openremote.com'
 }
 
+configurations {
+    staticLibraries
+}
+
 repositories {
     // OR repository must be defined first so that specific version of drools-compiler is found
     maven {
@@ -20,6 +24,10 @@ repositories {
 }
 
 dependencies {
+    staticLibraries "org.rxtx:rxtxSerial:2.2:pre2@dll"
+    staticLibraries "org.rxtx:librxtxSerial:2.2:pre2@so"
+    staticLibraries "org.rxtx:librxtxSerial:2.2:pre2@jnilib"
+
     compile "org.openremote:or-commons:0.1.0"
     compile "org.openremote:or-security:0.2.0"
     compile "org.openremote:or-logging:0.1.0"
@@ -111,12 +119,10 @@ war {
         into ('WEB-INF/classes')
     }
     
-    // Also copy native libraries, flattening source structure
+    // Also copy native libraries, getting rid of version information from file names
     into ('WEB-INF/lib/native') {
-        from fileTree('lib/rxtx').files
-        include '**/*.dll'
-        include '**/*.so'
-        include '**/*.jnilib'
+        from configurations.staticLibraries.files
+        rename { it - '-2.2-pre2' }
     }
 }
 
