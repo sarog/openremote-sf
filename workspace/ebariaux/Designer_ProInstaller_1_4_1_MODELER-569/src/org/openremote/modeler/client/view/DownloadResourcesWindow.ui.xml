@@ -32,7 +32,7 @@
 			  </li>
 			</ul>
 			<div>&nbsp;</div>
-			<div>For more information, please consult <a href="http://www.openremote.com/support/ipcontroller">Controller of Things</a></div>
+			<div>For more information about installing the controller, please refer to our "<a href='http://www.openremote.com/install-the-controller'>Getting Started</a>" guide.</div>
 			<div>&nbsp;</div>
 			<div>
 				<g:Button ui:field="okButton" styleName="{style.centeredButton}">OK</g:Button>
