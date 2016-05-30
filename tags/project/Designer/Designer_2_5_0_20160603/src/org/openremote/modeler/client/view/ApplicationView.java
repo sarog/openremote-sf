@@ -88,9 +88,7 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.user.client.Cookies;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.Window.Location;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.RootPanel;
 
 /**
@@ -303,8 +301,7 @@ public class ApplicationView implements View {
      downloadButton.addSelectionListener(new SelectionListener<ButtonEvent>() {
         @Override
         public void componentSelected(ButtonEvent ce) {
-          DownloadResourcesWindow downloadWindow = new DownloadResourcesWindow();
-          downloadWindow.show();
+          Window.open("https://github.com/openremote/Controller/releases", "_blank", "");
         }
      });
      return downloadButton;
