@@ -1,3 +1,8 @@
+#22
+===
+
+ - Fixed: Controller command polling thread dies for uncaught exceptions
+
 ORCJAVA-518
 ===========
 
