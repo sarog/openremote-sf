@@ -48,6 +48,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.jdom.Attribute;
 import org.jdom.Element;
 import org.restlet.data.ChallengeResponse;
@@ -1295,12 +1296,7 @@ public class Deployer
           {
             fileOutputStream = new BufferedOutputStream(new FileOutputStream(zippedFile));
 
-            int b;
-
-            while ((b = zipInputStream.read()) != -1)
-            {
-              fileOutputStream.write(b);
-            }
+            IOUtils.copy(zipInputStream, fileOutputStream);
           }
 
           catch (FileNotFoundException e)
