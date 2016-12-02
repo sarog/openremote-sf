@@ -111,6 +111,7 @@
     <fileset dir = "${lib.dir}/json-path" includes = "**/*.jar"/>
     <fileset dir = "${lib.dir}/rrd4j-2.1.1" includes = "**/*.jar"/>
     <fileset dir = "${lib.dir}/jzmq" includes = "**/*.jar"/>
+    <fileset dir = "${lib.dir}/netty" includes = "**/*.jar"/>
     <fileset dir = "${lib.dir}/openremote-logging-0.1.0" includes = "**/*.jar"/>
     <fileset dir = "${lib.dir}/openremote-security-0.2.0" includes = "**/*.jar"/>
     <fileset dir = "${lib.dir}/object-model-0.2.0" includes = "**/*.jar"/>
@@ -143,6 +144,7 @@
 	<property name = "openremote.remote.command.service.uri" value = "https://designer.openremote.com/ccs/rest"/>
 	<property name = "openremote.controller.id" value = "1"/>
 	<property name = "openremote.device.discovery.service.uri" value = "http://designer.openremote.com/dds/rest/"/>
+	<property name = "openremote.remote.command.service.ws.uri" value = "http://designer.openremote.com/ccs/ws-commands"/>
 		
 
 
@@ -470,6 +472,7 @@
 						<sysproperty key = "openremote.remote.command.service.uri" value = "${openremote.remote.command.service.uri}"/>
 						<sysproperty key = "openremote.controller.id" value = "${openremote.controller.id}"/>
 						<sysproperty key = "openremote.device.discovery.service.uri" value = "${openremote.device.discovery.service.uri}"/>
+						<sysproperty key = "openremote.remote.command.service.ws.uri" value = "${openremote.remote.command.service.ws.uri}"/>
       </java>
 
 
@@ -631,6 +634,7 @@
 					<sysproperty key = "openremote.remote.command.service.uri" value = "${openremote.remote.command.service.uri}"/>
 					<sysproperty key = "openremote.controller.id" value = "${openremote.controller.id}"/>
 					<sysproperty key = "openremote.device.discovery.service.uri" value = "${openremote.device.discovery.service.uri}"/>
+					<sysproperty key = "openremote.remote.command.service.ws.uri" value = "${openremote.remote.command.service.ws.uri}"/>
 
       <sysproperty key = "ant.home" value = "${ant.home}" />
 

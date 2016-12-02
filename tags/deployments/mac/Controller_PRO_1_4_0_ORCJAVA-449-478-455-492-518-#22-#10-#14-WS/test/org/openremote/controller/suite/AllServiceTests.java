@@ -23,7 +23,6 @@ package org.openremote.controller.suite;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
-import org.openremote.controller.service.BeehiveCommandCheckServiceTest;
 import org.openremote.controller.service.PollingServiceTest;
 import org.openremote.controller.service.ProfileServiceTest;
 import org.openremote.controller.service.DeployerTest;
@@ -34,8 +33,7 @@ import org.openremote.controller.service.DeployerTest;
    ProfileServiceTest.class,
    PollingServiceTest.class,
 
-   DeployerTest.class,
-   BeehiveCommandCheckServiceTest.class
+   DeployerTest.class
 }
 )
 
