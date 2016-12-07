@@ -1074,10 +1074,7 @@ public class Deployer
     // TODO : ORCJAVA-188, introduce lifecycle management for connection managers
     // TODO : ORCJAVA-188, introduce and use generic LifeCycle interface for state cache
 
-    if (beehiveCommandCheckService != null)
-    {
-      //beehiveCommandCheckService.stop();
-    }
+    BeehiveCommandCheckService.stop();
 
     deviceStateCache.shutdown();
     controllerXMLElementCache.clear();
@@ -1153,10 +1150,7 @@ public class Deployer
       Map<String, String> props = getConfigurationProperties();
       controllerConfig.setConfigurationProperties(props);
     } finally {
-      if (beehiveCommandCheckService != null)
-      {
-        //beehiveCommandCheckService.stop();
-      }
+      BeehiveCommandCheckService.stop();
 
 	  BeehiveCommandCheckService.start(this, controllerConfig);
 
